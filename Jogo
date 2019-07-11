@@ -1,20 +1,79 @@
 #include "raylib.h"
 
+typedef struct personagem{
+    Image visual; 
+    Vector2 pos;//posição(x,y)
+    Rectangle hitbox;
+    float veloci;
+    Texture2D textura;
+}personagem;
+typedef struct coisas{
+    Image visual; 
+    Vector2 pos;//posição(x,y)
+    Rectangle hitbox;
+    Texture2D textura;
+}coisas;
+
+
+void movimentofujona(float *x, float *y, float *xcam, float *ycam){
+    if(IsKeyPressed(KEY_W)||IsKeyPressed(KEY_UP)){
+        *y-=30.0f;
+        *ycam+=30.0f;
+    }
+    else if(IsKeyPressed(KEY_S)||IsKeyPressed(KEY_DOWN)){
+        *y+=30.0f;
+        *ycam-=30.0f;
+    }
+    else if(IsKeyPressed(KEY_A)||IsKeyPressed(KEY_LEFT)){
+        *x-=30.0f;
+        *xcam+=30.0f;
+    }
+    else if(IsKeyPressed(KEY_D)||IsKeyPressed(KEY_RIGHT)){
+        *x+=30.0f;
+        *xcam-=30.0f;
+    }
+}
+
+
 int main(void)
 {
     const int screenWidth = 1000;
     const int screenHeight = 500;
-   
+    //Declaração de variaveis
     int x, y;
+    //Vetor de personagens
+    personagem perso[50];
+    //perso[0]=pirraia
+
+    InitWindow(screenWidth, screenHeight, "Jogo RunningGirl");
     
-    InitWindow(screenWidth, screenHeight, "Jogo Teste-RunningGirl");
-    
+    //Carregando imagens e transformando-as em texturas
     Image menu = LoadImage("/raylib/RunningGirl/menu1.png");
     ImageResize(&menu, screenWidth, screenHeight);
     Texture2D menuTexture = LoadTextureFromImage(menu);
     UnloadImage(menu);
+    //troca pra do cenario
+    Image fundo = LoadImage("/raylib/RunningGirl/finalfesta1.png");
+    ImageResize(&fundo, screenWidth, screenHeight);
+    Texture2D fundotx = LoadTextureFromImage(fundo);
+    UnloadImage(fundo);
     
-   
+    //preenchendo a fujona
+    perso[0].visual = LoadImage("/raylib/RunningGirl/PERSONAGENS/show (54).png");
+    perso[0].textura = LoadTextureFromImage(perso[0].visual);
+    perso[0].pos.x = 4.0;//posição x incial da pirraia
+    perso[0].pos.y = 4.0;//posição y incial da pirraia
+    perso[0].hitbox.x = perso[0].pos.x;
+    perso[0].hitbox.y = perso[0].pos.y;
+    perso[0].hitbox.width = 40;
+    perso[0].hitbox.height = 50;
+    
+    //Declaração da camera
+    Camera2D cam;
+    cam.zoom = 2.2f;
+    cam.rotation = 0.0f;
+    cam.offset = (Vector2){0.0f,0.0f};
+    
     SetTargetFPS(60);
     
     while(!WindowShouldClose())
@@ -24,6 +83,7 @@ int main(void)
         
         BeginDrawing();
         
+            //Colocando fundo do menu
             DrawTexture(menuTexture, 0, 0, RAYWHITE);
             
             //printar localização do mouse
@@ -34,13 +94,25 @@ int main(void)
             if(x >= 250 && x <= 406 && y >= 290 && y <= 321)
             {
                 DrawText("Novo Jogo",238,290,35,WHITE);
-                
+                //Verificando se o botão JOGAR foi clicado
                 if(IsMouseButtonDown(MOUSE_LEFT_BUTTON))
                 {
+                    //JOGO
                     while(1)
                     {
                         BeginDrawing();
-                            DrawRectangle(0, 0, screenWidth, screenHeight, RAYWHITE);
+                        //Movimentação
+                        movimentofujona(&perso[0].pos.x, &perso[0].pos.y, &cam.offset.x, &cam.offset.y);
+                        //raio da camera
+                        cam.target = (Vector2){perso[0].pos.x-200, perso[0].pos.y-200};
+                        BeginMode2D(cam);
+                        ClearBackground(WHITE);
+                        //Printar cenario
+                        DrawTexture(fundotx, 0,0,RAYWHITE);
+                        //PIRRAIA
+                        DrawTexture(perso[0].textura,perso[0].pos.x,perso[0].pos.y,RAYWHITE);
+
+                        EndMode2D();
                         EndDrawing();
                         
                         if(IsKeyPressed(KEY_END))
@@ -107,13 +179,14 @@ int main(void)
                 DrawText("Ranking",430,350,30,WHITE);
             }
             
-           
+        
         EndDrawing();
     }
     
     //descarregar imagens e texturas
     UnloadTexture(menuTexture);
-    
+    UnloadTexture(pirraiatx);
+    UnloadTexture(fundotx);
     CloseWindow();
     
     return 0;
