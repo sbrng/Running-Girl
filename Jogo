@@ -1,0 +1,120 @@
+#include "raylib.h"
+
+int main(void)
+{
+    const int screenWidth = 1000;
+    const int screenHeight = 500;
+   
+    int x, y;
+    
+    InitWindow(screenWidth, screenHeight, "Jogo Teste-RunningGirl");
+    
+    Image menu = LoadImage("/raylib/RunningGirl/menu1.png");
+    ImageResize(&menu, screenWidth, screenHeight);
+    Texture2D menuTexture = LoadTextureFromImage(menu);
+    UnloadImage(menu);
+    
+   
+    SetTargetFPS(60);
+    
+    while(!WindowShouldClose())
+    {
+        x=GetMouseX();
+        y=GetMouseY();
+        
+        BeginDrawing();
+        
+            DrawTexture(menuTexture, 0, 0, RAYWHITE);
+            
+            //printar localização do mouse
+            DrawText(TextFormat("%i | %i",x ,y), 500, 30, 20, BLACK);
+            
+            
+            //printar botões
+            if(x >= 250 && x <= 406 && y >= 290 && y <= 321)
+            {
+                DrawText("Novo Jogo",238,290,35,WHITE);
+                
+                if(IsMouseButtonDown(MOUSE_LEFT_BUTTON))
+                {
+                    while(1)
+                    {
+                        BeginDrawing();
+                            DrawRectangle(0, 0, screenWidth, screenHeight, RAYWHITE);
+                        EndDrawing();
+                        
+                        if(IsKeyPressed(KEY_END))
+                        {
+                            return 0;
+                        }
+                            
+                    }
+                }
+            }
+            else
+            {
+                DrawText("Novo Jogo",250,290,30,WHITE);
+            }
+            
+            
+            if(x >= 550 && x <= 750 && y >= 290 && y <= 321)
+            {
+                DrawText("Jogos Salvos",535,290,35,WHITE);
+                
+                if(IsMouseButtonDown(MOUSE_LEFT_BUTTON))
+                {
+                    while(1)
+                    {
+                        BeginDrawing();
+                            DrawRectangle(0, 0, screenWidth, screenHeight, RAYWHITE);
+                        EndDrawing();
+                        
+                        if(IsKeyPressed(KEY_END))
+                        {
+                            return 0;
+                        }
+                            
+                    }
+                }
+            }
+            else
+            {
+                DrawText("Jogos Salvos",550,290,30,WHITE);
+            }
+            
+            if(x >= 428 && x <= 545 && y >= 350 && y <= 380)
+            {
+                DrawText("Ranking",420,350,35,WHITE);
+                
+                if(IsMouseButtonDown(MOUSE_LEFT_BUTTON))
+                {
+                    while(1)
+                    {
+                        BeginDrawing();
+                            DrawRectangle(0, 0, screenWidth, screenHeight, RAYWHITE);
+                        EndDrawing();
+                        
+                        if(IsKeyPressed(KEY_END))
+                        {
+                            return 0;
+                        }
+                            
+                    }
+                }
+            }
+            else
+            {
+                DrawText("Ranking",430,350,30,WHITE);
+            }
+            
+           
+        EndDrawing();
+    }
+    
+    //descarregar imagens e texturas
+    UnloadTexture(menuTexture);
+    
+    CloseWindow();
+    
+    return 0;
+}
