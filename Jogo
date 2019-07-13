@@ -20,25 +20,25 @@ typedef struct coisas
 
 void movimentofujona(float *x, float *y, float *xcam, float *ycam)
 {
-    if(IsKeyPressed(KEY_W)||IsKeyPressed(KEY_UP))
+    if(IsKeyDown(KEY_W)||IsKeyDown(KEY_UP))
     {
-        *y-=30.0f;
-        *ycam+=30.0f;
+        *y-=5.0f;
+        *ycam+=5.0f;
     }
-    else if(IsKeyPressed(KEY_S)||IsKeyPressed(KEY_DOWN))
+    else if(IsKeyDown(KEY_S)||IsKeyDown(KEY_DOWN))
     {
-        *y+=30.0f;
-        *ycam-=30.0f;
+        *y+=5.0f;
+        *ycam-=5.0f;
     }
-    else if(IsKeyPressed(KEY_A)||IsKeyPressed(KEY_LEFT))
+    else if(IsKeyDown(KEY_A)||IsKeyDown(KEY_LEFT))
     {
-        *x-=30.0f;
-        *xcam+=30.0f;
+        *x-=5.0f;
+        *xcam+=5.0f;
     }
-    else if(IsKeyPressed(KEY_D)||IsKeyPressed(KEY_RIGHT))
+    else if(IsKeyDown(KEY_D)||IsKeyDown(KEY_RIGHT))
     {
-        *x+=30.0f;
-        *xcam-=30.0f;
+        *x+=5.0f;
+        *xcam-=5.0f;
     }
 }
 
@@ -70,6 +70,10 @@ int main(void)
     ImageResize(&fundo, screenWidth, screenHeight);
     Texture2D fundotx = LoadTextureFromImage(fundo);
     UnloadImage(fundo);
+    
+    Image cen1 = LoadImage("/raylib/RunningGirl/cenario1.png");
+    Texture2D cen1tx = LoadTextureFromImage(cen1);
+    UnloadImage(cen1);
     
     //preenchendo a fujona
     perso[0].visual = LoadImage("/raylib/RunningGirl/PERSONAGENS/show (54).png");
@@ -125,7 +129,7 @@ int main(void)
                         ClearBackground(WHITE);
                         
                         //Printar cenario
-                        DrawTexture(fundotx, 0,0,RAYWHITE);
+                        DrawTexture(cen1tx, 0,0,RAYWHITE);
                         
                         //PIRRAIA
                         DrawTexture(perso[0].textura,perso[0].pos.x,perso[0].pos.y,RAYWHITE);
@@ -204,6 +208,7 @@ int main(void)
     //descarregar imagens e texturas
     UnloadTexture(menuTexture);
     UnloadTexture(perso[0].textura);
+    UnloadTexture(cen1tx);
     UnloadTexture(fundotx);
     
     CloseWindow();
