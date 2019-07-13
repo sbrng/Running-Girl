@@ -1,3 +1,6 @@
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include "raylib.h"
 
 typedef struct personagem
@@ -17,6 +20,13 @@ typedef struct coisas
     Texture2D textura;
 }coisas;
 
+typedef struct jogador
+{
+    char nome[20];
+    int points;
+    int vidas;
+    
+}jogador;
 
 void movimentofujona(float *x, float *y, float *xcam, float *ycam)
 {
@@ -50,6 +60,11 @@ int main(void)
     
     //Declaração de variaveis
     int x, y;
+    int letterCount = 0;
+    int end = 0;
+    
+    //vetor dos jogadores
+    jogador jog;
     
     //Vetor de personagens
     personagem perso[50];
@@ -115,9 +130,56 @@ int main(void)
                 //Verificando se o botão JOGAR foi clicado
                 if(IsMouseButtonDown(MOUSE_LEFT_BUTTON))
                 {
+                    
+                    while(1)
+                    {
+                        if(IsKeyPressed(KEY_END))
+                        {
+                            return 0;
+                        }
+                        
+                        BeginDrawing();
+                            
+                            ClearBackground(RAYWHITE);
+                            DrawRectangle(0, 0, screenWidth, screenHeight, RAYWHITE);
+                            DrawText("Insira seu nome:", 200, 100, 25, BLACK);
+                            DrawRectangle(200, 130, 600, 40, SKYBLUE);
+                            DrawText("Pressione ENTER para continuar", 200, 180, 15, BLACK);
+                            
+                            int key = GetKeyPressed();
+
+                            if ((key >= 32) && (key <= 125) && (letterCount < 19))
+                            {
+                                jog.nome[letterCount] = (char)key;
+                                letterCount++;
+                            }
+
+                            else if (IsKeyPressed(KEY_BACKSPACE) && letterCount > 0)
+                            {
+                                letterCount--;
+                                jog.nome[letterCount] = '\0';
+                            }
+                            
+                            else if(IsKeyPressed(KEY_ENTER)) 
+                            {
+                                break;
+                            }
+                            
+                            DrawText(TextFormat("%s", jog.nome), 220, 140, 25, WHITE);
+                            
+                        EndDrawing();
+                    }
+                    
                     //JOGO
                     while(1)
                     {
+                        if(IsKeyPressed(KEY_END))
+                        {
+                            return 0;
+                        }
+                            
+                        
+                        
                         BeginDrawing();
                         
                         //Movimentação
@@ -137,11 +199,7 @@ int main(void)
                         EndMode2D();
                         EndDrawing();
                         
-                        if(IsKeyPressed(KEY_END))
-                        {
-                            return 0;
-                        }
-                            
+                        
                     }
                 }
             }
@@ -160,6 +218,7 @@ int main(void)
                     while(1)
                     {
                         BeginDrawing();
+                            ClearBackground(RAYWHITE);
                             DrawRectangle(0, 0, screenWidth, screenHeight, RAYWHITE);
                         EndDrawing();
                         
@@ -185,6 +244,7 @@ int main(void)
                     while(1)
                     {
                         BeginDrawing();
+                            ClearBackground(RAYWHITE);
                             DrawRectangle(0, 0, screenWidth, screenHeight, RAYWHITE);
                         EndDrawing();
                         
