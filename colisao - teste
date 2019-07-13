@@ -1,0 +1,87 @@
+#include "raylib.h"
+
+// peguei tudo baseado nos codigos de giu
+typedef struct personagem 
+{
+    Image visual; 
+    Vector2 pos;//posição(x,y)
+    Rectangle hitbox;
+    float veloci;
+    Texture2D textura;
+}personagem;
+
+// aqui eu só tirei a camera
+void movimentofujona(float *x, float *y)
+{
+    if(IsKeyDown(KEY_W)||IsKeyDown(KEY_UP))
+        *y-=5.0f;
+  
+    else if(IsKeyDown(KEY_S)||IsKeyDown(KEY_DOWN))
+        *y+=5.0f;
+        
+    else if(IsKeyDown(KEY_A)||IsKeyDown(KEY_LEFT))
+        *x-=5.0f;
+        
+    else if(IsKeyDown(KEY_D)||IsKeyDown(KEY_RIGHT))
+        *x+=5.0f;
+}
+
+
+int main(void)
+{
+    const int screenWidth = 800;
+    const int screenHeight = 450;
+
+    InitWindow(screenWidth, screenHeight, "Colisão");
+
+    SetTargetFPS(60);                   
+    
+    personagem perso[50];
+    
+    // msm coisa do de giu, msms valores
+    perso[0].visual = LoadImage("/raylib/RunningGirl/PERSONAGENS/show (54).png");
+    perso[0].textura = LoadTextureFromImage(perso[0].visual);
+    perso[0].pos.x = 4.0;//posição x incial da pirraia
+    perso[0].pos.y = 4.0;//posição y incial da pirraia
+    perso[0].hitbox.x = perso[0].pos.x;
+    perso[0].hitbox.y = perso[0].pos.y;
+    perso[0].hitbox.width = 40;
+    perso[0].hitbox.height = 50;
+    
+    while (!WindowShouldClose())
+    {
+        //colisão com as paredes:
+        //lado esquerdo:
+        if (perso[0].pos.x <= 0) 
+            perso[0].pos.x += 5.0f;
+        
+        //lado direito:
+        if (perso[0].pos.x+45 >= 800)
+            perso[0].pos.x -= 5.0f;
+        
+        //cima:
+        if (perso[0].pos.y <= 0)
+            perso[0].pos.y += 5.0f;
+        
+        //baixo:
+        if (perso[0].pos.y+55 >= 450)
+            perso[0].pos.y -= 5.0f;
+     
+        
+        BeginDrawing();
+
+            ClearBackground(SKYBLUE); // mesmo background aleatorio só pra rodar
+             
+            movimentofujona(&perso[0].pos.x, &perso[0].pos.y);
+            
+            DrawTexture(perso[0].textura,perso[0].pos.x,perso[0].pos.y,RAYWHITE);
+            
+  
+        EndDrawing();
+        
+    }
+    
+    CloseWindow();        
+
+    return 0;
+}
