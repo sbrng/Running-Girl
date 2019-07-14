@@ -49,6 +49,19 @@ void movimentofujona(float *x, float *y, float *xcam, float *ycam)
     }
 }
 */
+ int coresaleatorias(int *r, int *g, int *b, int *a, float *time){
+        if(*time<0.4f){
+            *time+=GetFrameTime();
+        }
+        else{
+            *r=GetRandomValue(0,255);
+            *g=GetRandomValue(0,255);
+            *b=GetRandomValue(0,255);
+            *a=255;
+            *time=0.0f;
+        }
+
+ }
 void movimentofujona(float *x, float *y, int *estado){
     if(IsKeyDown(KEY_W)||IsKeyDown(KEY_UP)){
         *y-=2.0f;
@@ -78,6 +91,8 @@ int main(void)
     int letterCount = 0;
     int end = 0;
     int estadopirraia=3;//atualizada pela função "movimentopirraia"
+    int rgo,ggo,bgo,ago,rp,gp,bp,ap;
+    float timego=0, timep=0;
     //vetor dos jogadores
     jogador jog;
     
@@ -106,6 +121,18 @@ int main(void)
     ImageResize(&cen1, screenWidth, screenHeight);
     Texture2D cen1tx = LoadTextureFromImage(cen1);
     UnloadImage(cen1);
+    
+    //botando o fundo festa(quando ganhar)
+    Image party = LoadImage("/raylib/RunningGirl/finalfesta1.png");
+    ImageResize(&party, 1000, 550);
+    Texture2D partytx = LoadTextureFromImage(party);
+    UnloadImage(party);
+    
+    //botando o fundo game over
+    Image gameover = LoadImage("/raylib/RunningGirl/quarto.png");
+    ImageResize(&gameover, 1000, 550);
+    Texture2D gameovertx = LoadTextureFromImage(gameover);
+    UnloadImage(gameover);
     
     //preenchendo a fujona
     perso[0].imagem = LoadImage("/raylib/RunningGirl/pirraia.png");
@@ -245,7 +272,7 @@ int main(void)
                     //JOGO
                     while(1)
                     {
-                        if(IsKeyPressed(KEY_END))
+                        if(IsKeyPressed(KEY_END)||IsKeyPressed(KEY_F3))
                         {
                             return 0;
                         }
@@ -274,8 +301,18 @@ int main(void)
                             DrawTextureRec(perso[0].textura, rightpirraia, posicao , RAYWHITE);
                             break;
                         }
-                        
+
+                        if(IsKeyDown(KEY_F2)){//final game over
+                            DrawTexture(gameovertx, 0, 0, RAYWHITE);
+                            coresaleatorias(&rgo,&ggo,&bgo,&ago,&timego);
+                            DrawText("GAME OVER",280, 100, 80, (Color){rgo,ggo,bgo,ago}); 
+                        }
                        
+                        if(IsKeyDown(KEY_F1)){//final festa
+                           DrawTexture(partytx, 0, 0, RAYWHITE);
+                           coresaleatorias(&rp,&gp,&bp,&ap,&timep);
+                           DrawText(" WELCOME TO THE PARTY ! ",75, 120, 60, (Color){rp,gp,bp,ap}); 
+                        }
 
                         //EndMode2D();
                         EndDrawing();
@@ -350,7 +387,8 @@ int main(void)
     UnloadTexture(menuTexture);
     UnloadTexture(perso[0].textura);
     UnloadTexture(cen1tx);
-  
+    UnloadTexture(partytx);
+    UnloadTexture(gameovertx);
     
     CloseWindow();
     
