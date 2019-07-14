@@ -2,7 +2,7 @@
 
 typedef struct personagem
 {
-    Image visual; 
+    Image imagem; 
     Vector2 pos;//posição(x,y)
     Rectangle hitbox;
     float veloci;
@@ -24,7 +24,7 @@ typedef struct jogador
     int vidas;
     
 }jogador;
-
+/*
 void movimentofujona(float *x, float *y, float *xcam, float *ycam)
 {
     if(IsKeyDown(KEY_W)||IsKeyDown(KEY_UP))
@@ -48,8 +48,26 @@ void movimentofujona(float *x, float *y, float *xcam, float *ycam)
         *xcam-=5.0f;
     }
 }
-
-
+*/
+void movimentofujona(float *x, float *y, int *estado){
+    if(IsKeyDown(KEY_W)||IsKeyDown(KEY_UP)){
+        *y-=2.0f;
+        *estado = 0;
+    }
+    else if(IsKeyDown(KEY_S)||IsKeyDown(KEY_DOWN)){
+        *y+=2.0f;
+        *estado = 1;
+    }
+    else if(IsKeyDown(KEY_A)||IsKeyDown(KEY_LEFT)){
+        *x-=2.0f;
+        *estado = 2;
+    }
+    else if(IsKeyDown(KEY_D)||IsKeyDown(KEY_RIGHT)){
+        *x+=2.0f;
+        *estado = 3;
+    }
+    //essa função tá retornando valores pra atualizar a variavel "estadopirraia", pra poder usar no switch e printar a foto certa da pirraia em cada caso.
+}
 int main(void)
 {
     const int screenWidth = 1000;
@@ -59,15 +77,21 @@ int main(void)
     int x, y;
     int letterCount = 0;
     int end = 0;
-    
+    int estadopirraia=3;//atualizada pela função "movimentopirraia"
     //vetor dos jogadores
     jogador jog;
     
     //Vetor de personagens
     personagem perso[50];
+    //perso[0]=pirraia
+    //perso[1]=piolho
+    //perso[2]=mami
+    //perso[3]=papi
     
-    //perso[0] = pirraia
-
+    //Vetor de objetos
+    coisas coisa[10];
+    //faz legendinha!!
+    
     InitWindow(screenWidth, screenHeight, "Jogo RunningGirl");
     
     //Carregando imagens e transformando-as em texturas
@@ -77,32 +101,83 @@ int main(void)
     Texture2D menuTexture = LoadTextureFromImage(menu);
     UnloadImage(menu);
     
-    //troca pra do cenario
-    Image fundo = LoadImage("/raylib/RunningGirl/finalfesta1.png");
-    ImageResize(&fundo, screenWidth, screenHeight);
-    Texture2D fundotx = LoadTextureFromImage(fundo);
-    UnloadImage(fundo);
-    
-    Image cen1 = LoadImage("/raylib/RunningGirl/cenario1.png");
+    //cenario fase 1
+    Image cen1 = LoadImage("/raylib/RunningGirl/cenariocasa.png");
+    ImageResize(&cen1, screenWidth, screenHeight);
     Texture2D cen1tx = LoadTextureFromImage(cen1);
     UnloadImage(cen1);
     
     //preenchendo a fujona
-    perso[0].visual = LoadImage("/raylib/RunningGirl/PERSONAGENS/show (54).png");
-    perso[0].textura = LoadTextureFromImage(perso[0].visual);
+    perso[0].imagem = LoadImage("/raylib/RunningGirl/pirraia.png");
+    perso[0].textura = LoadTextureFromImage(perso[0].imagem);
     perso[0].pos.x = 4.0;//posição x incial da pirraia
     perso[0].pos.y = 4.0;//posição y incial da pirraia
     perso[0].hitbox.x = perso[0].pos.x;
     perso[0].hitbox.y = perso[0].pos.y;
-    perso[0].hitbox.width = 40;
+    perso[0].hitbox.width = 50;
     perso[0].hitbox.height = 50;
     
+    //sprite DA PIRRAIA
+    Rectangle leftpirraia  = { 0.0f  , 0.0f, (float)perso[0].textura.width/4, (float)perso[0].textura.height };//PEGA A IMAGEM DA PIRRAIA VOLTADA PRA ESQUERDA
+    Rectangle rightpirraia = { 50.0f , 0.0f, (float)perso[0].textura.width/4, (float)perso[0].textura.height };//PEGA A IMAGEM DA PIRRAIA VOLTADA PRA DIREITA
+    Rectangle uppirraia    = { 100.0f, 0.0f, (float)perso[0].textura.width/4, (float)perso[0].textura.height };//PEGA A IMAGEM DA PIRRAIA VOLTADA PRA CIMA
+    Rectangle downpirraia  = { 150.0f, 0.0f, (float)perso[0].textura.width/4, (float)perso[0].textura.height };//PEGA A IMAGEM DA PIRRAIA VOLTADA PRA BAIXO
+    
+    //preenchendo o piolho
+    perso[1].imagem = LoadImage("/raylib/RunningGirl/piolho.png");
+    perso[1].textura = LoadTextureFromImage(perso[1].imagem);
+    perso[1].pos.x = 4.0;//posição x incial da pirraia
+    perso[1].pos.y = 4.0;//posição y incial da pirraia
+    perso[1].hitbox.x = perso[1].pos.x;
+    perso[1].hitbox.y = perso[1].pos.y;
+    perso[1].hitbox.width = 50;
+    perso[1].hitbox.height = 50;
+    
+    //sprite DO PIOLHO
+    Rectangle leftpiolho  = { 0.0f  , 0.0f, (float)perso[1].textura.width/4, (float)perso[1].textura.height };//PEGA A IMAGEM DO PIOLHO VOLTADA PRA ESQUERDA
+    Rectangle rightpiolho = { 50.0f , 0.0f, (float)perso[1].textura.width/4, (float)perso[1].textura.height };//PEGA A IMAGEM DO PIOLHO VOLTADA PRA DIREITA
+    Rectangle uppiolho    = { 100.0f, 0.0f, (float)perso[1].textura.width/4, (float)perso[1].textura.height };//PEGA A IMAGEM DA DO PIOLHO VOLTADA PRA CIMA
+    Rectangle downpiolho  = { 150.0f, 0.0f, (float)perso[1].textura.width/4, (float)perso[1].textura.height };//PEGA A IMAGEM DO PIOLHO VOLTADA PRA BAIXO
+    
+    //preenchendo a mami
+    perso[2].imagem = LoadImage("/raylib/RunningGirl/mamis.png");
+    perso[2].textura = LoadTextureFromImage(perso[2].imagem);
+    perso[2].pos.x = 4.0;//posição x incial da pirraia
+    perso[2].pos.y = 4.0;//posição y incial da pirraia
+    perso[2].hitbox.x = perso[2].pos.x;
+    perso[2].hitbox.y = perso[2].pos.y;
+    perso[2].hitbox.width = 50;
+    perso[2].hitbox.height = 50;
+    
+    //sprite DA MAMI
+    Rectangle leftmami  = { 0.0f  , 0.0f, (float)perso[2].textura.width/4, (float)perso[2].textura.height };//PEGA A IMAGEM DA MAMI VOLTADA PRA ESQUERDA
+    Rectangle rightmami = { 50.0f , 0.0f, (float)perso[2].textura.width/4, (float)perso[2].textura.height };//PEGA A IMAGEM DA MAMI VOLTADA PRA DIREITA
+    Rectangle upmami    = { 100.0f, 0.0f, (float)perso[2].textura.width/4, (float)perso[2].textura.height };//PEGA A IMAGEM DA MAMI VOLTADA PRA CIMA
+    Rectangle downmami  = { 150.0f, 0.0f, (float)perso[2].textura.width/4, (float)perso[2].textura.height };//PEGA A IMAGEM DA MAMI VOLTADA PRA BAIXO
+    
+    //preenchendo o papi
+    perso[3].imagem = LoadImage("/raylib/RunningGirl/papis.png");
+    perso[3].textura = LoadTextureFromImage(perso[3].imagem);
+    perso[3].pos.x = 4.0;//posição x incial da pirraia
+    perso[3].pos.y = 4.0;//posição y incial da pirraia
+    perso[3].hitbox.x = perso[3].pos.x;
+    perso[3].hitbox.y = perso[3].pos.y;
+    perso[3].hitbox.width = 50;
+    perso[3].hitbox.height = 50;
+    
+     //sprite DO PAPI
+    Rectangle leftpapi  = { 0.0f  , 0.0f, (float)perso[3].textura.width/4, (float)perso[3].textura.height };//PEGA A IMAGEM DO PAPI VOLTADA PRA ESQUERDA
+    Rectangle rightpapi = { 50.0f , 0.0f, (float)perso[3].textura.width/4, (float)perso[3].textura.height };//PEGA A IMAGEM DO PAPI VOLTADA PRA DIREITA
+    Rectangle uppapi    = { 100.0f, 0.0f, (float)perso[3].textura.width/4, (float)perso[3].textura.height };//PEGA A IMAGEM DO PAPI VOLTADA PRA CIMA
+    Rectangle downpapi  = { 150.0f, 0.0f, (float)perso[3].textura.width/4, (float)perso[3].textura.height };//PEGA A IMAGEM DO PAPI VOLTADA PRA BAIXO
+   
+    /*
     //Declaração da camera
     Camera2D cam;
     cam.zoom = 2.2f;
     cam.rotation = 0.0f;
     cam.offset = (Vector2){0.0f,0.0f};
-    
+    */
     SetTargetFPS(60);
     
     while(!WindowShouldClose())
@@ -177,23 +252,32 @@ int main(void)
                             
                         
                         
-                        BeginDrawing();
-                        
-                        //Movimentação
-                        movimentofujona(&perso[0].pos.x, &perso[0].pos.y, &cam.offset.x, &cam.offset.y);
-                        
+                        BeginDrawing();  
                         //raio da camera
-                        cam.target = (Vector2){perso[0].pos.x-200, perso[0].pos.y-200};
-                        BeginMode2D(cam);
+                        //cam.target = (Vector2){perso[0].pos.x-200, perso[0].pos.y-200};
+                        //BeginMode2D(cam);
                         ClearBackground(WHITE);
+                        DrawTexture(cen1tx, 0,0,RAYWHITE);//Printar cenario
+                        Vector2 posicao = {perso[0].pos.x, perso[0].pos.y};//variavel da sprite da pirraia, pra as sprites terem a mesma posicao dela                       
+                        movimentofujona(&perso[0].pos.x, &perso[0].pos.y, &estadopirraia);//Movimentação pirraia
+                        switch(estadopirraia){//pra printar a pirraia do lado certo e sem sumir
+                            case 0:
+                            DrawTextureRec(perso[0].textura, uppirraia, posicao , RAYWHITE);
+                            break;
+                            case 1:
+                            DrawTextureRec(perso[0].textura, downpirraia, posicao , RAYWHITE);
+                            break;
+                            case 2:
+                            DrawTextureRec(perso[0].textura, leftpirraia, posicao , RAYWHITE);
+                            break;
+                            case 3:
+                            DrawTextureRec(perso[0].textura, rightpirraia, posicao , RAYWHITE);
+                            break;
+                        }
                         
-                        //Printar cenario
-                        DrawTexture(cen1tx, 0,0,RAYWHITE);
-                        
-                        //PIRRAIA
-                        DrawTexture(perso[0].textura,perso[0].pos.x,perso[0].pos.y,RAYWHITE);
+                       
 
-                        EndMode2D();
+                        //EndMode2D();
                         EndDrawing();
                         
                         
@@ -266,7 +350,7 @@ int main(void)
     UnloadTexture(menuTexture);
     UnloadTexture(perso[0].textura);
     UnloadTexture(cen1tx);
-    UnloadTexture(fundotx);
+  
     
     CloseWindow();
     
