@@ -1,28 +1,27 @@
 #include "raylib.h"
 
-
-
-void colisao (float *x, float *y) //função q eu criei pra colisão (com as paredes)
+void colisao (float *x, float *y)
 {
     //colisão com as paredes:
     //é bom colocar essa parte antes de desenhar o personagem pra visualmente ela só ficar parada
             
     //lado esquerdo:
-    if (*x + 10 <= 0) // esse +10 adicionado é para a colisão ficar visualmente melhor
-        *x += 5.0f; // tem q lembrar de trocar os valores de acordo com oq precisar
+    if (*x+10 <= 0) 
+        *x += 5.0f;
             
     //lado direito:
-    if (*x + 45 >= 1000) // 40 é a largura da hitbox da boneca, 1000 é o tamanho da largura da tela
+    if (*x+40 >= 800)
         *x -= 5.0f;
             
     //cima:
-    if (*y + 5 <= 0)  // de novo, esse +5 é pra ficar visualmente melhor
+    if (*y+5 <= 0)
         *y += 5.0f;
             
     //baixo:
-    if (*y + 50 >= 500)  // +50 é a altura da hitbox, 500 a altura da tela
+    if (*y+50 >= 450)
         *y -= 5.0f;
 }
+
 
 typedef struct personagem
 {
@@ -32,14 +31,6 @@ typedef struct personagem
     float veloci;
     Texture2D textura;
 }personagem;
-
-typedef struct coisas
-{
-    Image visual; 
-    Vector2 pos; //posição(x,y)
-    Rectangle hitbox;
-    Texture2D textura;
-}coisas;
 
 
 void movimentofujona(float *x, float *y)
@@ -58,168 +49,78 @@ void movimentofujona(float *x, float *y)
 }
 
 
+
 int main(void)
 {
-    const int screenWidth = 1000;
-    const int screenHeight = 500;
+    const int screenWidth = 800;
+    const int screenHeight = 450;
+
+    InitWindow(screenWidth, screenHeight, "Colisão");
     
-    //Declaração de variaveis
-    int x, y;
+    SetTargetFPS(60);                   
     
-    //Vetor de personagens
     personagem perso[50];
-    //perso[0] = pirraia
-    
-    InitWindow(screenWidth, screenHeight, "Jogo RunningGirl");
-    
-    //Carregando imagens e transformando-as em texturas
-    
-    Image menu = LoadImage("/raylib/RunningGirl/menu1.png");
-    ImageResize(&menu, screenWidth, screenHeight);
-    Texture2D menuTexture = LoadTextureFromImage(menu);
-    UnloadImage(menu);
-    
-    //troca pra do cenario
-    Image fundo = LoadImage("/raylib/RunningGirl/finalfesta1.png");
-    ImageResize(&fundo, screenWidth, screenHeight);
-    Texture2D fundotx = LoadTextureFromImage(fundo);
-    UnloadImage(fundo);
-    
-    //preenchendo a fujona
+
     perso[0].visual = LoadImage("/raylib/RunningGirl/PERSONAGENS/show (54).png");
     perso[0].textura = LoadTextureFromImage(perso[0].visual);
-    perso[0].pos.x = 4.0;//posição x incial da pirraia
-    perso[0].pos.y = 4.0;//posição y incial da pirraia
-    perso[0].hitbox.x = perso[0].pos.x;
-    perso[0].hitbox.y = perso[0].pos.y;
+    perso[0].hitbox.x = 370;
+    perso[0].hitbox.y = 225;
     perso[0].hitbox.width = 40;
     perso[0].hitbox.height = 50;
-   
-    SetTargetFPS(60);
     
-    while(!WindowShouldClose())
+    perso[1].visual = LoadImage("/raylib/RunningGirl/PERSONAGENS/show (54).png");
+    perso[1].textura = LoadTextureFromImage(perso[0].visual);
+    perso[1].hitbox.x = 300;
+    perso[1].hitbox.y = 200;
+    perso[1].hitbox.width = 40;
+    perso[1].hitbox.height = 50;
+    
+    while (!WindowShouldClose())
     {
-        x=GetMouseX();
-        y=GetMouseY();
-        
-        
         BeginDrawing();
+
+        ClearBackground(SKYBLUE); // mesmo background aleatorio só pra rodar
+             
+        movimentofujona(&perso[0].hitbox.x, &perso[0].hitbox.y);
+                        
+        colisao (&perso[0].hitbox.x, &perso[0].hitbox.y);
+            
+        //colisão com o retângulo:
+        if (CheckCollisionRecs (perso[0].hitbox, perso[1].hitbox))
+        {
+            //indo pela direita do objeto
+            if (perso[0].hitbox.x+5 == perso[1].hitbox.x + perso[1].hitbox.width) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.x += 5.0f;
+            
+            //indo pela esquerda do objeto
+            if (perso[0].hitbox.x + perso[0].hitbox.width == perso[1].hitbox.x+5) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.x -= 5.0f;
+            
+            //indo por baixo
+            if (perso[0].hitbox.y+5 == perso[1].hitbox.y + perso[1].hitbox.height) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.y += 5.0f;
+            
+            //indo por cima
+            if (perso[0].hitbox.y + perso[0].hitbox.height == perso[1].hitbox.y+5) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.y -= 5.0f;
+        }
         
-            //Colocando fundo do menu
-            DrawTexture(menuTexture, 0, 0, RAYWHITE);
-            
-            //printar localização do mouse
-            DrawText(TextFormat("%i | %i",x ,y), 500, 30, 20, BLACK);
-            
-            
-            //printar botões
-            if(x >= 250 && x <= 406 && y >= 290 && y <= 321)
-            {
-                DrawText("Novo Jogo",238,290,35,WHITE);
-                
-                //Verificando se o botão JOGAR foi clicado
-                if(IsMouseButtonDown(MOUSE_LEFT_BUTTON))
-                {
-                    //JOGO
-                    while(1)
-                    {
-                        BeginDrawing();
-                        
-                        //Movimentação
-                        movimentofujona(&perso[0].pos.x, &perso[0].pos.y);
-                        
-                        //Printar cenario
-                        DrawTexture(fundotx, 0,0,RAYWHITE);
-                        
-                        //mouse
-                        x=GetMouseX();
-                        y=GetMouseY();
-                        DrawText(TextFormat("%i | %i",x ,y), 480, 30, 20, BLACK);
-                        
-                        //colisão com as paredes:
-                        //importante colocar a colisão antes de colocar a boneca, pra ficar visualmente melhor
-                        colisao (&perso[0].pos.x, &perso[0].pos.y);
+        //os retangulos das hitboxs
+        DrawRectangleRec (perso[0].hitbox, RAYWHITE);
+        
+        DrawRectangleRec (perso[1].hitbox, RAYWHITE);
+ 
+        //as boneca
+        DrawTexture(perso[0].textura,perso[0].hitbox.x,perso[0].hitbox.y,RAYWHITE);
+        
+        DrawTexture(perso[1].textura,perso[1].hitbox.x,perso[1].hitbox.y,RAYWHITE);
 
-                        //PIRRAIA
-                        DrawTexture(perso[0].textura,perso[0].pos.x,perso[0].pos.y,RAYWHITE);
-
-                   
-                        EndDrawing();
-                        
-                        if(IsKeyPressed(KEY_END))
-                        {
-                            return 0;
-                        }
-                            
-                    }
-                }
-            }
-            else
-            {
-                DrawText("Novo Jogo",250,290,30,WHITE);
-            }
-            
-            
-            if(x >= 550 && x <= 750 && y >= 290 && y <= 321)
-            {
-                DrawText("Jogos Salvos",535,290,35,WHITE);
-                
-                if(IsMouseButtonDown(MOUSE_LEFT_BUTTON))
-                {
-                    while(1)
-                    {
-                        BeginDrawing();
-                            DrawRectangle(0, 0, screenWidth, screenHeight, RAYWHITE);
-                        EndDrawing();
-                        
-                        if(IsKeyPressed(KEY_END))
-                        {
-                            return 0;
-                        }
-                            
-                    }
-                }
-            }
-            else
-            {
-                DrawText("Jogos Salvos",550,290,30,WHITE);
-            }
-            
-            if(x >= 428 && x <= 545 && y >= 350 && y <= 380)
-            {
-                DrawText("Ranking",420,350,35,WHITE);
-                
-                if(IsMouseButtonDown(MOUSE_LEFT_BUTTON))
-                {
-                    while(1)
-                    {
-                        BeginDrawing();
-                            DrawRectangle(0, 0, screenWidth, screenHeight, RAYWHITE);
-                        EndDrawing();
-                        
-                        if(IsKeyPressed(KEY_END))
-                        {
-                            return 0;
-                        }
-                            
-                    }
-                }
-            }
-            else
-            {
-                DrawText("Ranking",430,350,30,WHITE);
-            }
-            
         
         EndDrawing();
+        
     }
     
-    //descarregar imagens e texturas
-    UnloadTexture(menuTexture);
-    UnloadTexture(perso[0].textura);
-    UnloadTexture(fundotx);
-    
-    CloseWindow();
-    
+    CloseWindow();        
+
     return 0;
 }
