@@ -62,7 +62,7 @@ void movimentofujona(float *x, float *y, float *xcam, float *ycam)
         }
 
  }
-void movimentofujona(float *x, float *y, int *estado){
+void movimentofujona(float *x, float *y, int *estado, float *xhitbox, float *yhitbox){
     if(IsKeyDown(KEY_W)||IsKeyDown(KEY_UP)){
         *y-=2.0f;
         *estado = 0;
@@ -79,6 +79,8 @@ void movimentofujona(float *x, float *y, int *estado){
         *x+=2.0f;
         *estado = 3;
     }
+    *yhitbox = *y;
+    *xhitbox = *x;
     //essa função tá retornando valores pra atualizar a variavel "estadopirraia", pra poder usar no switch e printar a foto certa da pirraia em cada caso.
 }
 int main(void)
@@ -286,7 +288,7 @@ int main(void)
                         ClearBackground(WHITE);
                         DrawTexture(cen1tx, 0,0,RAYWHITE);//Printar cenario
                         Vector2 posicao = {perso[0].pos.x, perso[0].pos.y};//variavel da sprite da pirraia, pra as sprites terem a mesma posicao dela                       
-                        movimentofujona(&perso[0].pos.x, &perso[0].pos.y, &estadopirraia);//Movimentação pirraia
+                         movimentofujona( &perso[0].pos.x, &perso[0].pos.y, &estadopirraia, &perso[0].hitbox.x, &perso[0].hitbox.y );//Movimentação pirraia
                         switch(estadopirraia){//pra printar a pirraia do lado certo e sem sumir
                             case 0:
                             DrawTextureRec(perso[0].textura, uppirraia, posicao , RAYWHITE);
