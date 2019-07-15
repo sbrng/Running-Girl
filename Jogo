@@ -9,6 +9,13 @@ typedef struct personagem
     Texture2D textura;
 }personagem;
 
+typedef struct paredes
+{
+    Vector2 pos; //posição(x,y)
+    Rectangle hitbox;
+}paredes;
+
+
 typedef struct coisas
 {
     Vector2 pos; //posição(x,y)
@@ -49,27 +56,27 @@ void movimentofujona(float *x, float *y, float *xcam, float *ycam)
     }
 }
 */
-void colisao (float *x, float *y){ //função q eu criei pra colisão (com as paredes)
+void colisao (float *x, float *y)
+{
     //colisão com as paredes:
     //é bom colocar essa parte antes de desenhar o personagem pra visualmente ela só ficar parada
             
     //lado esquerdo:
-    if (*x + 10 <= 0) // esse +10 adicionado é para a colisão ficar visualmente melhor
-        *x += 5.0f; // tem q lembrar de trocar os valores de acordo com oq precisar
+    if (*x+10 <= 28) 
+        *x += 5.0f;
             
     //lado direito:
-    if (*x + 45 >= 1000) // 40 é a largura da hitbox da boneca, 1000 é o tamanho da largura da tela
+    if (*x+40 >= 940)
         *x -= 5.0f;
             
     //cima:
-    if (*y + 5 <= 0)  // de novo, esse +5 é pra ficar visualmente melhor
+    if (*y+5 <= 45)
         *y += 5.0f;
             
     //baixo:
-    if (*y + 50 >= 500)  // +50 é a altura da hitbox, 500 a altura da tela
+    if (*y+50 >= 500)
         *y -= 5.0f;
 }
-
  int coresaleatorias(int *r, int *g, int *b, int *a, float *time){
         if(*time<0.4f){
             *time+=GetFrameTime();
@@ -84,7 +91,7 @@ void colisao (float *x, float *y){ //função q eu criei pra colisão (com as pa
 
  }
  
-void movimentofujona(float *x, float *y, int *estado, float *xhitbox, float *yhitbox){
+void movimentofujona(float *x, float *y, int *estado){
     if(IsKeyDown(KEY_W)||IsKeyDown(KEY_UP)){
         *y-=5.0f;
         *estado = 0;
@@ -101,8 +108,6 @@ void movimentofujona(float *x, float *y, int *estado, float *xhitbox, float *yhi
         *x+=5.0f;
         *estado = 3;
     }
-    *yhitbox = *y;
-    *xhitbox = *x;
     //essa função tá retornando valores pra atualizar a variavel "estadopirraia", pra poder usar no switch e printar a foto certa da pirraia em cada caso.
 }
 
@@ -126,6 +131,10 @@ int main(void)
     //perso[2]=mami
     //perso[3]=papi
     
+    //Vetor paredes
+    paredes wall[50];
+
+    
     InitWindow(screenWidth, screenHeight, "Jogo RunningGirl");
     
     //Carregando imagens e transformando-as em texturas
@@ -142,7 +151,7 @@ int main(void)
     UnloadImage(cen1);
     
     //botando o fundo festa(quando ganhar)
-    Image party = LoadImage("/raylib/RunningGirl/fundos/finalfesta1.png");
+    Image party = LoadImage("/raylib/RunningGirl/fundos/finalfesta.png");
     ImageResize(&party, screenWidth, screenHeight);
     Texture2D partytx = LoadTextureFromImage(party);
     UnloadImage(party);
@@ -186,16 +195,17 @@ int main(void)
     Rectangle balao8  = { 300.0f, 440.0f, (float)spritefalatx.width/3, (float)spritefalatx.height/3 };
     Rectangle balao9  = { 600.0f, 440.0f, (float)spritefalatx.width/3, (float)spritefalatx.height/3 };
     float xfala,yfala;
+    
+    
     //preenchendo a fujona
     perso[0].imagem = LoadImage("/raylib/RunningGirl/sprites/pirraia.png");
     ImageResize(&perso[0].imagem, 140, 35);
     perso[0].textura = LoadTextureFromImage(perso[0].imagem);
-    perso[0].pos.x = 200.0;//posição x incial da pirraia
-    perso[0].pos.y = 60.0;//posição y incial da pirraia
-    perso[0].hitbox.x = perso[0].pos.x;
-    perso[0].hitbox.y = perso[0].pos.y;
+    perso[0].hitbox.x = 200.0;
+    perso[0].hitbox.y = 60.0;
     perso[0].hitbox.width = 32;
     perso[0].hitbox.height = 45;
+    
     
     //sprite DA PIRRAIA
     Rectangle leftpirraia  = { 0.0f  , 0.0f, (float)perso[0].textura.width/4, (float)perso[0].textura.height };//PEGA A IMAGEM DA PIRRAIA VOLTADA PRA ESQUERDA
@@ -421,6 +431,117 @@ int main(void)
     chave.hitbox.width = 1;
     chave.hitbox.height = 1;
     
+    //preenchendo as paredes da fase 1:
+    //preto
+    wall[0].hitbox.x = 330;
+    wall[0].hitbox.y = 0;
+    wall[0].hitbox.width = 345;
+    wall[0].hitbox.height = 150;
+    //azul
+    wall[1].hitbox.x = 28;
+    wall[1].hitbox.y = 0;
+    wall[1].hitbox.width = 157;
+    wall[1].hitbox.height = 150;
+    //vermelho
+    wall[2].hitbox.x = 160;
+    wall[2].hitbox.y = 100;
+    wall[2].hitbox.width = 95;
+    wall[2].hitbox.height = 165;
+    //verde
+    wall[3].hitbox.x = 340;
+    wall[3].hitbox.y = 440;
+    wall[3].hitbox.width = 365;
+    wall[3].hitbox.height = 60;
+    //amarelo
+    wall[4].hitbox.x = 280;
+    wall[4].hitbox.y = 355;
+    wall[4].hitbox.width = 75;
+    wall[4].hitbox.height = 145;
+    //rosa
+    wall[5].hitbox.x = 250;
+    wall[5].hitbox.y = 330;
+    wall[5].hitbox.width = 220;
+    wall[5].hitbox.height = 45;
+    //marrom
+    wall[6].hitbox.x = 525;
+    wall[6].hitbox.y = 330;
+    wall[6].hitbox.width = 220;
+    wall[6].hitbox.height = 45;
+    //roxo
+    wall[7].hitbox.x = 666;
+    wall[7].hitbox.y = 355;
+    wall[7].hitbox.width = 39;
+    wall[7].hitbox.height = 145;
+    //laranja
+    wall[8].hitbox.x = 620;
+    wall[8].hitbox.y = 130;
+    wall[8].hitbox.width = 50;
+    wall[8].hitbox.height = 95;
+    //cinza
+    wall[9].hitbox.x = 325;
+    wall[9].hitbox.y = 115;
+    wall[9].hitbox.width = 55;
+    wall[9].hitbox.height = 135;
+    //azul escuro
+    wall[10].hitbox.x = 310;
+    wall[10].hitbox.y = 220;
+    wall[10].hitbox.width = 160;
+    wall[10].hitbox.height = 45;
+    //verde escuro
+    wall[11].hitbox.x = 525;
+    wall[11].hitbox.y = 220;
+    wall[11].hitbox.width = 280;
+    wall[11].hitbox.height = 45;
+    //lima
+    wall[12].hitbox.x = 0;
+    wall[12].hitbox.y = 220;
+    wall[12].hitbox.width = 60;
+    wall[12].hitbox.height = 115;
+    //violeta
+    wall[13].hitbox.x = 0;
+    wall[13].hitbox.y = 335;
+    wall[13].hitbox.width = 120;
+    wall[13].hitbox.height = 165;
+    //azul claro
+    wall[14].hitbox.x = 60;
+    wall[14].hitbox.y = 330;
+    wall[14].hitbox.width = 135;
+    wall[14].hitbox.height = 45;
+    //bege
+    wall[15].hitbox.x = 800;
+    wall[15].hitbox.y = 330;
+    wall[15].hitbox.width = 200;
+    wall[15].hitbox.height = 45;
+    //roxo escuro
+    wall[16].hitbox.x = 00;
+    wall[16].hitbox.y = 220;
+    wall[16].hitbox.width = 105;
+    wall[16].hitbox.height = 45;
+    //dourado
+    wall[17].hitbox.x = 860;
+    wall[17].hitbox.y = 220;
+    wall[17].hitbox.width = 140;
+    wall[17].hitbox.height = 45;
+    //preto dnv
+    wall[18].hitbox.x = 875;
+    wall[18].hitbox.y = 375;
+    wall[18].hitbox.width = 125;
+    wall[18].hitbox.height = 125;
+    //azul dnv
+    wall[19].hitbox.x = 670;
+    wall[19].hitbox.y = 140;
+    wall[19].hitbox.width = 45;
+    wall[19].hitbox.height = 30;
+    //vermelho dnv
+    wall[20].hitbox.x = 770;
+    wall[20].hitbox.y = 140;
+    wall[20].hitbox.width = 230;
+    wall[20].hitbox.height = 30;
+    //roxo dnv
+    wall[21].hitbox.x = 815;
+    wall[21].hitbox.y = 00;
+    wall[21].hitbox.width = 185;
+    wall[21].hitbox.height = 140;
     
     /*
     //Declaração da camera
@@ -512,14 +633,12 @@ int main(void)
                         
                         DrawTexture(cen1tx, 0,0,RAYWHITE);//Printar cenario
                         DrawText(TextFormat("%i | %i",x ,y), 500, 30, 20, BLACK);
-                        //colisão com as paredes:
-                        //importante colocar a colisão antes de colocar a boneca, pra ficar visualmente melhor
-                        colisao (&perso[0].pos.x, &perso[0].pos.y);
                         
-
-                        Vector2 posicaopirraia = {perso[0].pos.x, perso[0].pos.y};//variavel da sprite da pirraia, pra as sprites terem a mesma posicao dela                       
-                        movimentofujona( &perso[0].pos.x, &perso[0].pos.y, &estadopirraia, &perso[0].hitbox.x, &perso[0].hitbox.y );//Movimentação pirraia
-                        switch(estadopirraia){//pra printar a pirraia do lado certo e sem sumir
+                        Vector2 posicaopirraia = {perso[0].hitbox.x, perso[0].hitbox.y};//variavel da sprite da pirraia, pra as sprites terem a mesma posicao dela    
+                        
+                        movimentofujona(&perso[0].hitbox.x, &perso[0].hitbox.y, &estadopirraia);//Movimentação pirraia
+                        switch(estadopirraia)//pra printar a pirraia do lado certo e sem sumir
+                        {
                             case 0:
                             DrawTextureRec(perso[0].textura, uppirraia, posicaopirraia , RAYWHITE);
                             break;
@@ -532,7 +651,12 @@ int main(void)
                             case 3:
                             DrawTextureRec(perso[0].textura, rightpirraia, posicaopirraia , RAYWHITE);
                             break;
-                        }
+                         }
+                        
+                        //colisão com as paredes:
+                        //importante colocar a colisão antes de colocar a boneca, e depois de chamar a movimentação, pra ficar visualmente melhor
+                        colisao (&perso[0].hitbox.x, &perso[0].hitbox.y);
+                         
                         
                         //printar e checar colisão dinheirinho
                         for(int i = 0; i <= 72; i++)
@@ -566,6 +690,31 @@ int main(void)
                             jog.extra++;
                         }
                         
+                        
+                        //colisão com as paredes:   
+                        for(int i = 0; i <= 21; i++)
+                        {
+                            
+                            if (CheckCollisionRecs (perso[0].hitbox, wall[i].hitbox) == 1)
+                            {
+                                //indo pela direita do objeto
+                                if (perso[0].hitbox.x+10 == wall[0].hitbox.x + wall[i].hitbox.width) //esse +5 é só pra ficar visualmente melhor
+                                    perso[0].hitbox.x += 5.0f;
+                                
+                                //indo pela esquerda do objeto
+                                if (perso[0].hitbox.x + perso[0].hitbox.width == wall[i].hitbox.x+10) //esse +5 é só pra ficar visualmente melhor
+                                    perso[0].hitbox.x -= 5.0f;
+                                
+                                //indo por baixo
+                                if (perso[0].hitbox.y+10 == wall[0].hitbox.y + wall[i].hitbox.height) //esse +5 é só pra ficar visualmente melhor
+                                    perso[0].hitbox.y += 5.0f;
+                                
+                                //indo por cima
+                                if (perso[0].hitbox.y + perso[0].hitbox.height == wall[i].hitbox.y+10) //esse +5 é só pra ficar visualmente melhor
+                                    perso[0].hitbox.y -= 5.0f;
+                            }
+                            
+                        }
                         
                         DrawRectangle(350, 465, 300, 35, SKYBLUE);
                         DrawText(TextFormat("Dinheirinho: %i\t|\tExtra: %i", jog.points, jog.extra), 350, 470, 20, WHITE);
