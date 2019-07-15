@@ -172,7 +172,7 @@ int main(void)
     Rectangle safada     = { 100.0f, 50.0f, (float)spritehistorinhatx.width/3, (float)spritehistorinhatx.height/2 };
     float xhis,yhis;
     //sprites balao de fala
-    Image spritefala = LoadImage("/raylib/RunningGirl/sprites/pirraiafalando.png");
+    Image spritefala = LoadImage("/raylib/RunningGirl/sprites/falas1.png");
     //ImageResize(&spritehistorinha, screenWidth, screenHeight);
     Texture2D spritefalatx = LoadTextureFromImage(spritefala);
     UnloadImage(spritefala);
@@ -648,6 +648,8 @@ int main(void)
     UnloadTexture(historinhatx);
     UnloadTexture(spritehistorinhatx);
     UnloadTexture(spritefalatx);
+    UnloadTexture(moeda[1].textura);
+    UnloadTexture(chave.textura);
     
     CloseWindow();
     
