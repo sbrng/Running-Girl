@@ -119,7 +119,7 @@ int main(void)
     //amarelo
     wall[4].hitbox.x = 280;
     wall[4].hitbox.y = 355;
-    wall[4].hitbox.width = 75;
+    wall[4].hitbox.width = 70;
     wall[4].hitbox.height = 145;
     //rosa
     wall[5].hitbox.x = 250;
@@ -309,7 +309,7 @@ int main(void)
         if (CheckCollisionRecs (perso[0].hitbox, wall[4].hitbox))
         {
             //indo pela direita do objeto
-            if (perso[0].hitbox.x-3 == wall[4].hitbox.x + wall[4].hitbox.width) //esse +5 é só pra ficar visualmente melhor
+            if (perso[0].hitbox.x+10 == wall[4].hitbox.x + wall[4].hitbox.width) //esse +5 é só pra ficar visualmente melhor
                 perso[0].hitbox.x += 5.0f;
             
             //indo pela esquerda do objeto
