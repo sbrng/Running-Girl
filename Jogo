@@ -49,6 +49,27 @@ void movimentofujona(float *x, float *y, float *xcam, float *ycam)
     }
 }
 */
+void colisao (float *x, float *y){ //função q eu criei pra colisão (com as paredes)
+    //colisão com as paredes:
+    //é bom colocar essa parte antes de desenhar o personagem pra visualmente ela só ficar parada
+            
+    //lado esquerdo:
+    if (*x + 10 <= 0) // esse +10 adicionado é para a colisão ficar visualmente melhor
+        *x += 5.0f; // tem q lembrar de trocar os valores de acordo com oq precisar
+            
+    //lado direito:
+    if (*x + 45 >= 1000) // 40 é a largura da hitbox da boneca, 1000 é o tamanho da largura da tela
+        *x -= 5.0f;
+            
+    //cima:
+    if (*y + 5 <= 0)  // de novo, esse +5 é pra ficar visualmente melhor
+        *y += 5.0f;
+            
+    //baixo:
+    if (*y + 50 >= 500)  // +50 é a altura da hitbox, 500 a altura da tela
+        *y -= 5.0f;
+}
+
  int coresaleatorias(int *r, int *g, int *b, int *a, float *time){
         if(*time<0.4f){
             *time+=GetFrameTime();
@@ -62,27 +83,29 @@ void movimentofujona(float *x, float *y, float *xcam, float *ycam)
         }
 
  }
+ 
 void movimentofujona(float *x, float *y, int *estado, float *xhitbox, float *yhitbox){
     if(IsKeyDown(KEY_W)||IsKeyDown(KEY_UP)){
-        *y-=2.0f;
+        *y-=5.0f;
         *estado = 0;
     }
     else if(IsKeyDown(KEY_S)||IsKeyDown(KEY_DOWN)){
-        *y+=2.0f;
+        *y+=5.0f;
         *estado = 1;
     }
     else if(IsKeyDown(KEY_A)||IsKeyDown(KEY_LEFT)){
-        *x-=2.0f;
+        *x-=5.0f;
         *estado = 2;
     }
     else if(IsKeyDown(KEY_D)||IsKeyDown(KEY_RIGHT)){
-        *x+=2.0f;
+        *x+=5.0f;
         *estado = 3;
     }
     *yhitbox = *y;
     *xhitbox = *x;
     //essa função tá retornando valores pra atualizar a variavel "estadopirraia", pra poder usar no switch e printar a foto certa da pirraia em cada caso.
 }
+
 int main(void)
 {
     const int screenWidth = 1000;
@@ -92,9 +115,9 @@ int main(void)
     int x, y;
     int letterCount = 0;
     int end = 0;
-    int estadopirraia=3;//atualizada pela função "movimentopirraia"
+    int estadopirraia=3, estadopiolho=3, estadomami=3, estadopapi=3;//atualizada pela função "movimentopirraia"
     int rgo,ggo,bgo,ago,rp,gp,bp,ap;
-    float timego=0, timep=0;
+    float timego=0, timep=0, timemov=0;
     //vetor dos jogadores
     jogador jog;
     
@@ -119,64 +142,99 @@ int main(void)
     UnloadImage(menu);
     
     //cenario fase 1
-    Image cen1 = LoadImage("/raylib/RunningGirl/cenariocasa.png");
+    Image cen1 = LoadImage("/raylib/RunningGirl/casa.png");
     ImageResize(&cen1, screenWidth, screenHeight);
     Texture2D cen1tx = LoadTextureFromImage(cen1);
     UnloadImage(cen1);
     
     //botando o fundo festa(quando ganhar)
     Image party = LoadImage("/raylib/RunningGirl/finalfesta1.png");
-    ImageResize(&party, 1000, 550);
+    ImageResize(&party, screenWidth, screenHeight);
     Texture2D partytx = LoadTextureFromImage(party);
     UnloadImage(party);
     
     //botando o fundo game over
     Image gameover = LoadImage("/raylib/RunningGirl/quarto.png");
-    ImageResize(&gameover, 1000, 550);
+    ImageResize(&gameover, screenWidth, screenHeight);
     Texture2D gameovertx = LoadTextureFromImage(gameover);
     UnloadImage(gameover);
     
+    //botando o fundo historinha
+    Image historinha = LoadImage("/raylib/RunningGirl/historinhafundo.png");
+    ImageResize(&historinha, screenWidth, screenHeight);
+    Texture2D historinhatx = LoadTextureFromImage(historinha);
+    UnloadImage(historinha);
+    
+    //sprite da pirraia na historinha
+    Image spritehistorinha = LoadImage("/raylib/RunningGirl/pirraiafalando.png");
+    //ImageResize(&spritehistorinha, screenWidth, screenHeight);
+    Texture2D spritehistorinhatx = LoadTextureFromImage(spritehistorinha);
+    UnloadImage(spritehistorinha); 
+    Rectangle bicoleft   = { 0.0f  , 0.0f , (float)spritehistorinhatx.width/3, (float)spritehistorinhatx.height/2 };
+    Rectangle bicoright  = { 0.0f  , 50.0f, (float)spritehistorinhatx.width/3, (float)spritehistorinhatx.height/2 };
+    Rectangle bocaopen   = { 50.0f , 0.0f , (float)spritehistorinhatx.width/3, (float)spritehistorinhatx.height/2 };
+    Rectangle bocaclose  = { 50.0f , 50.0f, (float)spritehistorinhatx.width/3, (float)spritehistorinhatx.height/2 };
+    Rectangle chocs      = { 100.0f, 0.0f , (float)spritehistorinhatx.width/3, (float)spritehistorinhatx.height/2 };
+    Rectangle safada     = { 100.0f, 50.0f, (float)spritehistorinhatx.width/3, (float)spritehistorinhatx.height/2 };
+    float xhis,yhis;
+    //sprites balao de fala
+    Image spritefala = LoadImage("/raylib/RunningGirl/pirraiafalando.png");
+    //ImageResize(&spritehistorinha, screenWidth, screenHeight);
+    Texture2D spritefalatx = LoadTextureFromImage(spritefala);
+    UnloadImage(spritefala);
+    Rectangle balao1  = { 0.0f  , 0.0f  , (float)spritefalatx.width/3, (float)spritefalatx.height/3 };
+    Rectangle balao2  = { 300.0f, 0.0f  , (float)spritefalatx.width/3, (float)spritefalatx.height/3 };
+    Rectangle balao3  = { 600.0f, 0.0f  , (float)spritefalatx.width/3, (float)spritefalatx.height/3 };
+    Rectangle balao4  = { 0.0f  , 220.0f, (float)spritefalatx.width/3, (float)spritefalatx.height/3 };
+    Rectangle balao5  = { 300.0f, 220.0f, (float)spritefalatx.width/3, (float)spritefalatx.height/3 };
+    Rectangle balao6  = { 600.0f, 220.0f, (float)spritefalatx.width/3, (float)spritefalatx.height/3 };
+    Rectangle balao7  = { 0.0f  , 440.0f, (float)spritefalatx.width/3, (float)spritefalatx.height/3 };
+    Rectangle balao8  = { 300.0f, 440.0f, (float)spritefalatx.width/3, (float)spritefalatx.height/3 };
+    Rectangle balao9  = { 600.0f, 440.0f, (float)spritefalatx.width/3, (float)spritefalatx.height/3 };
+    float xfala,yfala;
     //preenchendo a fujona
     perso[0].imagem = LoadImage("/raylib/RunningGirl/pirraia.png");
+    ImageResize(&perso[0].imagem, 140, 35);
     perso[0].textura = LoadTextureFromImage(perso[0].imagem);
-    perso[0].pos.x = 4.0;//posição x incial da pirraia
-    perso[0].pos.y = 4.0;//posição y incial da pirraia
+    perso[0].pos.x = 200.0;//posição x incial da pirraia
+    perso[0].pos.y = 60.0;//posição y incial da pirraia
     perso[0].hitbox.x = perso[0].pos.x;
     perso[0].hitbox.y = perso[0].pos.y;
-    perso[0].hitbox.width = 50;
-    perso[0].hitbox.height = 50;
+    perso[0].hitbox.width = 32;
+    perso[0].hitbox.height = 45;
     
     //sprite DA PIRRAIA
     Rectangle leftpirraia  = { 0.0f  , 0.0f, (float)perso[0].textura.width/4, (float)perso[0].textura.height };//PEGA A IMAGEM DA PIRRAIA VOLTADA PRA ESQUERDA
-    Rectangle rightpirraia = { 50.0f , 0.0f, (float)perso[0].textura.width/4, (float)perso[0].textura.height };//PEGA A IMAGEM DA PIRRAIA VOLTADA PRA DIREITA
-    Rectangle uppirraia    = { 100.0f, 0.0f, (float)perso[0].textura.width/4, (float)perso[0].textura.height };//PEGA A IMAGEM DA PIRRAIA VOLTADA PRA CIMA
-    Rectangle downpirraia  = { 150.0f, 0.0f, (float)perso[0].textura.width/4, (float)perso[0].textura.height };//PEGA A IMAGEM DA PIRRAIA VOLTADA PRA BAIXO
+    Rectangle rightpirraia = { 35.0f , 0.0f, (float)perso[0].textura.width/4, (float)perso[0].textura.height };//PEGA A IMAGEM DA PIRRAIA VOLTADA PRA DIREITA
+    Rectangle uppirraia    = { 70.0f , 0.0f, (float)perso[0].textura.width/4, (float)perso[0].textura.height };//PEGA A IMAGEM DA PIRRAIA VOLTADA PRA CIMA
+    Rectangle downpirraia  = { 105.0f, 0.0f, (float)perso[0].textura.width/4, (float)perso[0].textura.height };//PEGA A IMAGEM DA PIRRAIA VOLTADA PRA BAIXO
     
     //preenchendo o piolho
     perso[1].imagem = LoadImage("/raylib/RunningGirl/piolho.png");
+    ImageResize(&perso[1].imagem, 140, 35);
     perso[1].textura = LoadTextureFromImage(perso[1].imagem);
-    perso[1].pos.x = 4.0;//posição x incial da pirraia
-    perso[1].pos.y = 4.0;//posição y incial da pirraia
+    perso[1].pos.x = 730.0;//posição x incial do piolho
+    perso[1].pos.y = 90.0;//posição y incial do piolho
     perso[1].hitbox.x = perso[1].pos.x;
     perso[1].hitbox.y = perso[1].pos.y;
-    perso[1].hitbox.width = 50;
-    perso[1].hitbox.height = 50;
+    perso[1].hitbox.width = 31;
+    perso[1].hitbox.height = 41;
     
     //sprite DO PIOLHO
     Rectangle leftpiolho  = { 0.0f  , 0.0f, (float)perso[1].textura.width/4, (float)perso[1].textura.height };//PEGA A IMAGEM DO PIOLHO VOLTADA PRA ESQUERDA
-    Rectangle rightpiolho = { 50.0f , 0.0f, (float)perso[1].textura.width/4, (float)perso[1].textura.height };//PEGA A IMAGEM DO PIOLHO VOLTADA PRA DIREITA
-    Rectangle uppiolho    = { 100.0f, 0.0f, (float)perso[1].textura.width/4, (float)perso[1].textura.height };//PEGA A IMAGEM DA DO PIOLHO VOLTADA PRA CIMA
-    Rectangle downpiolho  = { 150.0f, 0.0f, (float)perso[1].textura.width/4, (float)perso[1].textura.height };//PEGA A IMAGEM DO PIOLHO VOLTADA PRA BAIXO
+    Rectangle rightpiolho = { 35.0f , 0.0f, (float)perso[1].textura.width/4, (float)perso[1].textura.height };//PEGA A IMAGEM DO PIOLHO VOLTADA PRA DIREITA
+    Rectangle uppiolho    = { 70.0f , 0.0f, (float)perso[1].textura.width/4, (float)perso[1].textura.height };//PEGA A IMAGEM DA DO PIOLHO VOLTADA PRA CIMA
+    Rectangle downpiolho  = { 105.0f, 0.0f, (float)perso[1].textura.width/4, (float)perso[1].textura.height };//PEGA A IMAGEM DO PIOLHO VOLTADA PRA BAIXO
     
     //preenchendo a mami
     perso[2].imagem = LoadImage("/raylib/RunningGirl/mamis.png");
     perso[2].textura = LoadTextureFromImage(perso[2].imagem);
-    perso[2].pos.x = 4.0;//posição x incial da pirraia
-    perso[2].pos.y = 4.0;//posição y incial da pirraia
+    perso[2].pos.x = 220.0;//posição x incial da mae
+    perso[2].pos.y = 440.0;//posição y incial da mae
     perso[2].hitbox.x = perso[2].pos.x;
     perso[2].hitbox.y = perso[2].pos.y;
-    perso[2].hitbox.width = 50;
-    perso[2].hitbox.height = 50;
+    perso[2].hitbox.width = 26;
+    perso[2].hitbox.height = 40;
     
     //sprite DA MAMI
     Rectangle leftmami  = { 0.0f  , 0.0f, (float)perso[2].textura.width/4, (float)perso[2].textura.height };//PEGA A IMAGEM DA MAMI VOLTADA PRA ESQUERDA
@@ -187,12 +245,12 @@ int main(void)
     //preenchendo o papi
     perso[3].imagem = LoadImage("/raylib/RunningGirl/papis.png");
     perso[3].textura = LoadTextureFromImage(perso[3].imagem);
-    perso[3].pos.x = 4.0;//posição x incial da pirraia
-    perso[3].pos.y = 4.0;//posição y incial da pirraia
+    perso[3].pos.x = 777.0;//posição x incial do pai
+    perso[3].pos.y = 446.0;//posição y incial do pai
     perso[3].hitbox.x = perso[3].pos.x;
     perso[3].hitbox.y = perso[3].pos.y;
-    perso[3].hitbox.width = 50;
-    perso[3].hitbox.height = 50;
+    perso[3].hitbox.width = 20;
+    perso[3].hitbox.height = 40;
     
      //sprite DO PAPI
     Rectangle leftpapi  = { 0.0f  , 0.0f, (float)perso[3].textura.width/4, (float)perso[3].textura.height };//PEGA A IMAGEM DO PAPI VOLTADA PRA ESQUERDA
@@ -279,43 +337,39 @@ int main(void)
                             return 0;
                         }
                             
-                        
+                        x=GetMouseX();
+                        y=GetMouseY();
                         
                         BeginDrawing();  
                         //raio da camera
                         //cam.target = (Vector2){perso[0].pos.x-200, perso[0].pos.y-200};
                         //BeginMode2D(cam);
                         ClearBackground(WHITE);
+                        
                         DrawTexture(cen1tx, 0,0,RAYWHITE);//Printar cenario
-                        Vector2 posicao = {perso[0].pos.x, perso[0].pos.y};//variavel da sprite da pirraia, pra as sprites terem a mesma posicao dela                       
-                         movimentofujona( &perso[0].pos.x, &perso[0].pos.y, &estadopirraia, &perso[0].hitbox.x, &perso[0].hitbox.y );//Movimentação pirraia
+                        DrawText(TextFormat("%i | %i",x ,y), 500, 30, 20, BLACK);
+                        //colisão com as paredes:
+                        //importante colocar a colisão antes de colocar a boneca, pra ficar visualmente melhor
+                        colisao (&perso[0].pos.x, &perso[0].pos.y);
+                        
+
+                        Vector2 posicaopirraia = {perso[0].pos.x, perso[0].pos.y};//variavel da sprite da pirraia, pra as sprites terem a mesma posicao dela                       
+                        movimentofujona( &perso[0].pos.x, &perso[0].pos.y, &estadopirraia, &perso[0].hitbox.x, &perso[0].hitbox.y );//Movimentação pirraia
                         switch(estadopirraia){//pra printar a pirraia do lado certo e sem sumir
                             case 0:
-                            DrawTextureRec(perso[0].textura, uppirraia, posicao , RAYWHITE);
+                            DrawTextureRec(perso[0].textura, uppirraia, posicaopirraia , RAYWHITE);
                             break;
                             case 1:
-                            DrawTextureRec(perso[0].textura, downpirraia, posicao , RAYWHITE);
+                            DrawTextureRec(perso[0].textura, downpirraia, posicaopirraia , RAYWHITE);
                             break;
                             case 2:
-                            DrawTextureRec(perso[0].textura, leftpirraia, posicao , RAYWHITE);
+                            DrawTextureRec(perso[0].textura, leftpirraia, posicaopirraia , RAYWHITE);
                             break;
                             case 3:
-                            DrawTextureRec(perso[0].textura, rightpirraia, posicao , RAYWHITE);
+                            DrawTextureRec(perso[0].textura, rightpirraia, posicaopirraia , RAYWHITE);
                             break;
                         }
-
-                        if(IsKeyDown(KEY_F2)){//final game over
-                            DrawTexture(gameovertx, 0, 0, RAYWHITE);
-                            coresaleatorias(&rgo,&ggo,&bgo,&ago,&timego);
-                            DrawText("GAME OVER",280, 100, 80, (Color){rgo,ggo,bgo,ago}); 
-                        }
-                       
-                        if(IsKeyDown(KEY_F1)){//final festa
-                           DrawTexture(partytx, 0, 0, RAYWHITE);
-                           coresaleatorias(&rp,&gp,&bp,&ap,&timep);
-                           DrawText(" WELCOME TO THE PARTY ! ",75, 120, 60, (Color){rp,gp,bp,ap}); 
-                        }
-
+                        
                         //EndMode2D();
                         EndDrawing();
                         
@@ -391,6 +445,9 @@ int main(void)
     UnloadTexture(cen1tx);
     UnloadTexture(partytx);
     UnloadTexture(gameovertx);
+    UnloadTexture(historinhatx);
+    UnloadTexture(spritehistorinhatx);
+    UnloadTexture(spritefalatx);
     
     CloseWindow();
     
