@@ -111,6 +111,90 @@ void movimentofujona(float *x, float *y, int *estado){
     //essa função tá retornando valores pra atualizar a variavel "estadopirraia", pra poder usar no switch e printar a foto certa da pirraia em cada caso.
 }
 
+void menu(void)
+{
+    int x, y;
+    const int screenWidth = 1000;
+    const int screenHeight = 500;
+    
+    //imagem menu
+    Image menu = LoadImage("/raylib/RunningGirl/fundos/menu2.png");
+    ImageResize(&menu, screenWidth, screenHeight);
+    Texture2D menutx = LoadTextureFromImage(menu);
+    UnloadImage(menu);
+    
+    while(1)
+    {
+        x=GetMouseX();
+        y=GetMouseY();
+        
+        BeginDrawing();
+            ClearBackground(RAYWHITE);
+            DrawTexture(menutx, 0, 0, RAYWHITE);
+            
+            DrawText(TextFormat("%i | %i",x ,y), 500, 30, 20, BLACK);
+
+            //botão continuar
+            DrawRectangle(400, 100, 200, 50, BLACK);
+            if(x >= 400 && x <= 600 && y >= 100 && y <= 150){
+                DrawRectangle(405, 105, 190, 40, VIOLET);
+                
+                if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+                {
+                    break;
+                }
+            }
+            else{
+            DrawRectangle(405, 105, 190, 40, BLUE);}
+            DrawText("Continuar", 418, 115, 25, BLACK);
+            
+            //botão salvar e sair
+            DrawRectangle(400, 180, 200, 50, BLACK);
+            if(x >= 400 && x <= 600 && y >= 180 && y <= 230){
+                DrawRectangle(405, 185, 190, 40, VIOLET);
+                
+                if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+                {
+                    break;
+                }
+                
+            }
+            else{
+            DrawRectangle(405, 185, 190, 40, BLUE);}
+            DrawText("Salvar e sair", 418, 195, 25, BLACK);
+            
+            // botão salvar
+            DrawRectangle(400, 260, 200, 50, BLACK);
+            if(x >= 400 && x <= 600 && y >= 260 && y <= 310){
+                DrawRectangle(405, 265, 190, 40, VIOLET);
+            }
+            else{
+            DrawRectangle(405, 265, 190, 40, BLUE);}
+            DrawText("Salvar", 418, 275, 25, BLACK);
+            
+            //botão sair
+            DrawRectangle(400, 340, 200, 50, BLACK);
+            if(x >= 400 && x <= 600 && y >= 340 && y <= 390){
+                DrawRectangle(405, 345, 190, 40, VIOLET);
+                
+                if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+                {
+                    exit(0);
+                }
+               
+            }
+            else{
+            DrawRectangle(405, 345, 190, 40, BLUE);}
+            DrawText("Sair", 418, 355, 25, BLACK);
+            
+            
+        EndDrawing();
+    }
+    
+    UnloadTexture(menutx);
+}
+
+
 int main(void)
 {
     const int screenWidth = 1000;
@@ -139,10 +223,11 @@ int main(void)
     
     //Carregando imagens e transformando-as em texturas
     
-    Image menu = LoadImage("/raylib/RunningGirl/fundos/menu1.png");
-    ImageResize(&menu, screenWidth, screenHeight);
-    Texture2D menuTexture = LoadTextureFromImage(menu);
-    UnloadImage(menu);
+    //imagem main menu
+    Image mainMenu = LoadImage("/raylib/RunningGirl/fundos/menu1.png");
+    ImageResize(&mainMenu, screenWidth, screenHeight);
+    Texture2D menuTexture = LoadTextureFromImage(mainMenu);
+    UnloadImage(mainMenu);
     
     //cenario fase 1
     Image cen1 = LoadImage("/raylib/RunningGirl/fundos/casa.png");
@@ -151,7 +236,7 @@ int main(void)
     UnloadImage(cen1);
     
     //botando o fundo festa(quando ganhar)
-    Image party = LoadImage("/raylib/RunningGirl/fundos/finalfesta.png");
+    Image party = LoadImage("/raylib/RunningGirl/fundos/finalfesta1.png");
     ImageResize(&party, screenWidth, screenHeight);
     Texture2D partytx = LoadTextureFromImage(party);
     UnloadImage(party);
@@ -717,7 +802,19 @@ int main(void)
                         }
                         
                         DrawRectangle(350, 465, 300, 35, SKYBLUE);
-                        DrawText(TextFormat("Dinheirinho: %i\t|\tExtra: %i", jog.points, jog.extra), 350, 470, 20, WHITE);
+                        DrawText(TextFormat("Dinheirinho: %i\t|\tExtra: %i", jog.points, jog.extra), 355, 470, 20, WHITE);
+                        
+                        DrawRectangle(20, 20, 80, 20, RED);
+                        DrawText("PAUSA",22, 22, 20, WHITE);
+                        
+                        if(x >= 20 && x <= 100 && y >= 20 && y <= 40)
+                        {
+                            if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+                            {
+                                menu();
+                            }
+                        }
+                            
                         
                         //EndMode2D();
                         EndDrawing();
