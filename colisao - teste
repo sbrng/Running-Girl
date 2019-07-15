@@ -6,19 +6,19 @@ void colisao (float *x, float *y)
     //é bom colocar essa parte antes de desenhar o personagem pra visualmente ela só ficar parada
             
     //lado esquerdo:
-    if (*x+10 <= 0) 
+    if (*x+10 <= 28) 
         *x += 5.0f;
             
     //lado direito:
-    if (*x+40 >= 800)
+    if (*x+40 >= 940)
         *x -= 5.0f;
             
     //cima:
-    if (*y+5 <= 0)
+    if (*y+5 <= 45)
         *y += 5.0f;
             
     //baixo:
-    if (*y+50 >= 450)
+    if (*y+50 >= 500)
         *y -= 5.0f;
 }
 
@@ -32,6 +32,18 @@ typedef struct personagem
     Texture2D textura;
 }personagem;
 
+typedef struct paredes
+{
+    Vector2 pos; //posição(x,y)
+    Rectangle hitbox;
+}paredes;
+
+//copiei a struct das paredes pra simular o novo tamanho da boneca, q é 35x35
+typedef struct meninateste
+{
+    Vector2 pos;
+    Rectangle hitbox;
+}meninateste;
 
 void movimentofujona(float *x, float *y)
 {
@@ -52,68 +64,661 @@ void movimentofujona(float *x, float *y)
 
 int main(void)
 {
-    const int screenWidth = 800;
-    const int screenHeight = 450;
-
+    const int screenWidth = 1000;
+    const int screenHeight = 500;
+    
+    int x, y;
+    
+    SetTargetFPS(60);       
+    
+    //declarei esse retangulo teste
+    meninateste perso[50];
+    
+    //declarando as paredes
+    paredes wall[50];
     InitWindow(screenWidth, screenHeight, "Colisão");
     
-    SetTargetFPS(60);                   
-    
-    personagem perso[50];
+    Image cen1 = LoadImage("/raylib/RunningGirl/casa.png");
+    ImageResize(&cen1, screenWidth, screenHeight);
+    Texture2D cen1tx = LoadTextureFromImage(cen1);
+    UnloadImage(cen1);
 
-    perso[0].visual = LoadImage("/raylib/RunningGirl/PERSONAGENS/show (54).png");
+    /*perso[0].visual = LoadImage("/raylib/RunningGirl/PERSONAGENS/show (54).png");
     perso[0].textura = LoadTextureFromImage(perso[0].visual);
-    perso[0].hitbox.x = 370;
-    perso[0].hitbox.y = 225;
-    perso[0].hitbox.width = 40;
-    perso[0].hitbox.height = 50;
+    perso[0].hitbox.x = 480;
+    perso[0].hitbox.y = 270;
+    perso[0].hitbox.width = 35;
+    perso[0].hitbox.height = 35;*/
     
-    perso[1].visual = LoadImage("/raylib/RunningGirl/PERSONAGENS/show (54).png");
-    perso[1].textura = LoadTextureFromImage(perso[0].visual);
-    perso[1].hitbox.x = 300;
-    perso[1].hitbox.y = 200;
-    perso[1].hitbox.width = 40;
-    perso[1].hitbox.height = 50;
+    //declarei a personagem como um retangulo branco 35x35
+    perso[0].hitbox.x = 480;
+    perso[0].hitbox.y = 270;
+    perso[0].hitbox.width = 35;
+    perso[0].hitbox.height = 35;
+    
+    //preto
+    wall[0].hitbox.x = 330;
+    wall[0].hitbox.y = 0;
+    wall[0].hitbox.width = 345;
+    wall[0].hitbox.height = 150;
+    //azul
+    wall[1].hitbox.x = 28;
+    wall[1].hitbox.y = 0;
+    wall[1].hitbox.width = 157;
+    wall[1].hitbox.height = 150;
+    //vermelho
+    wall[2].hitbox.x = 160;
+    wall[2].hitbox.y = 100;
+    wall[2].hitbox.width = 95;
+    wall[2].hitbox.height = 165;
+    //verde
+    wall[3].hitbox.x = 340;
+    wall[3].hitbox.y = 440;
+    wall[3].hitbox.width = 365;
+    wall[3].hitbox.height = 60;
+    //amarelo
+    wall[4].hitbox.x = 280;
+    wall[4].hitbox.y = 355;
+    wall[4].hitbox.width = 75;
+    wall[4].hitbox.height = 145;
+    //rosa
+    wall[5].hitbox.x = 250;
+    wall[5].hitbox.y = 330;
+    wall[5].hitbox.width = 220;
+    wall[5].hitbox.height = 45;
+    //marrom
+    wall[6].hitbox.x = 525;
+    wall[6].hitbox.y = 330;
+    wall[6].hitbox.width = 220;
+    wall[6].hitbox.height = 45;
+    //roxo
+    wall[7].hitbox.x = 666;
+    wall[7].hitbox.y = 355;
+    wall[7].hitbox.width = 39;
+    wall[7].hitbox.height = 145;
+    //laranja
+    wall[8].hitbox.x = 620;
+    wall[8].hitbox.y = 130;
+    wall[8].hitbox.width = 50;
+    wall[8].hitbox.height = 95;
+    //cinza
+    wall[9].hitbox.x = 325;
+    wall[9].hitbox.y = 115;
+    wall[9].hitbox.width = 55;
+    wall[9].hitbox.height = 135;
+    //azul escuro
+    wall[10].hitbox.x = 310;
+    wall[10].hitbox.y = 220;
+    wall[10].hitbox.width = 160;
+    wall[10].hitbox.height = 45;
+    //verde escuro
+    wall[11].hitbox.x = 525;
+    wall[11].hitbox.y = 220;
+    wall[11].hitbox.width = 280;
+    wall[11].hitbox.height = 45;
+    //lima
+    wall[12].hitbox.x = 0;
+    wall[12].hitbox.y = 220;
+    wall[12].hitbox.width = 60;
+    wall[12].hitbox.height = 115;
+    //violeta
+    wall[13].hitbox.x = 0;
+    wall[13].hitbox.y = 335;
+    wall[13].hitbox.width = 120;
+    wall[13].hitbox.height = 165;
+    //azul claro
+    wall[14].hitbox.x = 60;
+    wall[14].hitbox.y = 330;
+    wall[14].hitbox.width = 135;
+    wall[14].hitbox.height = 45;
+    //bege
+    wall[15].hitbox.x = 800;
+    wall[15].hitbox.y = 330;
+    wall[15].hitbox.width = 200;
+    wall[15].hitbox.height = 45;
+    //roxo escuro
+    wall[16].hitbox.x = 00;
+    wall[16].hitbox.y = 220;
+    wall[16].hitbox.width = 105;
+    wall[16].hitbox.height = 45;
+    //dourado
+    wall[17].hitbox.x = 860;
+    wall[17].hitbox.y = 220;
+    wall[17].hitbox.width = 140;
+    wall[17].hitbox.height = 45;
+    //preto dnv
+    wall[18].hitbox.x = 875;
+    wall[18].hitbox.y = 375;
+    wall[18].hitbox.width = 125;
+    wall[18].hitbox.height = 125;
+    //azul dnv
+    wall[19].hitbox.x = 670;
+    wall[19].hitbox.y = 140;
+    wall[19].hitbox.width = 45;
+    wall[19].hitbox.height = 30;
+    //vermelho dnv
+    wall[20].hitbox.x = 770;
+    wall[20].hitbox.y = 140;
+    wall[20].hitbox.width = 230;
+    wall[20].hitbox.height = 30;
+    //roxo dnv
+    wall[21].hitbox.x = 815;
+    wall[21].hitbox.y = 00;
+    wall[21].hitbox.width = 185;
+    wall[21].hitbox.height = 140;
+
     
     while (!WindowShouldClose())
     {
         BeginDrawing();
-
-        ClearBackground(SKYBLUE); // mesmo background aleatorio só pra rodar
-             
+        
+        x = GetMouseX();
+        y = GetMouseY();
+        ClearBackground(RAYWHITE); // mesmo background aleatorio só pra rodar
+        
+        DrawTexture(cen1tx, 0,0,RAYWHITE); // Printar cenario
+        
         movimentofujona(&perso[0].hitbox.x, &perso[0].hitbox.y);
-                        
+        
         colisao (&perso[0].hitbox.x, &perso[0].hitbox.y);
+
             
         //colisão com o retângulo:
-        if (CheckCollisionRecs (perso[0].hitbox, perso[1].hitbox))
+        
+        //BLACK
+        if (CheckCollisionRecs (perso[0].hitbox, wall[0].hitbox))
         {
             //indo pela direita do objeto
-            if (perso[0].hitbox.x+5 == perso[1].hitbox.x + perso[1].hitbox.width) //esse +5 é só pra ficar visualmente melhor
+            if (perso[0].hitbox.x+10 == wall[0].hitbox.x + wall[0].hitbox.width) //esse +5 é só pra ficar visualmente melhor
                 perso[0].hitbox.x += 5.0f;
             
             //indo pela esquerda do objeto
-            if (perso[0].hitbox.x + perso[0].hitbox.width == perso[1].hitbox.x+5) //esse +5 é só pra ficar visualmente melhor
+            if (perso[0].hitbox.x + perso[0].hitbox.width == wall[0].hitbox.x+10) //esse +5 é só pra ficar visualmente melhor
                 perso[0].hitbox.x -= 5.0f;
             
             //indo por baixo
-            if (perso[0].hitbox.y+5 == perso[1].hitbox.y + perso[1].hitbox.height) //esse +5 é só pra ficar visualmente melhor
+            if (perso[0].hitbox.y+10 == wall[0].hitbox.y + wall[0].hitbox.height) //esse +5 é só pra ficar visualmente melhor
                 perso[0].hitbox.y += 5.0f;
             
             //indo por cima
-            if (perso[0].hitbox.y + perso[0].hitbox.height == perso[1].hitbox.y+5) //esse +5 é só pra ficar visualmente melhor
+            if (perso[0].hitbox.y + perso[0].hitbox.height == wall[0].hitbox.y+10) //esse +5 é só pra ficar visualmente melhor
                 perso[0].hitbox.y -= 5.0f;
         }
         
-        //os retangulos das hitboxs
-        DrawRectangleRec (perso[0].hitbox, RAYWHITE);
+        //BLUE
+        if (CheckCollisionRecs (perso[0].hitbox, wall[1].hitbox))
+        {
+            //indo pela direita do objeto
+            if (perso[0].hitbox.x+10 == wall[1].hitbox.x + wall[1].hitbox.width) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.x += 5.0f;
+            
+            //indo pela esquerda do objeto
+            if (perso[0].hitbox.x + perso[0].hitbox.width == wall[1].hitbox.x+10) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.x -= 5.0f;
+            
+            //indo por baixo
+            if (perso[0].hitbox.y+10 == wall[1].hitbox.y + wall[1].hitbox.height) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.y += 5.0f;
+            
+            //indo por cima
+            if (perso[0].hitbox.y + perso[0].hitbox.height == wall[1].hitbox.y+10) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.y -= 5.0f;
+        }
         
-        DrawRectangleRec (perso[1].hitbox, RAYWHITE);
+        //RED
+        if (CheckCollisionRecs (perso[0].hitbox, wall[2].hitbox))
+        {
+            //indo pela direita do objeto
+            if (perso[0].hitbox.x+10 == wall[2].hitbox.x + wall[2].hitbox.width) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.x += 5.0f;
+            
+            //indo pela esquerda do objeto
+            if (perso[0].hitbox.x + perso[0].hitbox.width == wall[2].hitbox.x+10) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.x -= 5.0f;
+            
+            //indo por baixo
+            if (perso[0].hitbox.y+10 == wall[2].hitbox.y + wall[2].hitbox.height) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.y += 5.0f;
+            
+            //indo por cima
+            if (perso[0].hitbox.y + perso[0].hitbox.height == wall[2].hitbox.y+10) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.y -= 5.0f;
+        }
+        
+        //GREEN
+        if (CheckCollisionRecs (perso[0].hitbox, wall[3].hitbox))
+        {
+            //indo pela direita do objeto
+            if (perso[0].hitbox.x+10 == wall[3].hitbox.x + wall[3].hitbox.width) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.x += 5.0f;
+            
+            //indo pela esquerda do objeto
+            if (perso[0].hitbox.x + perso[0].hitbox.width == wall[3].hitbox.x+10) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.x -= 5.0f;
+            
+            //indo por baixo
+            if (perso[0].hitbox.y+10 == wall[3].hitbox.y + wall[3].hitbox.height) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.y += 5.0f;
+            
+            //indo por cima
+            if (perso[0].hitbox.y + perso[0].hitbox.height == wall[3].hitbox.y+10) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.y -= 5.0f;
+        }
+        
+        //YELLOW
+        if (CheckCollisionRecs (perso[0].hitbox, wall[4].hitbox))
+        {
+            //indo pela direita do objeto
+            if (perso[0].hitbox.x-3 == wall[4].hitbox.x + wall[4].hitbox.width) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.x += 5.0f;
+            
+            //indo pela esquerda do objeto
+            if (perso[0].hitbox.x + perso[0].hitbox.width == wall[4].hitbox.x+10) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.x -= 5.0f;
+            
+            //indo por baixo
+            if (perso[0].hitbox.y+10 == wall[4].hitbox.y + wall[4].hitbox.height) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.y += 5.0f;
+            
+            //indo por cima
+            if (perso[0].hitbox.y + perso[0].hitbox.height == wall[4].hitbox.y+10) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.y -= 5.0f;
+        }
+        
+        //PINK
+        if (CheckCollisionRecs (perso[0].hitbox, wall[5].hitbox))
+        {
+            //indo pela direita do objeto
+            if (perso[0].hitbox.x+10 == wall[5].hitbox.x + wall[5].hitbox.width) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.x += 5.0f;
+            
+            //indo pela esquerda do objeto
+            if (perso[0].hitbox.x + perso[0].hitbox.width == wall[5].hitbox.x+10) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.x -= 5.0f;
+            
+            //indo por baixo
+            if (perso[0].hitbox.y+10 == wall[5].hitbox.y + wall[5].hitbox.height) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.y += 5.0f;
+            
+            //indo por cima
+            if (perso[0].hitbox.y + perso[0].hitbox.height == wall[5].hitbox.y+10) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.y -= 5.0f;
+        }
+        
+        // BROWN
+        if (CheckCollisionRecs (perso[0].hitbox, wall[6].hitbox))
+        {
+            //indo pela direita do objeto
+            if (perso[0].hitbox.x+10 == wall[6].hitbox.x + wall[6].hitbox.width) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.x += 5.0f;
+            
+            //indo pela esquerda do objeto
+            if (perso[0].hitbox.x + perso[0].hitbox.width == wall[6].hitbox.x+10) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.x -= 5.0f;
+            
+            //indo por baixo
+            if (perso[0].hitbox.y+10 == wall[6].hitbox.y + wall[6].hitbox.height) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.y += 5.0f;
+            
+            //indo por cima
+            if (perso[0].hitbox.y + perso[0].hitbox.height == wall[6].hitbox.y+10) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.y -= 5.0f;
+        }
+        
+        //PURPLE
+        if (CheckCollisionRecs (perso[0].hitbox, wall[7].hitbox))
+        {
+            //indo pela direita do objeto
+            if (perso[0].hitbox.x +10 == wall[7].hitbox.x + wall[7].hitbox.width) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.x += 5.0f;
+            
+            //indo pela esquerda do objeto
+            if (perso[0].hitbox.x + perso[0].hitbox.width == wall[7].hitbox.x+3) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.x -= 5.0f;
+            
+            //indo por baixo
+            if (perso[0].hitbox.y +6 == wall[7].hitbox.y + wall[7].hitbox.height) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.y += 5.0f;
+            
+            //indo por cima
+            if (perso[0].hitbox.y + perso[0].hitbox.height == wall[7].hitbox.y) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.y -= 5.0f;
+        }
+        
+        //ORANGE
+        if (CheckCollisionRecs (perso[0].hitbox, wall[8].hitbox))
+        {
+            //indo pela direita do objeto
+            if (perso[0].hitbox.x+10 == wall[8].hitbox.x + wall[8].hitbox.width) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.x += 5.0f;
+            
+            //indo pela esquerda do objeto
+            if (perso[0].hitbox.x + perso[0].hitbox.width == wall[8].hitbox.x+10) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.x -= 5.0f;
+            
+            //indo por baixo
+            if (perso[0].hitbox.y+10 == wall[8].hitbox.y + wall[8].hitbox.height) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.y += 5.0f;
+            
+            //indo por cima
+            if (perso[0].hitbox.y + perso[0].hitbox.height == wall[8].hitbox.y+10) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.y -= 5.0f;
+        }
+        
+        //GRAY
+        if (CheckCollisionRecs (perso[0].hitbox, wall[9].hitbox))
+        {
+            //indo pela direita do objeto
+            if (perso[0].hitbox.x+10 == wall[9].hitbox.x + wall[9].hitbox.width) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.x += 5.0f;
+            
+            //indo pela esquerda do objeto
+            if (perso[0].hitbox.x + perso[0].hitbox.width == wall[9].hitbox.x+10) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.x -= 5.0f;
+            
+            //indo por baixo
+            if (perso[0].hitbox.y+10 == wall[9].hitbox.y + wall[9].hitbox.height) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.y += 5.0f;
+            
+            //indo por cima
+            if (perso[0].hitbox.y + perso[0].hitbox.height == wall[9].hitbox.y+10) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.y -= 5.0f;
+        }
+        
+        //DARKBLUE
+        if (CheckCollisionRecs (perso[0].hitbox, wall[10].hitbox))
+        {
+            //indo pela direita do objeto
+            if (perso[0].hitbox.x+10 == wall[10].hitbox.x + wall[10].hitbox.width) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.x += 5.0f;
+            
+            //indo pela esquerda do objeto
+            if (perso[0].hitbox.x + perso[0].hitbox.width == wall[10].hitbox.x+10) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.x -= 5.0f;
+            
+            //indo por baixo
+            if (perso[0].hitbox.y+10 == wall[10].hitbox.y + wall[10].hitbox.height) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.y += 5.0f;
+            
+            //indo por cima
+            if (perso[0].hitbox.y + perso[0].hitbox.height == wall[10].hitbox.y+10) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.y -= 5.0f;
+        }
+        
+        //DARKGREEN
+        if (CheckCollisionRecs (perso[0].hitbox, wall[11].hitbox))
+        {
+            //indo pela direita do objeto
+            if (perso[0].hitbox.x+10 == wall[11].hitbox.x + wall[11].hitbox.width) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.x += 5.0f;
+            
+            //indo pela esquerda do objeto
+            if (perso[0].hitbox.x + perso[0].hitbox.width == wall[11].hitbox.x+10) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.x -= 5.0f;
+            
+            //indo por baixo
+            if (perso[0].hitbox.y+10 == wall[11].hitbox.y + wall[11].hitbox.height) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.y += 5.0f;
+            
+            //indo por cima
+            if (perso[0].hitbox.y + perso[0].hitbox.height == wall[11].hitbox.y+10) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.y -= 5.0f;
+        }
+        
+        //LIME
+        if (CheckCollisionRecs (perso[0].hitbox, wall[12].hitbox))
+        {
+            //indo pela direita do objeto
+            if (perso[0].hitbox.x+10 == wall[12].hitbox.x + wall[12].hitbox.width) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.x += 5.0f;
+            
+            //indo pela esquerda do objeto
+            if (perso[0].hitbox.x + perso[0].hitbox.width == wall[12].hitbox.x+10) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.x -= 5.0f;
+            
+            //indo por baixo
+            if (perso[0].hitbox.y+10 == wall[12].hitbox.y + wall[12].hitbox.height) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.y += 5.0f;
+            
+            //indo por cima
+            if (perso[0].hitbox.y + perso[0].hitbox.height == wall[12].hitbox.y+10) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.y -= 5.0f;
+        }
+        
+        //VIOLET
+        if (CheckCollisionRecs (perso[0].hitbox, wall[13].hitbox))
+        {
+            //indo pela direita do objeto
+            if (perso[0].hitbox.x+10 == wall[13].hitbox.x + wall[13].hitbox.width) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.x += 5.0f;
+            
+            //indo pela esquerda do objeto
+            if (perso[0].hitbox.x + perso[0].hitbox.width == wall[13].hitbox.x+10) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.x -= 5.0f;
+            
+            //indo por baixo
+            if (perso[0].hitbox.y+10 == wall[13].hitbox.y + wall[13].hitbox.height) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.y += 5.0f;
+            
+            //indo por cima
+            if (perso[0].hitbox.y + perso[0].hitbox.height == wall[13].hitbox.y+10) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.y -= 5.0f;
+        }
+        
+        //SKYBLUE
+        if (CheckCollisionRecs (perso[0].hitbox, wall[14].hitbox))
+        {
+            //indo pela direita do objeto
+            if (perso[0].hitbox.x+10 == wall[14].hitbox.x + wall[14].hitbox.width) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.x += 5.0f;
+            
+            //indo pela esquerda do objeto
+            if (perso[0].hitbox.x + perso[0].hitbox.width == wall[14].hitbox.x+10) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.x -= 5.0f;
+            
+            //indo por baixo
+            if (perso[0].hitbox.y+10 == wall[14].hitbox.y + wall[14].hitbox.height) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.y += 5.0f;
+            
+            //indo por cima
+            if (perso[0].hitbox.y + perso[0].hitbox.height == wall[14].hitbox.y+10) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.y -= 5.0f;
+        }
+        
+        //BEIGE
+        if (CheckCollisionRecs (perso[0].hitbox, wall[15].hitbox))
+        {
+            //indo pela direita do objeto
+            if (perso[0].hitbox.x+10 == wall[15].hitbox.x + wall[15].hitbox.width) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.x += 5.0f;
+            
+            //indo pela esquerda do objeto
+            if (perso[0].hitbox.x + perso[0].hitbox.width == wall[15].hitbox.x+10) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.x -= 5.0f;
+            
+            //indo por baixo
+            if (perso[0].hitbox.y+10 == wall[15].hitbox.y + wall[15].hitbox.height) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.y += 5.0f;
+            
+            //indo por cima
+            if (perso[0].hitbox.y + perso[0].hitbox.height == wall[15].hitbox.y+10) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.y -= 5.0f;
+        }
+        
+        //DARKPURPLE
+        if (CheckCollisionRecs (perso[0].hitbox, wall[16].hitbox))
+        {
+            //indo pela direita do objeto
+            if (perso[0].hitbox.x+10 == wall[16].hitbox.x + wall[16].hitbox.width) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.x += 5.0f;
+            
+            //indo pela esquerda do objeto
+            if (perso[0].hitbox.x + perso[0].hitbox.width == wall[16].hitbox.x+10) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.x -= 5.0f;
+            
+            //indo por baixo
+            if (perso[0].hitbox.y+10 == wall[16].hitbox.y + wall[16].hitbox.height) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.y += 5.0f;
+            
+            //indo por cima
+            if (perso[0].hitbox.y + perso[0].hitbox.height == wall[16].hitbox.y+10) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.y -= 5.0f;
+        }
+        
+        //GOLD
+        if (CheckCollisionRecs (perso[0].hitbox, wall[17].hitbox))
+        {
+            //indo pela direita do objeto
+            if (perso[0].hitbox.x+10 == wall[17].hitbox.x + wall[17].hitbox.width) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.x += 5.0f;
+            
+            //indo pela esquerda do objeto
+            if (perso[0].hitbox.x + perso[0].hitbox.width == wall[17].hitbox.x+10) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.x -= 5.0f;
+            
+            //indo por baixo
+            if (perso[0].hitbox.y+10 == wall[17].hitbox.y + wall[17].hitbox.height) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.y += 5.0f;
+            
+            //indo por cima
+            if (perso[0].hitbox.y + perso[0].hitbox.height == wall[17].hitbox.y+10) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.y -= 5.0f;
+        }
+        
+        //BLACK again
+        if (CheckCollisionRecs (perso[0].hitbox, wall[18].hitbox))
+        {
+            //indo pela direita do objeto
+            if (perso[0].hitbox.x+10 == wall[18].hitbox.x + wall[18].hitbox.width) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.x += 5.0f;
+            
+            //indo pela esquerda do objeto
+            if (perso[0].hitbox.x + perso[0].hitbox.width == wall[18].hitbox.x+10) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.x -= 5.0f;
+            
+            //indo por baixo
+            if (perso[0].hitbox.y+10 == wall[18].hitbox.y + wall[18].hitbox.height) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.y += 5.0f;
+            
+            //indo por cima
+            if (perso[0].hitbox.y + perso[0].hitbox.height == wall[18].hitbox.y+10) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.y -= 5.0f;
+        }
+        
+        //BLUE again
+        if (CheckCollisionRecs (perso[0].hitbox, wall[19].hitbox))
+        {
+            //indo pela direita do objeto
+            if (perso[0].hitbox.x+10 == wall[19].hitbox.x + wall[19].hitbox.width) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.x += 5.0f;
+            
+            //indo pela esquerda do objeto
+            if (perso[0].hitbox.x + perso[0].hitbox.width == wall[19].hitbox.x+10) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.x -= 5.0f;
+            
+            //indo por baixo
+            if (perso[0].hitbox.y+10 == wall[19].hitbox.y + wall[19].hitbox.height) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.y += 5.0f;
+            
+            //indo por cima
+            if (perso[0].hitbox.y + perso[0].hitbox.height == wall[19].hitbox.y+10) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.y -= 5.0f;
+        }
+        
+        //RED again
+        if (CheckCollisionRecs (perso[0].hitbox, wall[20].hitbox))
+        {
+            //indo pela direita do objeto
+            if (perso[0].hitbox.x+10 == wall[20].hitbox.x + wall[20].hitbox.width) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.x += 5.0f;
+            
+            //indo pela esquerda do objeto
+            if (perso[0].hitbox.x + perso[0].hitbox.width == wall[20].hitbox.x+10) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.x -= 5.0f;
+            
+            //indo por baixo
+            if (perso[0].hitbox.y+10 == wall[20].hitbox.y + wall[20].hitbox.height) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.y += 5.0f;
+            
+            //indo por cima
+            if (perso[0].hitbox.y + perso[0].hitbox.height == wall[20].hitbox.y+10) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.y -= 5.0f;
+        }
+        
+        //PURPLE again
+        if (CheckCollisionRecs (perso[0].hitbox, wall[21].hitbox))
+        {
+            //indo pela direita do objeto
+            if (perso[0].hitbox.x+10 == wall[21].hitbox.x + wall[21].hitbox.width) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.x += 5.0f;
+            
+            //indo pela esquerda do objeto
+            if (perso[0].hitbox.x + perso[0].hitbox.width == wall[21].hitbox.x+10) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.x -= 5.0f;
+            
+            //indo por baixo
+            if (perso[0].hitbox.y+10 == wall[21].hitbox.y + wall[21].hitbox.height) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.y += 5.0f;
+            
+            //indo por cima
+            if (perso[0].hitbox.y + perso[0].hitbox.height == wall[21].hitbox.y+10) //esse +5 é só pra ficar visualmente melhor
+                perso[0].hitbox.y -= 5.0f;
+        }
+        //os retangulos das hitboxs
+        //DrawRectangleRec (perso[0].hitbox, RAYWHITE);
+        
+        //DrawRectangleRec (perso[1].hitbox, RAYWHITE);*/
  
         //as boneca
-        DrawTexture(perso[0].textura,perso[0].hitbox.x,perso[0].hitbox.y,RAYWHITE);
+        DrawRectangle(perso[0].hitbox.x, perso[0].hitbox.y, perso[0].hitbox.width, perso[0].hitbox.height ,RAYWHITE);
         
-        DrawTexture(perso[1].textura,perso[1].hitbox.x,perso[1].hitbox.y,RAYWHITE);
+        //se quiserem ver as paredes:
+        /*
+        //preto
+        DrawRectangle(wall[0].hitbox.x, wall[0].hitbox.y, wall[0].hitbox.width, wall[0].hitbox.height, BLACK);
+        //azul
+        DrawRectangle(wall[1].hitbox.x, wall[1].hitbox.y, wall[1].hitbox.width, wall[1].hitbox.height, BLUE);
+        //vermelho
+        DrawRectangle(wall[2].hitbox.x, wall[2].hitbox.y, wall[2].hitbox.width, wall[2].hitbox.height, RED);
+        //verde
+        DrawRectangle(wall[3].hitbox.x, wall[3].hitbox.y, wall[3].hitbox.width, wall[3].hitbox.height, GREEN);
+        //amarelo
+        DrawRectangle(wall[4].hitbox.x, wall[4].hitbox.y, wall[4].hitbox.width, wall[4].hitbox.height, YELLOW);
+        //rosa
+        DrawRectangle(wall[5].hitbox.x, wall[5].hitbox.y, wall[5].hitbox.width, wall[5].hitbox.height, PINK);
+        //marrom
+        DrawRectangle(wall[6].hitbox.x, wall[6].hitbox.y, wall[6].hitbox.width, wall[6].hitbox.height, DARKBROWN);
+        //roxo
+        DrawRectangle(wall[7].hitbox.x, wall[7].hitbox.y, wall[7].hitbox.width, wall[7].hitbox.height, PURPLE);
+        //laranja
+        DrawRectangle(wall[8].hitbox.x, wall[8].hitbox.y, wall[8].hitbox.width, wall[8].hitbox.height, ORANGE);
+        //cinza
+        DrawRectangle(wall[9].hitbox.x, wall[9].hitbox.y, wall[9].hitbox.width, wall[9].hitbox.height, GRAY);
+        //azulescuro
+        DrawRectangle(wall[10].hitbox.x, wall[10].hitbox.y, wall[10].hitbox.width, wall[10].hitbox.height, DARKBLUE);
+        //VERDEescuro
+        DrawRectangle(wall[11].hitbox.x, wall[11].hitbox.y, wall[11].hitbox.width, wall[11].hitbox.height, DARKGREEN);
+        //lime
+        DrawRectangle(wall[12].hitbox.x, wall[12].hitbox.y, wall[12].hitbox.width, wall[12].hitbox.height, LIME);
+        //violeta
+        DrawRectangle(wall[13].hitbox.x, wall[13].hitbox.y, wall[13].hitbox.width, wall[13].hitbox.height, VIOLET);
+        //azul claro
+        DrawRectangle(wall[14].hitbox.x, wall[14].hitbox.y, wall[14].hitbox.width, wall[14].hitbox.height, SKYBLUE);
+        //bege
+        DrawRectangle(wall[15].hitbox.x, wall[15].hitbox.y, wall[15].hitbox.width, wall[15].hitbox.height, BEIGE);
+        //roxo escuro
+        DrawRectangle(wall[16].hitbox.x, wall[16].hitbox.y, wall[16].hitbox.width, wall[16].hitbox.height, DARKPURPLE);
+        //dourado
+        DrawRectangle(wall[17].hitbox.x, wall[17].hitbox.y, wall[17].hitbox.width, wall[17].hitbox.height, GOLD);
+        //preto de novo
+        DrawRectangle(wall[18].hitbox.x, wall[18].hitbox.y, wall[18].hitbox.width, wall[18].hitbox.height, BLACK);
+        //azul de novo
+        DrawRectangle(wall[19].hitbox.x, wall[19].hitbox.y, wall[19].hitbox.width, wall[19].hitbox.height, BLUE);
+        //vermelho de novo
+        DrawRectangle(wall[20].hitbox.x, wall[20].hitbox.y, wall[20].hitbox.width, wall[20].hitbox.height, RED);
+        //roxo de novo
+        DrawRectangle(wall[21].hitbox.x, wall[21].hitbox.y, wall[21].hitbox.width, wall[21].hitbox.height, PURPLE);
+        */
 
         
         EndDrawing();
