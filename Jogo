@@ -94,7 +94,7 @@ void colisao (float *x, float *y)
         }
 
  }
- 
+
 void sprites(int *lados, Texture2D *textura, Color color, Vector2 *posicao, Rectangle *ladoup, Rectangle *ladodown, Rectangle *ladoleft, Rectangle *ladoright){
         switch(*lados){//pra printar os perseguidores do lado certo de acordo com o movimento
         case 0:
@@ -111,7 +111,7 @@ void sprites(int *lados, Texture2D *textura, Color color, Vector2 *posicao, Rect
         break;
      }
 }
-void movimentoperseguidor(FILE *perseguidor, int *x, int *y, Texture2D *textura, Color color, int *lado){
+void movimentoperseguidor(FILE *perseguidor, int *x, int *y, Texture2D *textura, Color color, int *lado, float *xhitper, float *yhitper){
                         int xa=*x, ya=*y;
                         fscanf(perseguidor, "%i %i\n", x, y);//reproduzindo o mov 
                         //DrawTexture(*textura,*x,*y,color);
@@ -128,6 +128,8 @@ void movimentoperseguidor(FILE *perseguidor, int *x, int *y, Texture2D *textura,
                         else if(yp-ya < 0){
                             *lado=0;
                         }
+                        *xhitper=(float)*x;
+                        *yhitper=(float)*y;
 }
 void movimentofujona(float *x, float *y, int *estado, float *xhitbox, float *yhitbox){
     if(IsKeyDown(KEY_W)){
@@ -247,7 +249,8 @@ int main(void)
     int estadopirraia=3, lado=2;//atualizada pela função "movimentopirraia"
     int rgo,ggo,bgo,ago,rp,gp,bp,ap;
     float timego=0, timep=0, timemov=0;
-    
+    float time=0.0f;
+    bool nperdevida=false;
     
     //Vetor de personagens
     personagem perso[50];
@@ -262,8 +265,9 @@ int main(void)
 
     
     InitWindow(screenWidth, screenHeight, "Jogo RunningGirl");
+    InitAudioDevice();
     
-    //Carregando imagens e transformando-as em texturas
+    
     
     //imagem main menu
     Image mainMenu = LoadImage("/raylib/RunningGirl/fundos/menu1.png");
@@ -301,8 +305,8 @@ int main(void)
     perso[0].textura = LoadTextureFromImage(perso[0].imagem);
     perso[0].hitbox.x = 200.0;
     perso[0].hitbox.y = 60.0;
-    perso[0].hitbox.width = 32;
-    perso[0].hitbox.height = 45;
+    perso[0].hitbox.width = 35;
+    perso[0].hitbox.height = 35;
 
     //sprite DA PIRRAIA
     Rectangle leftpirraia  = { 0.0f  , 0.0f, (float)perso[0].textura.width/4, (float)perso[0].textura.height };//PEGA A IMAGEM DA PIRRAIA VOLTADA PRA ESQUERDA
@@ -318,8 +322,8 @@ int main(void)
     perso[1].pos.y = 90.0;//posição y incial do piolho
     perso[1].hitbox.x = perso[1].pos.x;
     perso[1].hitbox.y = perso[1].pos.y;
-    perso[1].hitbox.width = 31;
-    perso[1].hitbox.height = 41;
+    perso[1].hitbox.width = 35;
+    perso[1].hitbox.height = 35;
     
     //sprite DO PIOLHO
     Rectangle leftpiolho  = { 0.0f  , 0.0f, (float)perso[1].textura.width/4, (float)perso[1].textura.height };//PEGA A IMAGEM DO PIOLHO VOLTADA PRA ESQUERDA
@@ -334,8 +338,8 @@ int main(void)
     perso[2].pos.y = 440.0;//posição y incial da mae
     perso[2].hitbox.x = perso[2].pos.x;
     perso[2].hitbox.y = perso[2].pos.y;
-    perso[2].hitbox.width = 26;
-    perso[2].hitbox.height = 40;
+    perso[2].hitbox.width = 50;
+    perso[2].hitbox.height = 50;
     
     //sprite DA MAMI
     Rectangle leftmami  = { 0.0f  , 0.0f, (float)perso[2].textura.width/4, (float)perso[2].textura.height };//PEGA A IMAGEM DA MAMI VOLTADA PRA ESQUERDA
@@ -350,8 +354,8 @@ int main(void)
     perso[3].pos.y = 446.0;//posição y incial do pai
     perso[3].hitbox.x = perso[3].pos.x;
     perso[3].hitbox.y = perso[3].pos.y;
-    perso[3].hitbox.width = 20;
-    perso[3].hitbox.height = 40;
+    perso[3].hitbox.width = 50;
+    perso[3].hitbox.height = 50;
     
      //sprite DO PAPI
     Rectangle leftpapi  = { 0.0f  , 0.0f, (float)perso[3].textura.width/4, (float)perso[3].textura.height };//PEGA A IMAGEM DO PAPI VOLTADA PRA ESQUERDA
@@ -367,8 +371,8 @@ int main(void)
     perso[4].pos.y = 446.0;//posição y incial do dog
     perso[4].hitbox.x = perso[4].pos.x;
     perso[4].hitbox.y = perso[4].pos.y;
-    perso[4].hitbox.width = 20;
-    perso[4].hitbox.height = 40;
+    perso[4].hitbox.width = 50;
+    perso[4].hitbox.height = 50;
     
      //sprite DO DOG
     Rectangle downdog  = { 0.0f, 0.0f  , (float)perso[4].textura.width, (float)perso[4].textura.height/4};//PEGA A IMAGEM DO  VOLTADA PRA ESQUERDA
@@ -667,6 +671,7 @@ int main(void)
     FILE* dogsf2  = fopen ("/raylib/RunningGirl/arquivos/dogfase2.txt","r");
     int mae1x, mae1y, pai1x, pai1y, pioi1x, pioi1y, mae2x, mae2y, pai2x, pai2y, pioi2x, pioi2y, dogx, dogy;//PRA USAR NA MOVIMENTAÇÃO DA FAMILIA
     
+    
     /*
     //Declaração da camera
     Camera2D cam;
@@ -680,12 +685,13 @@ int main(void)
     {
         x=GetMouseX();
         y=GetMouseY();
-        
+
+  
         BeginDrawing();
         
             //Colocando fundo do menu
             DrawTexture(menuTexture, 0, 0, RAYWHITE);
-            
+                  
             //printar localização do mouse
             DrawText(TextFormat("%i | %i",x ,y), 500, 30, 20, BLACK);
             
@@ -730,6 +736,7 @@ int main(void)
                             
                             else if(IsKeyPressed(KEY_ENTER)) 
                             {
+                                
                                 break;
                             }
                             
@@ -762,20 +769,47 @@ int main(void)
                         movimentofujona( &perso[0].pos.x, &perso[0].pos.y, &estadopirraia, &perso[0].hitbox.x, &perso[0].hitbox.y );//Movimentação pirraia
                         sprites(&estadopirraia, &perso[0].textura, RAYWHITE, &posicaopirraia, &uppirraia, &downpirraia, &leftpirraia, &rightpirraia);
                         
+                        
                         //fase1
                         
-                        movimentoperseguidor(pioif1, &pioi1x, &pioi1y, &perso[1].textura, RAYWHITE, &lado);
+                        movimentoperseguidor(pioif1, &pioi1x, &pioi1y, &perso[1].textura, RAYWHITE, &lado, &perso[1].hitbox.x,&perso[1].hitbox.y );
                         Vector2 posicaopioi1 = {pioi1x, pioi1y};//variavel da sprite do pioi, pra as sprites terem a mesma posicao dele
                         sprites(&lado, &perso[1].textura, RAYWHITE, &posicaopioi1, &uppiolho, &downpiolho, &leftpiolho, &rightpiolho);
 
-                        movimentoperseguidor(mamisf1, &mae1x, &mae1y, &perso[2].textura, RAYWHITE, &lado);
+                        movimentoperseguidor(mamisf1, &mae1x, &mae1y, &perso[2].textura, RAYWHITE, &lado,&perso[2].hitbox.x,&perso[2].hitbox.y);
                         Vector2 posicaomae1 = {mae1x, mae1y};//variavel da sprite da mae, pra as sprites terem a mesma posicao dela 
                         sprites(&lado, &perso[2].textura, RAYWHITE, &posicaomae1, &upmami, &downmami, &leftmami, &rightmami);
                         
                        
-                        movimentoperseguidor(papisf1, &pai1x, &pai1y, &perso[3].textura, RAYWHITE, &lado);
+                        movimentoperseguidor(papisf1, &pai1x, &pai1y, &perso[3].textura, RAYWHITE, &lado,&perso[3].hitbox.x,&perso[3].hitbox.y);
                         Vector2 posicaopai1 = {pai1x, pai1y};//variavel da sprite do pai, pra as sprites terem a mesma posicao dele
                         sprites(&lado, &perso[3].textura, RAYWHITE, &posicaopai1, &uppapi, &downpapi, &leftpapi, &rightpapi);
+                        DrawRectangleRec(perso[1].hitbox, RAYWHITE );
+                        DrawRectangleRec(perso[3].hitbox, RAYWHITE );
+                        DrawRectangleRec(perso[2].hitbox, RAYWHITE );
+                        DrawRectangleRec(perso[0].hitbox, RAYWHITE );
+                        
+                        if(CheckCollisionRecs(perso[0].hitbox, perso[1].hitbox) && !nperdevida){
+                                jog.vidas--;
+                                nperdevida=true;
+                        }
+                        if(CheckCollisionRecs(perso[0].hitbox, perso[2].hitbox) && !nperdevida){
+                                jog.vidas--;
+                                nperdevida=true;
+                        }
+                        if(CheckCollisionRecs(perso[0].hitbox, perso[3].hitbox) && !nperdevida){
+                                jog.vidas--;
+                                nperdevida=true;
+                                
+                        }
+                        if(nperdevida){
+                            time+=1.0f;
+                            if(time==30.0f){
+                                nperdevida=false;
+                                time=0.0f;
+                            }
+                        }
+                        DrawText(TextFormat("%d", nperdevida), 200,400,60,BLUE);
                         
                         
                         //colisão com as paredes:
@@ -843,7 +877,7 @@ int main(void)
                         
                         DrawRectangle(350, 465, 300, 35, SKYBLUE);
                         DrawText(TextFormat("Dinheirinho: %i\t|\tExtra: %i", jog.points, jog.extra), 355, 470, 20, WHITE);
-                        
+                        DrawText(TextFormat("Vidas: %i\n", jog.vidas), 200, 200, 20, BLACK);
                         DrawRectangle(20, 20, 80, 20, RED);
                         DrawText("PAUSA",22, 22, 20, WHITE);
                         
@@ -889,22 +923,49 @@ int main(void)
                         sprites(&estadopirraia, &perso[0].textura, RAYWHITE, &posicaopirraia, &uppirraia, &downpirraia, &leftpirraia, &rightpirraia);
                         
                         //fase2 mov
-                        movimentoperseguidor(pioif2, &pioi2x, &pioi2y, &perso[1].textura, RAYWHITE, &lado);
+                        movimentoperseguidor(pioif2, &pioi2x, &pioi2y, &perso[1].textura, RAYWHITE, &lado,&perso[1].hitbox.x,&perso[1].hitbox.y);
                         Vector2 posicaopioi2 = {pioi2x, pioi2y};//variavel da sprite do pioi, pra as sprites terem a mesma posicao dele
                         sprites(&lado, &perso[1].textura, RAYWHITE, &posicaopioi2, &uppiolho, &downpiolho, &leftpiolho, &rightpiolho);
 
-                        movimentoperseguidor(mamisf2, &mae2x, &mae2y, &perso[2].textura, RAYWHITE, &lado);
+                        movimentoperseguidor(mamisf2, &mae2x, &mae2y, &perso[2].textura, RAYWHITE, &lado,&perso[2].hitbox.x,&perso[2].hitbox.y);
                         Vector2 posicaomae2 = {mae2x, mae2y};//variavel da sprite da mae, pra as sprites terem a mesma posicao dela 
                         sprites(&lado, &perso[2].textura, RAYWHITE, &posicaomae2, &upmami, &downmami, &leftmami, &rightmami);
 
-                        movimentoperseguidor(papisf2, &pai2x, &pai2y, &perso[3].textura, RAYWHITE, &lado);
+                        movimentoperseguidor(papisf2, &pai2x, &pai2y, &perso[3].textura, RAYWHITE, &lado,&perso[3].hitbox.x,&perso[3].hitbox.y);
                         Vector2 posicaopai2 = {pai2x, pai2y};//variavel da sprite do pai, pra as sprites terem a mesma posicao dele
                         sprites(&lado, &perso[3].textura, RAYWHITE, &posicaopai2, &uppapi, &downpapi, &leftpapi, &rightpapi);
 
-                        movimentoperseguidor(dogsf2, &dogx, &dogy, &perso[4].textura, RAYWHITE, &lado);
+                        movimentoperseguidor(dogsf2, &dogx, &dogy, &perso[4].textura, RAYWHITE, &lado,&perso[4].hitbox.x,&perso[4].hitbox.y);
                         Vector2 posicaodog = {dogx, dogy};//variavel da sprite do dog, pra as sprites terem a mesma posicao dele
                         sprites(&lado, &perso[4].textura, RAYWHITE, &posicaodog, &updog, &downdog, &leftdog, &rightdog);
                         
+                        if(CheckCollisionRecs(perso[0].hitbox, perso[1].hitbox) && !nperdevida){
+                                jog.vidas--;
+                                nperdevida=true;
+                        }
+                        if(CheckCollisionRecs(perso[0].hitbox, perso[2].hitbox) && !nperdevida){
+                                jog.vidas--;
+                                nperdevida=true;
+                        }
+                        if(CheckCollisionRecs(perso[0].hitbox, perso[3].hitbox) && !nperdevida){
+                                jog.vidas--;
+                                nperdevida=true;
+                                
+                        }
+                        if(CheckCollisionRecs(perso[0].hitbox, perso[4].hitbox) && !nperdevida){
+                                jog.vidas--;
+                                nperdevida=true;
+                                
+                        }
+                        if(nperdevida){
+                            time+=1.0f;
+                            if(time==30.0f){
+                                nperdevida=false;
+                                time=0.0f;
+                            }
+                        }
+                        DrawText(TextFormat("%d", nperdevida), 200,400,60,BLUE);
+                        DrawText(TextFormat("Vidas: %i\n", jog.vidas), 20, 20, 20, BLACK);
                         EndDrawing();
                         
                         if(IsKeyPressed(KEY_END))
