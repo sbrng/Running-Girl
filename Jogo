@@ -1,4 +1,8 @@
 #include "raylib.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <string.h>
 
 typedef struct personagem
 {
@@ -91,25 +95,62 @@ void colisao (float *x, float *y)
 
  }
  
-void movimentofujona(float *x, float *y, int *estado){
-    if(IsKeyDown(KEY_W)||IsKeyDown(KEY_UP)){
+void sprites(int *lados, Texture2D *textura, Color color, Vector2 *posicao, Rectangle *ladoup, Rectangle *ladodown, Rectangle *ladoleft, Rectangle *ladoright){
+        switch(*lados){//pra printar os perseguidores do lado certo de acordo com o movimento
+        case 0:
+        DrawTextureRec(*textura, *ladoup, *posicao , color);
+        break;
+        case 1:
+        DrawTextureRec(*textura, *ladodown, *posicao , color);
+        break;
+        case 2:
+        DrawTextureRec(*textura, *ladoleft, *posicao , color);
+        break;
+        case 3:
+        DrawTextureRec(*textura, *ladoright, *posicao , color);
+        break;
+     }
+}
+void movimentoperseguidor(FILE *perseguidor, int *x, int *y, Texture2D *textura, Color color, int *lado){
+                        int xa=*x, ya=*y;
+                        fscanf(perseguidor, "%i %i\n", x, y);//reproduzindo o mov 
+                        //DrawTexture(*textura,*x,*y,color);
+                        int xp=*x,yp=*y;
+                        if( xp-xa > 0){
+                            *lado=3;
+                        }
+                        else if(xp-xa < 0){
+                            *lado=2;
+                        }
+                        else if(yp-ya > 0){
+                            *lado=1;
+                        }
+                        else if(yp-ya < 0){
+                            *lado=0;
+                        }
+}
+void movimentofujona(float *x, float *y, int *estado, float *xhitbox, float *yhitbox){
+    if(IsKeyDown(KEY_W)){
         *y-=5.0f;
-        *estado = 0;
+        *estado = 0;//up
     }
-    else if(IsKeyDown(KEY_S)||IsKeyDown(KEY_DOWN)){
+    else if(IsKeyDown(KEY_S)){
         *y+=5.0f;
-        *estado = 1;
+        *estado = 1;//down
     }
-    else if(IsKeyDown(KEY_A)||IsKeyDown(KEY_LEFT)){
+    else if(IsKeyDown(KEY_A)){
         *x-=5.0f;
-        *estado = 2;
+        *estado = 2;//left
     }
-    else if(IsKeyDown(KEY_D)||IsKeyDown(KEY_RIGHT)){
+    else if(IsKeyDown(KEY_D)){
         *x+=5.0f;
-        *estado = 3;
+        *estado = 3;//right
     }
+    *yhitbox = *y;
+    *xhitbox = *x;
     //essa função tá retornando valores pra atualizar a variavel "estadopirraia", pra poder usar no switch e printar a foto certa da pirraia em cada caso.
 }
+
 
 void menu(void)
 {
@@ -203,7 +244,7 @@ int main(void)
     //Declaração de variaveis
     int x, y;
     int letterCount = 0;
-    int estadopirraia=3, estadopiolho=3, estadomami=3, estadopapi=3;//atualizada pela função "movimentopirraia"
+    int estadopirraia=3, lado=2;//atualizada pela função "movimentopirraia"
     int rgo,ggo,bgo,ago,rp,gp,bp,ap;
     float timego=0, timep=0, timemov=0;
     
@@ -214,6 +255,7 @@ int main(void)
     //perso[1]=piolho
     //perso[2]=mami
     //perso[3]=papi
+    //perso[4]=doguinho
     
     //Vetor paredes
     paredes wall[50];
@@ -235,6 +277,12 @@ int main(void)
     Texture2D cen1tx = LoadTextureFromImage(cen1);
     UnloadImage(cen1);
     
+     //cenario fase 1
+    Image cen2 = LoadImage("/raylib/RunningGirl/fundos/casa1.png");
+    ImageResize(&cen2, screenWidth, screenHeight);
+    Texture2D cen2tx = LoadTextureFromImage(cen2);
+    UnloadImage(cen2);
+    
     //botando o fundo festa(quando ganhar)
     Image party = LoadImage("/raylib/RunningGirl/fundos/finalfesta1.png");
     ImageResize(&party, screenWidth, screenHeight);
@@ -247,41 +295,6 @@ int main(void)
     Texture2D gameovertx = LoadTextureFromImage(gameover);
     UnloadImage(gameover);
     
-    //botando o fundo historinha
-    Image historinha = LoadImage("/raylib/RunningGirl/fundos/historinhafundo.png");
-    ImageResize(&historinha, screenWidth, screenHeight);
-    Texture2D historinhatx = LoadTextureFromImage(historinha);
-    UnloadImage(historinha);
-    
-    //sprite da pirraia na historinha
-    Image spritehistorinha = LoadImage("/raylib/RunningGirl/sprites/pirraiafalando.png");
-    //ImageResize(&spritehistorinha, screenWidth, screenHeight);
-    Texture2D spritehistorinhatx = LoadTextureFromImage(spritehistorinha);
-    UnloadImage(spritehistorinha); 
-    Rectangle bicoleft   = { 0.0f  , 0.0f , (float)spritehistorinhatx.width/3, (float)spritehistorinhatx.height/2 };
-    Rectangle bicoright  = { 0.0f  , 50.0f, (float)spritehistorinhatx.width/3, (float)spritehistorinhatx.height/2 };
-    Rectangle bocaopen   = { 50.0f , 0.0f , (float)spritehistorinhatx.width/3, (float)spritehistorinhatx.height/2 };
-    Rectangle bocaclose  = { 50.0f , 50.0f, (float)spritehistorinhatx.width/3, (float)spritehistorinhatx.height/2 };
-    Rectangle chocs      = { 100.0f, 0.0f , (float)spritehistorinhatx.width/3, (float)spritehistorinhatx.height/2 };
-    Rectangle safada     = { 100.0f, 50.0f, (float)spritehistorinhatx.width/3, (float)spritehistorinhatx.height/2 };
-    float xhis,yhis;
-    //sprites balao de fala
-    Image spritefala = LoadImage("/raylib/RunningGirl/sprites/falas1.png");
-    //ImageResize(&spritehistorinha, screenWidth, screenHeight);
-    Texture2D spritefalatx = LoadTextureFromImage(spritefala);
-    UnloadImage(spritefala);
-    Rectangle balao1  = { 0.0f  , 0.0f  , (float)spritefalatx.width/3, (float)spritefalatx.height/3 };
-    Rectangle balao2  = { 300.0f, 0.0f  , (float)spritefalatx.width/3, (float)spritefalatx.height/3 };
-    Rectangle balao3  = { 600.0f, 0.0f  , (float)spritefalatx.width/3, (float)spritefalatx.height/3 };
-    Rectangle balao4  = { 0.0f  , 220.0f, (float)spritefalatx.width/3, (float)spritefalatx.height/3 };
-    Rectangle balao5  = { 300.0f, 220.0f, (float)spritefalatx.width/3, (float)spritefalatx.height/3 };
-    Rectangle balao6  = { 600.0f, 220.0f, (float)spritefalatx.width/3, (float)spritefalatx.height/3 };
-    Rectangle balao7  = { 0.0f  , 440.0f, (float)spritefalatx.width/3, (float)spritefalatx.height/3 };
-    Rectangle balao8  = { 300.0f, 440.0f, (float)spritefalatx.width/3, (float)spritefalatx.height/3 };
-    Rectangle balao9  = { 600.0f, 440.0f, (float)spritefalatx.width/3, (float)spritefalatx.height/3 };
-    float xfala,yfala;
-    
-    
     //preenchendo a fujona
     perso[0].imagem = LoadImage("/raylib/RunningGirl/sprites/pirraia.png");
     ImageResize(&perso[0].imagem, 140, 35);
@@ -290,8 +303,7 @@ int main(void)
     perso[0].hitbox.y = 60.0;
     perso[0].hitbox.width = 32;
     perso[0].hitbox.height = 45;
-    
-    
+
     //sprite DA PIRRAIA
     Rectangle leftpirraia  = { 0.0f  , 0.0f, (float)perso[0].textura.width/4, (float)perso[0].textura.height };//PEGA A IMAGEM DA PIRRAIA VOLTADA PRA ESQUERDA
     Rectangle rightpirraia = { 35.0f , 0.0f, (float)perso[0].textura.width/4, (float)perso[0].textura.height };//PEGA A IMAGEM DA PIRRAIA VOLTADA PRA DIREITA
@@ -347,7 +359,23 @@ int main(void)
     Rectangle uppapi    = { 100.0f, 0.0f, (float)perso[3].textura.width/4, (float)perso[3].textura.height };//PEGA A IMAGEM DO PAPI VOLTADA PRA CIMA
     Rectangle downpapi  = { 150.0f, 0.0f, (float)perso[3].textura.width/4, (float)perso[3].textura.height };//PEGA A IMAGEM DO PAPI VOLTADA PRA BAIXO
    
+    //preenchendo o dog
+    perso[4].imagem = LoadImage("/raylib/RunningGirl/sprites/dog.png");
+    ImageResize(&perso[4].imagem,50,200);
+    perso[4].textura = LoadTextureFromImage(perso[4].imagem);
+    perso[4].pos.x = 777.0;//posição x incial do dog
+    perso[4].pos.y = 446.0;//posição y incial do dog
+    perso[4].hitbox.x = perso[4].pos.x;
+    perso[4].hitbox.y = perso[4].pos.y;
+    perso[4].hitbox.width = 20;
+    perso[4].hitbox.height = 40;
     
+     //sprite DO DOG
+    Rectangle downdog  = { 0.0f, 0.0f  , (float)perso[4].textura.width, (float)perso[4].textura.height/4};//PEGA A IMAGEM DO  VOLTADA PRA ESQUERDA
+    Rectangle rightdog = { 0.0f, 50.0f, (float)perso[4].textura.width, (float)perso[4].textura.height/4};//PEGA A IMAGEM DO  VOLTADA PRA DIREITA
+    Rectangle updog    = { 0.0f, 100.0f, (float)perso[4].textura.width, (float)perso[4].textura.height/4};//PEGA A IMAGEM DO  VOLTADA PRA CIMA
+    Rectangle leftdog  = { 0.0f, 150.0f, (float)perso[4].textura.width, (float)perso[4].textura.height/4};//PEGA A IMAGEM DO  VOLTADA PRA BAIXO
+   
     
     //preenchendo a struct jogador
     jogador jog;
@@ -628,6 +656,17 @@ int main(void)
     wall[21].hitbox.width = 185;
     wall[21].hitbox.height = 140;
     
+    
+    //ABRINDO ARQUIVOS DA MOVIMENTAÇÃO
+    FILE* mamisf1 = fopen ("/raylib/RunningGirl/arquivos/maefase1.txt","r");
+    FILE* papisf1 = fopen ("/raylib/RunningGirl/arquivos/paifase1.txt","r");
+    FILE* pioif1  = fopen ("/raylib/RunningGirl/arquivos/piolhofase1.txt","r");
+    FILE* mamisf2 = fopen ("/raylib/RunningGirl/arquivos/maefase2.txt","r");
+    FILE* papisf2 = fopen ("/raylib/RunningGirl/arquivos/paifase2.txt","r");
+    FILE* pioif2  = fopen ("/raylib/RunningGirl/arquivos/piolhofase2.txt","r");
+    FILE* dogsf2  = fopen ("/raylib/RunningGirl/arquivos/dogfase2.txt","r");
+    int mae1x, mae1y, pai1x, pai1y, pioi1x, pioi1y, mae2x, mae2y, pai2x, pai2y, pioi2x, pioi2y, dogx, dogy;//PRA USAR NA MOVIMENTAÇÃO DA FAMILIA
+    
     /*
     //Declaração da camera
     Camera2D cam;
@@ -719,24 +758,25 @@ int main(void)
                         DrawTexture(cen1tx, 0,0,RAYWHITE);//Printar cenario
                         DrawText(TextFormat("%i | %i",x ,y), 500, 30, 20, BLACK);
                         
-                        Vector2 posicaopirraia = {perso[0].hitbox.x, perso[0].hitbox.y};//variavel da sprite da pirraia, pra as sprites terem a mesma posicao dela    
+                        Vector2 posicaopirraia = {perso[0].pos.x, perso[0].pos.y};//variavel da sprite da pirraia, pra as sprites terem a mesma posicao dela                       
+                        movimentofujona( &perso[0].pos.x, &perso[0].pos.y, &estadopirraia, &perso[0].hitbox.x, &perso[0].hitbox.y );//Movimentação pirraia
+                        sprites(&estadopirraia, &perso[0].textura, RAYWHITE, &posicaopirraia, &uppirraia, &downpirraia, &leftpirraia, &rightpirraia);
                         
-                        movimentofujona(&perso[0].hitbox.x, &perso[0].hitbox.y, &estadopirraia);//Movimentação pirraia
-                        switch(estadopirraia)//pra printar a pirraia do lado certo e sem sumir
-                        {
-                            case 0:
-                            DrawTextureRec(perso[0].textura, uppirraia, posicaopirraia , RAYWHITE);
-                            break;
-                            case 1:
-                            DrawTextureRec(perso[0].textura, downpirraia, posicaopirraia , RAYWHITE);
-                            break;
-                            case 2:
-                            DrawTextureRec(perso[0].textura, leftpirraia, posicaopirraia , RAYWHITE);
-                            break;
-                            case 3:
-                            DrawTextureRec(perso[0].textura, rightpirraia, posicaopirraia , RAYWHITE);
-                            break;
-                         }
+                        //fase1
+                        
+                        movimentoperseguidor(pioif1, &pioi1x, &pioi1y, &perso[1].textura, RAYWHITE, &lado);
+                        Vector2 posicaopioi1 = {pioi1x, pioi1y};//variavel da sprite do pioi, pra as sprites terem a mesma posicao dele
+                        sprites(&lado, &perso[1].textura, RAYWHITE, &posicaopioi1, &uppiolho, &downpiolho, &leftpiolho, &rightpiolho);
+
+                        movimentoperseguidor(mamisf1, &mae1x, &mae1y, &perso[2].textura, RAYWHITE, &lado);
+                        Vector2 posicaomae1 = {mae1x, mae1y};//variavel da sprite da mae, pra as sprites terem a mesma posicao dela 
+                        sprites(&lado, &perso[2].textura, RAYWHITE, &posicaomae1, &upmami, &downmami, &leftmami, &rightmami);
+                        
+                       
+                        movimentoperseguidor(papisf1, &pai1x, &pai1y, &perso[3].textura, RAYWHITE, &lado);
+                        Vector2 posicaopai1 = {pai1x, pai1y};//variavel da sprite do pai, pra as sprites terem a mesma posicao dele
+                        sprites(&lado, &perso[3].textura, RAYWHITE, &posicaopai1, &uppapi, &downpapi, &leftpapi, &rightpapi);
+                        
                         
                         //colisão com as paredes:
                         //importante colocar a colisão antes de colocar a boneca, e depois de chamar a movimentação, pra ficar visualmente melhor
@@ -838,8 +878,33 @@ int main(void)
                     while(1)
                     {
                         BeginDrawing();
-                            ClearBackground(RAYWHITE);
-                            DrawRectangle(0, 0, screenWidth, screenHeight, RAYWHITE);
+                        ClearBackground(WHITE);
+                        
+                        DrawTexture(cen2tx, 0,0,RAYWHITE);//Printar cenario
+                        DrawText(TextFormat("%i | %i",x ,y), 500, 30, 20, BLACK);
+                       
+                        
+                        movimentofujona( &perso[0].pos.x, &perso[0].pos.y, &estadopirraia, &perso[0].hitbox.x, &perso[0].hitbox.y );//Movimentação pirraia
+                        Vector2 posicaopirraia = {perso[0].pos.x, perso[0].pos.y};//variavel da sprite da pirraia, pra as sprites terem a mesma posicao dela                       
+                        sprites(&estadopirraia, &perso[0].textura, RAYWHITE, &posicaopirraia, &uppirraia, &downpirraia, &leftpirraia, &rightpirraia);
+                        
+                        //fase2 mov
+                        movimentoperseguidor(pioif2, &pioi2x, &pioi2y, &perso[1].textura, RAYWHITE, &lado);
+                        Vector2 posicaopioi2 = {pioi2x, pioi2y};//variavel da sprite do pioi, pra as sprites terem a mesma posicao dele
+                        sprites(&lado, &perso[1].textura, RAYWHITE, &posicaopioi2, &uppiolho, &downpiolho, &leftpiolho, &rightpiolho);
+
+                        movimentoperseguidor(mamisf2, &mae2x, &mae2y, &perso[2].textura, RAYWHITE, &lado);
+                        Vector2 posicaomae2 = {mae2x, mae2y};//variavel da sprite da mae, pra as sprites terem a mesma posicao dela 
+                        sprites(&lado, &perso[2].textura, RAYWHITE, &posicaomae2, &upmami, &downmami, &leftmami, &rightmami);
+
+                        movimentoperseguidor(papisf2, &pai2x, &pai2y, &perso[3].textura, RAYWHITE, &lado);
+                        Vector2 posicaopai2 = {pai2x, pai2y};//variavel da sprite do pai, pra as sprites terem a mesma posicao dele
+                        sprites(&lado, &perso[3].textura, RAYWHITE, &posicaopai2, &uppapi, &downpapi, &leftpapi, &rightpapi);
+
+                        movimentoperseguidor(dogsf2, &dogx, &dogy, &perso[4].textura, RAYWHITE, &lado);
+                        Vector2 posicaodog = {dogx, dogy};//variavel da sprite do dog, pra as sprites terem a mesma posicao dele
+                        sprites(&lado, &perso[4].textura, RAYWHITE, &posicaodog, &updog, &downdog, &leftdog, &rightdog);
+                        
                         EndDrawing();
                         
                         if(IsKeyPressed(KEY_END))
@@ -889,14 +954,18 @@ int main(void)
     UnloadTexture(menuTexture);
     UnloadTexture(perso[0].textura);
     UnloadTexture(cen1tx);
+    UnloadTexture(cen2tx);
     UnloadTexture(partytx);
     UnloadTexture(gameovertx);
-    UnloadTexture(historinhatx);
-    UnloadTexture(spritehistorinhatx);
-    UnloadTexture(spritefalatx);
     UnloadTexture(moeda[1].textura);
     UnloadTexture(chave.textura);
-    
+    fclose(mamisf2);
+    fclose(papisf2);
+    fclose(pioif2);
+    fclose(dogsf2);
+    fclose(mamisf1);
+    fclose(papisf1);
+    fclose(pioif1);
     CloseWindow();
     
     return 0;
