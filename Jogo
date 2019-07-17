@@ -19,7 +19,6 @@ typedef struct paredes
     Rectangle hitbox;
 }paredes;
 
-
 typedef struct coisas
 {
     Vector2 pos; //posição(x,y)
@@ -176,7 +175,6 @@ void movimentofujona(float *x, float *y, int *estado){
     //essa função tá retornando valores pra atualizar a variavel "estadopirraia", pra poder usar no switch e printar a foto certa da pirraia em cada caso.
 }
 
-
 void menu(void)
 {
     int x, y;
@@ -260,7 +258,6 @@ void menu(void)
     UnloadTexture(menutx);
 }
 
-
 int main(void)
 {
     const int screenWidth = 1000;
@@ -272,9 +269,9 @@ int main(void)
     int estadopirraia=3, lado=2;//atualizada pela função "movimentopirraia"
     int rgo,ggo,bgo,ago,rp,gp,bp,ap;
     float timego=0, timep=0, timemov=0;
-    float time=0.0f;
-    bool nperdevida=false;
-    
+    float time=0.0f, timevida=0.0f;
+    bool nperdevida=false, perdeu=false;
+    Color cores1,cores2;
     //Vetor de personagens
     personagem perso[50];
     //perso[0]=pirraia
@@ -309,6 +306,18 @@ int main(void)
     ImageResize(&cen2, screenWidth, screenHeight);
     Texture2D cen2tx = LoadTextureFromImage(cen2);
     UnloadImage(cen2);
+    
+     //objetivo fase 1
+    Image objf1 = LoadImage("/raylib/RunningGirl/fundos/objfase1.png");
+    ImageResize(&objf1, screenWidth, screenHeight);
+    Texture2D objf1tx = LoadTextureFromImage(objf1);
+    UnloadImage(objf1);
+    
+     //objetivo fase 2
+    Image objf2 = LoadImage("/raylib/RunningGirl/fundos/objfase2.png");
+    ImageResize(&objf2, screenWidth, screenHeight);
+    Texture2D objf2tx = LoadTextureFromImage(objf2);
+    UnloadImage(objf2);
     
     //botando o fundo festa(quando ganhar)
     Image party = LoadImage("/raylib/RunningGirl/fundos/finalfesta1.png");
@@ -1142,10 +1151,17 @@ int main(void)
                         EndDrawing();
                     }
                     
-                    //JOGO
-                    while(1)
+                    do{ //pra aparecer objetivos fase 1
+                        BeginDrawing();
+                        DrawTexture(objf1tx,0,0,RAYWHITE);
+                        EndDrawing();
+                        time+=GetFrameTime();
+                    }while(time<5.0f);
+                    
+                    //FASE1 
+                    while(perdeu==false)
                     {
-                        if(IsKeyPressed(KEY_END)||IsKeyPressed(KEY_F3))
+                        if(IsKeyPressed(KEY_END))
                         {
                             return 0;
                         }
@@ -1242,13 +1258,13 @@ int main(void)
                                 
                         }
                         if(nperdevida){
-                            time+=1.0f;
-                            if(time==30.0f){
+                            timevida+=1.0f;
+                            if(timevida==50.0f){
                                 nperdevida=false;
-                                time=0.0f;
+                                timevida=0.0f;
                             }
                         }
-                        DrawText(TextFormat("%d", nperdevida), 200,400,60,BLUE);
+                        
                         
                         //importante colocar a colisão antes de colocar a boneca, e depois de chamar a movimentação, pra ficar visualmente melhor
                         //colisão pra não sair do mapa
@@ -1277,7 +1293,7 @@ int main(void)
                         } 
                         
                         DrawRectangle(350, 465, 300, 35, SKYBLUE);
-                        DrawText(TextFormat("Dinheirinho: %i\t|\tExtra: %i", jog[n].points, jog[n].extra), 355, 470, 20, WHITE);
+                        DrawText(TextFormat("Dinheirinho: %i\t|\tExtra: %i", jog[n].points, jog[n].extra), 360, 470, 20, WHITE);
                         DrawText(TextFormat("Vidas: %i\n", jog[n].vidas), 20, 50, 20, BLACK);
                         DrawRectangle(20, 20, 80, 20, RED);
                         DrawText("PAUSA",22, 22, 20, WHITE);
@@ -1290,12 +1306,24 @@ int main(void)
                             }
                         }
                             
-                        
+                        if(jog[n].vidas==0){
+                            perdeu=true;
+                        }
                         //EndMode2D();
                         EndDrawing();
                         
                         
                     }
+                    do{
+                        BeginDrawing();
+                        DrawTexture(gameovertx, 0,0,RAYWHITE);
+                        coresaleatorias(&rgo,&ggo,&bgo,&ago,&timego);
+                        
+                        DrawText("GAME OVER", 300,200, 60,(Color){rp,gp,bp,ap});
+                        EndDrawing();
+                    }while(perdeu);
+                    
+                    
                 }
             }
             else
@@ -1310,6 +1338,12 @@ int main(void)
                 
                 if(IsMouseButtonDown(MOUSE_LEFT_BUTTON))
                 {
+                    do{ //pra aparecer objetivos fase 2
+                        BeginDrawing();
+                        DrawTexture(objf2tx,0,0,RAYWHITE);
+                        EndDrawing();
+                        time+=GetFrameTime();
+                    }while(time<5.0f);
                     while(1)
                     {
                         x=GetMouseX();
@@ -1407,10 +1441,10 @@ int main(void)
                                 
                         }
                         if(nperdevida){
-                            time+=1.0f;
-                            if(time==30.0f){
+                            timevida+=1.0f;
+                            if(timevida==50.0f){
                                 nperdevida=false;
-                                time=0.0f;
+                                timevida=0.0f;
                             }
                         }
                         
@@ -1515,6 +1549,8 @@ int main(void)
     UnloadTexture(oculos.textura);
     UnloadTexture(celular.textura);
     UnloadTexture(jack.textura);
+    UnloadTexture(objf1tx);
+    UnloadTexture(objf2tx);
     
     fclose(mamisf2);
     fclose(papisf2);
