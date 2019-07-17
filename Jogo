@@ -414,7 +414,7 @@ int main(void)
     jog.extra = 0;
     //jog.fujona = perso[0];
     
-    coisas moeda[100];
+    coisas moeda[76];
     //colocando imagem nas moedas
     Image coin = LoadImage("/raylib/RunningGirl/objetos/cedulas.png");
     ImageResize(&coin, 20, 20);
@@ -435,8 +435,9 @@ int main(void)
     moeda[4].pos.y = 160;
     moeda[5].pos.x = 675;
     moeda[5].pos.y = 200;
-    moeda[6].pos.x = 885;
-    moeda[6].pos.y = 185;
+    
+    moeda[6].pos.x = 570;
+    moeda[6].pos.y = 175;
     moeda[7].pos.x = 826;
     moeda[7].pos.y = 205;
     moeda[8].pos.x = 735;
@@ -528,8 +529,8 @@ int main(void)
         count += 46;
     }
     
-    moeda[65].pos.x = 250;
-    moeda[65].pos.y = 440;
+    moeda[65].pos.x = -30;
+    moeda[65].pos.y = -30;
     moeda[66].pos.x = 130;
     moeda[66].pos.y = 450;
     moeda[67].pos.x = 170;
@@ -544,9 +545,16 @@ int main(void)
     moeda[71].pos.y = 174;
     moeda[72].pos.x = 103;
     moeda[72].pos.y = 190;
+    moeda[73].pos.x = 635;
+    moeda[73].pos.y = 415;
+    moeda[74].pos.x = 380;
+    moeda[74].pos.y = 180;
+    moeda[75].pos.x = 423;
+    moeda[75].pos.y = 180;
+    
     
     //preenchendo as hitbox das moedinhas
-    for(int i = 0; i <= 72; i++)
+    for(int i = 0; i <= 74; i++)
     {
         moeda[i].hitbox.x = moeda[i].pos.x + 10;
         moeda[i].hitbox.y = moeda[i].pos.y + 10;
@@ -554,17 +562,280 @@ int main(void)
         moeda[i].hitbox.height = 1;
     }
     
+    // declarando e posicionando as moedas da 2 fase
+    coisas moeda1[114];
+    
+    moeda1[0].pos.x = 365;
+    moeda1[0].pos.y = 210;
+    moeda1[1].pos.x = 260;
+    moeda1[1].pos.y = 90;
+    moeda1[2].pos.x = 245;
+    moeda1[2].pos.y = 120;
+    moeda1[3].pos.x = 245;
+    moeda1[3].pos.y = 155;
+    moeda1[4].pos.x = 335;
+    moeda1[4].pos.y = 183;
+    moeda1[5].pos.x = 245;
+    moeda1[5].pos.y = 265;
+    moeda1[6].pos.x = 245;
+    moeda1[6].pos.y = 230;
+    moeda1[7].pos.x = 218;
+    moeda1[7].pos.y = 210;
+    moeda1[8].pos.x = 300;
+    moeda1[8].pos.y = 170;
+    moeda1[9].pos.x = 290;
+    moeda1[9].pos.y = 220;
+    moeda1[10].pos.x = 270;
+    moeda1[10].pos.y = 180;
+    moeda1[11].pos.x = 183;
+    moeda1[11].pos.y = 210;
+    moeda1[12].pos.x = 200;
+    moeda1[12].pos.y = 180;
+    moeda1[13].pos.x = 240;
+    moeda1[13].pos.y = 185;
+    
+    count = 65;
+    for(int i = 14; i <= 33; i++)
+    {
+        moeda1[i].pos.x = count;
+        moeda1[i].pos.y = 300;
+        count += 44;
+    }
+    
+    count = 190;
+    for(int i = 34; i <= 36; i++)
+    {
+        moeda1[i].pos.y = count;
+        moeda1[i].pos.x = 95;
+        count += 40;
+    }
+    
+    moeda1[37].pos.x = 260;
+    moeda1[37].pos.y = 205;
+    moeda1[38].pos.x = 70;
+    moeda1[38].pos.y = 210;
+    moeda1[39].pos.x = 120;
+    moeda1[39].pos.y = 210;
+    moeda1[40].pos.x = 360;
+    moeda1[40].pos.y = 420;
+    moeda1[41].pos.x = 395;
+    moeda1[41].pos.y = 410;
+    moeda1[42].pos.x = 510;
+    moeda1[42].pos.y = 420;
+    moeda1[43].pos.x = 480;
+    moeda1[43].pos.y = 400;
+    moeda1[44].pos.x = 500;
+    moeda1[44].pos.y = 350;
+    moeda1[45].pos.x = 424;
+    moeda1[45].pos.y = 388;
+    moeda1[46].pos.x = 600;
+    moeda1[46].pos.y = 420;
+    moeda1[47].pos.x = 600;
+    moeda1[47].pos.y = 380;
+    moeda1[48].pos.x = 600;
+    moeda1[48].pos.y = 340;
+    moeda1[49].pos.x = 515;
+    moeda1[49].pos.y = 380;
+    moeda1[50].pos.x = 390;
+    moeda1[50].pos.y = 370;
+    moeda1[51].pos.x = 460;
+    moeda1[51].pos.y = 370;
+    moeda1[52].pos.x = 360;
+    moeda1[52].pos.y = 350;
+    moeda1[53].pos.x = 425;
+    moeda1[53].pos.y = 355;
+    
+    count = 570;
+    for(int i = 54; i <= 58; i++)
+    {
+        moeda1[i].pos.x = count;
+        moeda1[i].pos.y = 325;
+        count -= 46;
+    }
+    
+    count = 95;
+    for(int i = 59; i <= 63; i++)
+    {
+        moeda1[i].pos.y = count;
+        moeda1[i].pos.x = 658;
+        count += 42;
+    }
+    
+    moeda1[64].pos.x = 760;
+    moeda1[64].pos.y = 75;
+    moeda1[65].pos.x = 740;
+    moeda1[65].pos.y = 95;
+    moeda1[66].pos.x = 720;
+    moeda1[66].pos.y = 75;
+    moeda1[67].pos.x = 701;
+    moeda1[67].pos.y = 95;
+    moeda1[68].pos.x = 682;
+    moeda1[68].pos.y = 75;
+    moeda1[69].pos.x = 900;
+    moeda1[69].pos.y = 222;
+    moeda1[70].pos.x = 890;
+    moeda1[70].pos.y = 185;
+    moeda1[71].pos.x = 860;
+    moeda1[71].pos.y = 207;
+    moeda1[72].pos.x = 590;
+    moeda1[72].pos.y = 215;
+    moeda1[73].pos.x = 705;
+    moeda1[73].pos.y = 170;
+    moeda1[74].pos.x = 705;
+    moeda1[74].pos.y = 225;
+    moeda1[75].pos.x = 685;
+    moeda1[75].pos.y = 200;
+    moeda1[76].pos.x = 616;
+    moeda1[76].pos.y = 180;
+    moeda1[77].pos.x = 630;
+    moeda1[77].pos.y = 207;
+    
+    count = 335;
+    for(int i = 78; i <= 80; i++)
+    {
+        moeda1[i].pos.y = count;
+        moeda1[i].pos.x = 810;
+        count += 40;
+    }
+    
+    moeda1[81].pos.x = 840;
+    moeda1[81].pos.y = 450;
+    moeda1[82].pos.x = 670;
+    moeda1[82].pos.y = 425;
+    moeda1[83].pos.x = 700;
+    moeda1[83].pos.y = 400;
+    moeda1[84].pos.x = 700;
+    moeda1[84].pos.y = 450;
+    moeda1[85].pos.x = 750;
+    moeda1[85].pos.y = 395;
+    
+    
+    count = 333;
+    for(int i = 86; i <= 89; i++)
+    {
+        moeda1[i].pos.y = count;
+        moeda1[i].pos.x = 216;
+        count += 47;
+    }
+    
+    count = 175;
+    for(int i = 90; i <= 93; i++)
+    {
+        moeda1[i].pos.y = count;
+        moeda1[i].pos.x = 480;
+        count += 33;
+    }
+    
+    count = 155;
+    for(int i = 94; i <= 97; i++)
+    {
+        moeda1[i].pos.y = count;
+        moeda1[i].pos.x = 510;
+        count += 35;
+    }
+    
+    count = 190;
+    for(int i = 98; i <= 100; i++)
+    {
+        moeda1[i].pos.y = count;
+        moeda1[i].pos.x = 445;
+        count += 41;
+    }
+    
+    moeda1[101].pos.x = 545;
+    moeda1[101].pos.y = 190;
+    moeda1[102].pos.x = 425;
+    moeda1[102].pos.y = 155;
+    moeda1[103].pos.x = 416;
+    moeda1[103].pos.y = 200;
+    
+    count = 138;
+    for(int i = 104; i <= 107; i++)
+    {
+        moeda1[i].pos.x = count;
+        moeda1[i].pos.y = 445;
+        count += 49;
+    }
+    
+    count = 138;
+    for(int i = 108; i <= 111; i++)
+    {
+        moeda1[i].pos.x = count;
+        moeda1[i].pos.y = 398;
+        count += 49;
+    }
+    
+    moeda1[112].pos.x = 162;
+    moeda1[112].pos.y = 427;
+    moeda1[113].pos.x = 263;
+    moeda1[113].pos.y = 427;
+    
+    //preenchendo as hitbox das moedas fase 2
+    for(int i = 0; i <= 113; i++)
+    {
+        moeda1[i].hitbox.x = moeda1[i].pos.x + 10;
+        moeda1[i].hitbox.y = moeda1[i].pos.y + 10;
+        moeda1[i].hitbox.width = 1;
+        moeda1[i].hitbox.height = 1;
+    }
+    
+    
+    
+    //declarando e posicionando o óculos
+    coisas oculos;
+    
+    Image oculoss = LoadImage("/raylib/RunningGirl/objetos/oculos.png");
+    ImageResize(&oculoss, 45, 20);
+    oculos.textura = LoadTextureFromImage(oculoss);
+    UnloadImage(oculoss);
+    
+    oculos.pos.x = 870;
+    oculos.pos.y = 185;
+    oculos.hitbox.x = oculos.pos.x + 23;
+    oculos.hitbox.y = oculos.pos.y + 10;
+    oculos.hitbox.width = 1;
+    oculos.hitbox.height = 1;
+    
+    //declarando e posicionando a jaqueta
+    coisas jack;
+    
+    Image jacket = LoadImage("/raylib/RunningGirl/objetos/jacket.png");
+    ImageResize(&jacket, 20, 45);
+    jack.textura = LoadTextureFromImage(jacket);
+    UnloadImage(jacket);
+    
+    jack.pos.x = 250;
+    jack.pos.y = 420;
+    jack.hitbox.x = jack.pos.x + 10;
+    jack.hitbox.y = jack.pos.y + 23;
+    jack.hitbox.width = 1;
+    jack.hitbox.height = 1;
+    
+    //declarando e posicionando o celular
+    coisas celular;
+    
+    Image cel = LoadImage("/raylib/RunningGirl/objetos/iphone.png");
+    ImageResize(&cel, 15, 15);
+    celular.textura = LoadTextureFromImage(cel);
+    UnloadImage(cel);
+    
+    celular.pos.x = 295;
+    celular.pos.y = 90;
+    celular.hitbox.x = celular.pos.x + 8;
+    celular.hitbox.y = celular.pos.y + 8;
+    celular.hitbox.width = 1;
+    celular.hitbox.height = 1;
     
     //declarando e posicionando a chavinha
     coisas chave;
     
-    Image chavinha = LoadImage("/raylib/RunningGirl/objetos/chave.png");
-    ImageResize(&chavinha, 25, 25);
+    Image chavinha = LoadImage("/raylib/RunningGirl/objetos/key.png");
+    ImageResize(&chavinha, 20, 20);
     chave.textura = LoadTextureFromImage(chavinha);
     UnloadImage(chavinha);
     
-    chave.pos.x = 570;
-    chave.pos.y = 175;
+    chave.pos.x = 805;
+    chave.pos.y = 445;
     chave.hitbox.x = chave.pos.x + 10;
     chave.hitbox.y = chave.pos.y + 10;
     chave.hitbox.width = 1;
@@ -890,6 +1161,49 @@ int main(void)
                         
                         movimentofujona (&perso[0].hitbox.x, &perso[0].hitbox.y, &estadopirraia);
                         
+                        //printar e checar colisão dinheirinho
+                        for(int i = 0; i <= 75; i++)
+                        {
+                            if(CheckCollisionRecs(moeda[i].hitbox, perso[0].hitbox) == 1)
+                            {
+                                jog.points++;
+                                
+                                moeda[i].hitbox.x = -30;
+                                moeda[i].hitbox.y = -30;
+                                moeda[i].pos.x = -30;
+                                moeda[i].pos.y = -30;
+                            }
+                            
+                            DrawTexture(moeda[1].textura, moeda[i].pos.x, moeda[i].pos.y, RAYWHITE);
+                         
+                        }
+                        
+                        //printar e checar colisão do oculos
+                        DrawTexture(oculos.textura, oculos.pos.x, oculos.pos.y, RAYWHITE);
+                        
+                        if(CheckCollisionRecs(oculos.hitbox, perso[0].hitbox) == 1)
+                        {
+                            oculos.pos.x = -30;
+                            oculos.pos.y = -30;
+                            oculos.hitbox.x = oculos.pos.x;
+                            oculos.hitbox.y = oculos.pos.y;
+                            
+                            jog.extra++;
+                        }
+                        
+                        //printar e checar colisão da jaqueta
+                        DrawTexture(jack.textura, jack.pos.x, jack.pos.y, RAYWHITE);
+                        
+                        if(CheckCollisionRecs(jack.hitbox, perso[0].hitbox) == 1)
+                        {
+                            jack.pos.x = -30;
+                            jack.pos.y = -30;
+                            jack.hitbox.x = jack.pos.x;
+                            jack.hitbox.y = jack.pos.y;
+                            
+                            jog.extra++;
+                        }
+                        
                         sprites(&estadopirraia, &perso[0].textura, RAYWHITE, &posicaopirraia, &uppirraia, &downpirraia, &leftpirraia, &rightpirraia);
                         
                         
@@ -956,39 +1270,6 @@ int main(void)
                             }   
                         } 
                         
-                        
-                        //printar e checar colisão dinheirinho das moedas
-                        for(int i = 0; i <= 72; i++)
-                        {
-                            if(CheckCollisionRecs(moeda[i].hitbox, perso[0].hitbox) == 1)
-                            {
-                                jog.points++;
-                                
-                                moeda[i].hitbox.x = -30;
-                                moeda[i].hitbox.y = -30;
-                                moeda[i].pos.x = -30;
-                                moeda[i].pos.y = -30;
-                            }
-                            
-                            DrawTexture(moeda[1].textura, moeda[i].pos.x, moeda[i].pos.y, RAYWHITE);
-                         
-                        }
-                        
-                        
-                        
-                        //printar e checar colisão da chave
-                        DrawTexture(chave.textura, chave.pos.x, chave.pos.y, RAYWHITE);
-                        
-                        if(CheckCollisionRecs(chave.hitbox, perso[0].hitbox) == 1)
-                        {
-                            chave.pos.x = -30;
-                            chave.pos.y = -30;
-                            chave.hitbox.x = chave.pos.x;
-                            chave.hitbox.y = chave.pos.y;
-                            
-                            jog.extra++;
-                        }
-                        
                         DrawRectangle(350, 465, 300, 35, SKYBLUE);
                         DrawText(TextFormat("Dinheirinho: %i\t|\tExtra: %i", jog.points, jog.extra), 355, 470, 20, WHITE);
                         DrawText(TextFormat("Vidas: %i\n", jog.vidas), 200, 200, 20, BLACK);
@@ -1025,6 +1306,9 @@ int main(void)
                 {
                     while(1)
                     {
+                        x=GetMouseX();
+                        y=GetMouseY();
+                        
                         BeginDrawing();
                         ClearBackground(WHITE);
                         
@@ -1035,6 +1319,49 @@ int main(void)
                         Vector2 posicaopirraia = {perso[0].hitbox.x, perso[0].hitbox.y};
                         
                         movimentofujona (&perso[0].hitbox.x, &perso[0].hitbox.y, &estadopirraia);
+                        
+                        //printar e checar colisão dinheirinho
+                        for(int i = 0; i <= 113; i++)
+                        {
+                            if(CheckCollisionRecs(moeda1[i].hitbox, perso[0].hitbox) == 1)
+                            {
+                                jog.points++;
+                                
+                                moeda1[i].hitbox.x = -30;
+                                moeda1[i].hitbox.y = -30;
+                                moeda1[i].pos.x = -30;
+                                moeda1[i].pos.y = -30;
+                            }
+                            
+                            DrawTexture(moeda[1].textura, moeda1[i].pos.x, moeda1[i].pos.y, RAYWHITE);
+                         
+                        }
+                        
+                        //printar e checar colisão da chave
+                        DrawTexture(chave.textura, chave.pos.x, chave.pos.y, RAYWHITE);
+                        
+                        if(CheckCollisionRecs(chave.hitbox, perso[0].hitbox) == 1)
+                        {
+                            chave.pos.x = -30;
+                            chave.pos.y = -30;
+                            chave.hitbox.x = chave.pos.x;
+                            chave.hitbox.y = chave.pos.y;
+                            
+                            jog.extra++;
+                        }
+                        
+                        //printar e checar colisão da chave
+                        DrawTexture(celular.textura, celular.pos.x, celular.pos.y, RAYWHITE);
+                        
+                        if(CheckCollisionRecs(celular.hitbox, perso[0].hitbox) == 1)
+                        {
+                            celular.pos.x = -30;
+                            celular.pos.y = -30;
+                            celular.hitbox.x = chave.pos.x;
+                            celular.hitbox.y = chave.pos.y;
+                            
+                            jog.extra++;
+                        }
                         
                         sprites(&estadopirraia, &perso[0].textura, RAYWHITE, &posicaopirraia, &uppirraia, &downpirraia, &leftpirraia, &rightpirraia);
                         
@@ -1107,8 +1434,22 @@ int main(void)
                                             
                         }
                         
+                        DrawRectangle(350, 465, 300, 35, SKYBLUE);
+                        DrawText(TextFormat("Dinheirinho: %i\t|\tExtra: %i", jog.points, jog.extra), 355, 470, 20, WHITE);
+                        
+                        DrawRectangle(20, 20, 80, 20, RED);
+                        DrawText("PAUSA",24, 22, 20, WHITE);
+                        
+                        if(x >= 20 && x <= 100 && y >= 20 && y <= 40)
+                        {
+                            if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+                            {
+                                menu();
+                            }
+                        }
+                        
                         DrawText(TextFormat("%d", nperdevida), 200,400,60,BLUE);
-                        DrawText(TextFormat("Vidas: %i\n", jog.vidas), 20, 20, 20, BLACK);
+                        DrawText(TextFormat("Vidas: %i\n", jog.vidas), 20, 50, 20, BLACK);
                         EndDrawing();
                         
                         if(IsKeyPressed(KEY_END))
@@ -1163,6 +1504,12 @@ int main(void)
     UnloadTexture(gameovertx);
     UnloadTexture(moeda[1].textura);
     UnloadTexture(chave.textura);
+    UnloadTexture(moeda[1].textura);
+    UnloadTexture(chave.textura);
+    UnloadTexture(oculos.textura);
+    UnloadTexture(celular.textura);
+    UnloadTexture(jack.textura);
+    
     fclose(mamisf2);
     fclose(papisf2);
     fclose(pioif2);
@@ -1170,6 +1517,7 @@ int main(void)
     fclose(mamisf1);
     fclose(papisf1);
     fclose(pioif1);
+    
     CloseWindow();
     
     return 0;
