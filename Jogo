@@ -60,9 +60,9 @@ void movimentofujona(float *x, float *y, float *xcam, float *ycam)
     }
 }
 */
-void colisao (float *x, float *y)
+void colisao_fase1 (float *x, float *y)
 {
-    //colisão com as paredes:
+    //colisão pra n sair da tela fase 1
     //é bom colocar essa parte antes de desenhar o personagem pra visualmente ela só ficar parada
             
     //lado esquerdo:
@@ -70,7 +70,7 @@ void colisao (float *x, float *y)
         *x += 5.0f;
             
     //lado direito:
-    if (*x+40 >= 940)
+    if (*x+35 >= 950)
         *x -= 5.0f;
             
     //cima:
@@ -78,25 +78,48 @@ void colisao (float *x, float *y)
         *y += 5.0f;
             
     //baixo:
-    if (*y+50 >= 500)
+    if (*y+35>= 500)
         *y -= 5.0f;
 }
+
+void colisao_fase2 (float *x, float *y)
+{
+    //colisão pra n sair da tela fase 2
+    //é bom colocar essa parte antes de desenhar o personagem pra visualmente ela só ficar parada
+            
+    //lado esquerdo:
+    if (*x+35 <= 60) 
+        *x += 5.0f;
+            
+    //lado direito:
+    if (*x+35 >= 925)
+        *x -= 5.0f;
+            
+    //cima:
+    if (*y+35 <= 80)
+        *y += 5.0f;
+            
+    //baixo:
+    if (*y+35 >= 470)
+        *y -= 5.0f;
+}
+
  int coresaleatorias(int *r, int *g, int *b, int *a, float *time){
-        if(*time<0.4f){
-            *time+=GetFrameTime();
-        }
-        else{
-            *r=GetRandomValue(0,255);
-            *g=GetRandomValue(0,255);
-            *b=GetRandomValue(0,255);
-            *a=255;
-            *time=0.0f;
-        }
+    if(*time<0.4f){
+        *time+=GetFrameTime();
+    }
+    else{
+        *r=GetRandomValue(0,255);
+        *g=GetRandomValue(0,255);
+        *b=GetRandomValue(0,255);
+        *a=255;
+        *time=0.0f;
+    }
 
  }
 
 void sprites(int *lados, Texture2D *textura, Color color, Vector2 *posicao, Rectangle *ladoup, Rectangle *ladodown, Rectangle *ladoleft, Rectangle *ladoright){
-        switch(*lados){//pra printar os perseguidores do lado certo de acordo com o movimento
+    switch(*lados){//pra printar os perseguidores do lado certo de acordo com o movimento
         case 0:
         DrawTextureRec(*textura, *ladoup, *posicao , color);
         break;
@@ -112,26 +135,26 @@ void sprites(int *lados, Texture2D *textura, Color color, Vector2 *posicao, Rect
      }
 }
 void movimentoperseguidor(FILE *perseguidor, int *x, int *y, Texture2D *textura, Color color, int *lado, float *xhitper, float *yhitper){
-                        int xa=*x, ya=*y;
-                        fscanf(perseguidor, "%i %i\n", x, y);//reproduzindo o mov 
-                        //DrawTexture(*textura,*x,*y,color);
-                        int xp=*x,yp=*y;
-                        if( xp-xa > 0){
-                            *lado=3;
-                        }
-                        else if(xp-xa < 0){
-                            *lado=2;
-                        }
-                        else if(yp-ya > 0){
-                            *lado=1;
-                        }
-                        else if(yp-ya < 0){
-                            *lado=0;
-                        }
-                        *xhitper=(float)*x;
-                        *yhitper=(float)*y;
+    int xa=*x, ya=*y;
+    fscanf(perseguidor, "%i %i\n", x, y);//reproduzindo o mov 
+    //DrawTexture(*textura,*x,*y,color);
+    int xp=*x,yp=*y;
+    if( xp-xa > 0){
+        *lado=3;
+    }
+    else if(xp-xa < 0){
+        *lado=2;
+    }
+    else if(yp-ya > 0){
+        *lado=1;
+    }
+    else if(yp-ya < 0){
+        *lado=0;
+    }
+    *xhitper=(float)*x;
+    *yhitper=(float)*y;
 }
-void movimentofujona(float *x, float *y, int *estado, float *xhitbox, float *yhitbox){
+void movimentofujona(float *x, float *y, int *estado){
     if(IsKeyDown(KEY_W)){
         *y-=5.0f;
         *estado = 0;//up
@@ -148,8 +171,7 @@ void movimentofujona(float *x, float *y, int *estado, float *xhitbox, float *yhi
         *x+=5.0f;
         *estado = 3;//right
     }
-    *yhitbox = *y;
-    *xhitbox = *x;
+    
     //essa função tá retornando valores pra atualizar a variavel "estadopirraia", pra poder usar no switch e printar a foto certa da pirraia em cada caso.
 }
 
@@ -659,8 +681,106 @@ int main(void)
     wall[21].hitbox.y = 00;
     wall[21].hitbox.width = 185;
     wall[21].hitbox.height = 140;
-    
-    
+    //preto
+    wall[22].hitbox.x = 350;
+    wall[22].hitbox.y = 0;
+    wall[22].hitbox.width = 300;
+    wall[22].hitbox.height = 145;
+    //azul
+    wall[23].hitbox.x = 0;
+    wall[23].hitbox.y = 0;
+    wall[23].hitbox.width = 225;
+    wall[23].hitbox.height = 150;
+    //vermelho
+    wall[24].hitbox.x = 150;
+    wall[24].hitbox.y = 115;
+    wall[24].hitbox.width = 30;
+    wall[24].hitbox.height = 125;
+    //verde
+    wall[25].hitbox.x = 320;
+    wall[25].hitbox.y = 425;
+    wall[25].hitbox.width = 340;
+    wall[25].hitbox.height = 80;
+    //amarelo
+    wall[26].hitbox.x = 320;
+    wall[26].hitbox.y = 355;
+    wall[26].hitbox.width = 35;
+    wall[26].hitbox.height = 145;
+    //rosa
+    wall[27].hitbox.x = 250;
+    wall[27].hitbox.y = 310;
+    wall[27].hitbox.width = 105;
+    wall[27].hitbox.height = 45;
+    //marrom
+    wall[28].hitbox.x = 625;
+    wall[28].hitbox.y = 310;
+    wall[28].hitbox.width = 165;
+    wall[28].hitbox.height = 50;
+    //roxo
+    wall[29].hitbox.x = 625;
+    wall[29].hitbox.y = 320;
+    wall[29].hitbox.width = 25;
+    wall[29].hitbox.height = 115;
+    //laranja
+    wall[30].hitbox.x = 560;
+    wall[30].hitbox.y = 140;
+    wall[30].hitbox.width = 30;
+    wall[30].hitbox.height = 130;
+    //cinza
+    wall[31].hitbox.x = 385;
+    wall[31].hitbox.y = 140;
+    wall[31].hitbox.width = 40;
+    wall[31].hitbox.height = 130;
+    //azul escuro
+    wall[32].hitbox.x = 280;
+    wall[32].hitbox.y = 230;
+    wall[32].hitbox.width = 135;
+    wall[32].hitbox.height = 40;
+    //verde escuro
+    wall[33].hitbox.x = 560;
+    wall[33].hitbox.y = 230;
+    wall[33].hitbox.width = 80;
+    wall[33].hitbox.height = 40;
+    //lima
+    wall[34].hitbox.x = 130;
+    wall[34].hitbox.y = 230;
+    wall[34].hitbox.width = 90;
+    wall[34].hitbox.height = 40;
+    //violeta
+    wall[36].hitbox.x = 120;
+    wall[36].hitbox.y = 310;
+    wall[36].hitbox.width = 60;
+    wall[36].hitbox.height = 45;
+    //azul claro
+    wall[37].hitbox.x = 50;
+    wall[37].hitbox.y = 310;
+    wall[37].hitbox.width = 75;
+    wall[37].hitbox.height = 190;
+    //bege
+    wall[38].hitbox.x = 850;
+    wall[38].hitbox.y = 310;
+    wall[38].hitbox.width = 80;
+    wall[38].hitbox.height = 190;
+    //roxo escuro
+    wall[39].hitbox.x = 690;
+    wall[39].hitbox.y = 230;
+    wall[39].hitbox.width = 240;
+    wall[39].hitbox.height = 40;
+    //dourado
+    wall[40].hitbox.x = 705;
+    wall[40].hitbox.y = 100;
+    wall[40].hitbox.width = 240;
+    wall[40].hitbox.height = 50;
+    //cinza escuro
+    wall[41].hitbox.x = 280;
+    wall[41].hitbox.y = 100;
+    wall[41].hitbox.width = 135;
+    wall[41].hitbox.height = 50;
+    //rosa pink
+    wall[42].hitbox.x = 795;
+    wall[42].hitbox.y = 00;
+    wall[42].hitbox.width = 15;
+    wall[42].hitbox.height = 110;
     //ABRINDO ARQUIVOS DA MOVIMENTAÇÃO
     FILE* mamisf1 = fopen ("/raylib/RunningGirl/arquivos/maefase1.txt","r");
     FILE* papisf1 = fopen ("/raylib/RunningGirl/arquivos/paifase1.txt","r");
@@ -763,10 +883,13 @@ int main(void)
                         ClearBackground(WHITE);
                         
                         DrawTexture(cen1tx, 0,0,RAYWHITE);//Printar cenario
+                        
                         DrawText(TextFormat("%i | %i",x ,y), 500, 30, 20, BLACK);
                         
-                        Vector2 posicaopirraia = {perso[0].pos.x, perso[0].pos.y};//variavel da sprite da pirraia, pra as sprites terem a mesma posicao dela                       
-                        movimentofujona( &perso[0].pos.x, &perso[0].pos.y, &estadopirraia, &perso[0].hitbox.x, &perso[0].hitbox.y );//Movimentação pirraia
+                        Vector2 posicaopirraia = {perso[0].hitbox.x, perso[0].hitbox.y};
+                        
+                        movimentofujona (&perso[0].hitbox.x, &perso[0].hitbox.y, &estadopirraia);
+                        
                         sprites(&estadopirraia, &perso[0].textura, RAYWHITE, &posicaopirraia, &uppirraia, &downpirraia, &leftpirraia, &rightpirraia);
                         
                         
@@ -784,10 +907,6 @@ int main(void)
                         movimentoperseguidor(papisf1, &pai1x, &pai1y, &perso[3].textura, RAYWHITE, &lado,&perso[3].hitbox.x,&perso[3].hitbox.y);
                         Vector2 posicaopai1 = {pai1x, pai1y};//variavel da sprite do pai, pra as sprites terem a mesma posicao dele
                         sprites(&lado, &perso[3].textura, RAYWHITE, &posicaopai1, &uppapi, &downpapi, &leftpapi, &rightpapi);
-                        DrawRectangleRec(perso[1].hitbox, RAYWHITE );
-                        DrawRectangleRec(perso[3].hitbox, RAYWHITE );
-                        DrawRectangleRec(perso[2].hitbox, RAYWHITE );
-                        DrawRectangleRec(perso[0].hitbox, RAYWHITE );
                         
                         if(CheckCollisionRecs(perso[0].hitbox, perso[1].hitbox) && !nperdevida){
                                 jog.vidas--;
@@ -811,13 +930,34 @@ int main(void)
                         }
                         DrawText(TextFormat("%d", nperdevida), 200,400,60,BLUE);
                         
-                        
-                        //colisão com as paredes:
                         //importante colocar a colisão antes de colocar a boneca, e depois de chamar a movimentação, pra ficar visualmente melhor
-                        colisao (&perso[0].hitbox.x, &perso[0].hitbox.y);
-                         
+                        //colisão pra não sair do mapa
+                        colisao_fase1 (&perso[0].hitbox.x, &perso[0].hitbox.y);
+                        //colisão as paredes
+                        for(int i = 0; i <= 21; i++)
+                        {
+                         if (CheckCollisionRecs (perso[0].hitbox, wall[i].hitbox))
+                            {
+                                //indo pra direita
+                                if (perso[0].hitbox.x+10 == wall[i].hitbox.x + wall[i].hitbox.width)
+                                    perso[0].hitbox.x += 5.0f;
+
+                                //indo pra direita
+                                if (perso[0].hitbox.x + perso[0].hitbox.width == wall[i].hitbox.x+10)
+                                    perso[0].hitbox.x -= 5.0f;
+
+                                //indo pra cima
+                                if (perso[0].hitbox.y+10 == wall[i].hitbox.y + wall[i].hitbox.height)
+                                    perso[0].hitbox.y += 5.0f;
+
+                                //indo pra baixo
+                                if (perso[0].hitbox.y + perso[0].hitbox.height == wall[i].hitbox.y+10)
+                                    perso[0].hitbox.y -= 5.0f;
+                            }   
+                        } 
                         
-                        //printar e checar colisão dinheirinho
+                        
+                        //printar e checar colisão dinheirinho das moedas
                         for(int i = 0; i <= 72; i++)
                         {
                             if(CheckCollisionRecs(moeda[i].hitbox, perso[0].hitbox) == 1)
@@ -847,32 +987,6 @@ int main(void)
                             chave.hitbox.y = chave.pos.y;
                             
                             jog.extra++;
-                        }
-                        
-                        
-                        //colisão com as paredes:   
-                        for(int i = 0; i <= 21; i++)
-                        {
-                            
-                            if (CheckCollisionRecs (perso[0].hitbox, wall[i].hitbox) == 1)
-                            {
-                                //indo pela direita do objeto
-                                if (perso[0].hitbox.x+10 == wall[0].hitbox.x + wall[i].hitbox.width) //esse +5 é só pra ficar visualmente melhor
-                                    perso[0].hitbox.x += 5.0f;
-                                
-                                //indo pela esquerda do objeto
-                                if (perso[0].hitbox.x + perso[0].hitbox.width == wall[i].hitbox.x+10) //esse +5 é só pra ficar visualmente melhor
-                                    perso[0].hitbox.x -= 5.0f;
-                                
-                                //indo por baixo
-                                if (perso[0].hitbox.y+10 == wall[0].hitbox.y + wall[i].hitbox.height) //esse +5 é só pra ficar visualmente melhor
-                                    perso[0].hitbox.y += 5.0f;
-                                
-                                //indo por cima
-                                if (perso[0].hitbox.y + perso[0].hitbox.height == wall[i].hitbox.y+10) //esse +5 é só pra ficar visualmente melhor
-                                    perso[0].hitbox.y -= 5.0f;
-                            }
-                            
                         }
                         
                         DrawRectangle(350, 465, 300, 35, SKYBLUE);
@@ -918,8 +1032,10 @@ int main(void)
                         DrawText(TextFormat("%i | %i",x ,y), 500, 30, 20, BLACK);
                        
                         
-                        movimentofujona( &perso[0].pos.x, &perso[0].pos.y, &estadopirraia, &perso[0].hitbox.x, &perso[0].hitbox.y );//Movimentação pirraia
-                        Vector2 posicaopirraia = {perso[0].pos.x, perso[0].pos.y};//variavel da sprite da pirraia, pra as sprites terem a mesma posicao dela                       
+                        Vector2 posicaopirraia = {perso[0].hitbox.x, perso[0].hitbox.y};
+                        
+                        movimentofujona (&perso[0].hitbox.x, &perso[0].hitbox.y, &estadopirraia);
+                        
                         sprites(&estadopirraia, &perso[0].textura, RAYWHITE, &posicaopirraia, &uppirraia, &downpirraia, &leftpirraia, &rightpirraia);
                         
                         //fase2 mov
@@ -964,6 +1080,33 @@ int main(void)
                                 time=0.0f;
                             }
                         }
+                        
+                        colisao_fase2 (&perso[0].hitbox.x, &perso[0].hitbox.y);
+                        
+                        for(int i = 20; i <= 41; i++)
+                        {
+                            
+                            if (CheckCollisionRecs (perso[0].hitbox, wall[i].hitbox) == 1)
+                            {
+                                //indo pra esquerda
+                                if (perso[0].hitbox.x+10 == wall[i].hitbox.x + wall[i].hitbox.width)
+                                    perso[0].hitbox.x += 5.0f;
+                                
+                                //indo pra direita
+                                if (perso[0].hitbox.x + perso[0].hitbox.width == wall[i].hitbox.x+10)
+                                    perso[0].hitbox.x -= 5.0f;
+                                
+                                //indo pra cima
+                                if (perso[0].hitbox.y+10 == wall[i].hitbox.y + wall[i].hitbox.height)
+                                    perso[0].hitbox.y += 5.0f;
+                                
+                                //indo pra baixo
+                                if (perso[0].hitbox.y + perso[0].hitbox.height == wall[i].hitbox.y+10)
+                                    perso[0].hitbox.y -= 5.0f;
+                            }
+                                            
+                        }
+                        
                         DrawText(TextFormat("%d", nperdevida), 200,400,60,BLUE);
                         DrawText(TextFormat("Vidas: %i\n", jog.vidas), 20, 20, 20, BLACK);
                         EndDrawing();
