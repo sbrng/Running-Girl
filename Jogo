@@ -554,7 +554,7 @@ int main(void)
     
     
     //preenchendo as hitbox das moedinhas
-    for(int i = 0; i <= 74; i++)
+    for(int i = 0; i <= 75; i++)
     {
         moeda[i].hitbox.x = moeda[i].pos.x + 10;
         moeda[i].hitbox.y = moeda[i].pos.y + 10;
