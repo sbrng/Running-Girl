@@ -62,7 +62,7 @@ void movimentofujona(float *x, float *y, float *xcam, float *ycam)
 */
 void colisao_fase1 (float *x, float *y)
 {
-    //colisão pra n sair da tela fase 1
+    //colisão com as paredes:
     //é bom colocar essa parte antes de desenhar o personagem pra visualmente ela só ficar parada
             
     //lado esquerdo:
@@ -78,17 +78,17 @@ void colisao_fase1 (float *x, float *y)
         *y += 5.0f;
             
     //baixo:
-    if (*y+35>= 500)
+    if (*y+35 >= 500)
         *y -= 5.0f;
 }
 
 void colisao_fase2 (float *x, float *y)
 {
-    //colisão pra n sair da tela fase 2
+    //colisão com as paredes:
     //é bom colocar essa parte antes de desenhar o personagem pra visualmente ela só ficar parada
             
     //lado esquerdo:
-    if (*x+35 <= 60) 
+    if (*x+35 <= 90) 
         *x += 5.0f;
             
     //lado direito:
@@ -547,117 +547,95 @@ int fase1(int* n, int* points, int* vidas, int* extra, int* fase)
     jack.hitbox.width = 1;
     jack.hitbox.height = 1;
     
-        //preenchendo as paredes da fase 1:
-    //preto
-    wall[0].hitbox.x = 330;
-    wall[0].hitbox.y = 0;
-    wall[0].hitbox.width = 345;
-    wall[0].hitbox.height = 150;
-    //azul
-    wall[1].hitbox.x = 28;
-    wall[1].hitbox.y = 0;
-    wall[1].hitbox.width = 157;
-    wall[1].hitbox.height = 150;
-    //vermelho
-    wall[2].hitbox.x = 160;
-    wall[2].hitbox.y = 100;
-    wall[2].hitbox.width = 95;
-    wall[2].hitbox.height = 165;
-    //verde
-    wall[3].hitbox.x = 340;
-    wall[3].hitbox.y = 440;
-    wall[3].hitbox.width = 365;
-    wall[3].hitbox.height = 60;
-    //amarelo
-    wall[4].hitbox.x = 280;
-    wall[4].hitbox.y = 355;
-    wall[4].hitbox.width = 75;
-    wall[4].hitbox.height = 145;
-    //rosa
-    wall[5].hitbox.x = 250;
-    wall[5].hitbox.y = 330;
-    wall[5].hitbox.width = 220;
-    wall[5].hitbox.height = 45;
-    //marrom
-    wall[6].hitbox.x = 525;
-    wall[6].hitbox.y = 330;
-    wall[6].hitbox.width = 220;
-    wall[6].hitbox.height = 45;
-    //roxo
-    wall[7].hitbox.x = 666;
-    wall[7].hitbox.y = 355;
-    wall[7].hitbox.width = 39;
-    wall[7].hitbox.height = 145;
-    //laranja
-    wall[8].hitbox.x = 620;
-    wall[8].hitbox.y = 130;
-    wall[8].hitbox.width = 50;
-    wall[8].hitbox.height = 95;
-    //cinza
-    wall[9].hitbox.x = 325;
-    wall[9].hitbox.y = 115;
-    wall[9].hitbox.width = 55;
-    wall[9].hitbox.height = 135;
-    //azul escuro
-    wall[10].hitbox.x = 310;
-    wall[10].hitbox.y = 220;
-    wall[10].hitbox.width = 160;
-    wall[10].hitbox.height = 45;
-    //verde escuro
-    wall[11].hitbox.x = 525;
-    wall[11].hitbox.y = 220;
-    wall[11].hitbox.width = 280;
-    wall[11].hitbox.height = 45;
-    //lima
-    wall[12].hitbox.x = 0;
-    wall[12].hitbox.y = 220;
-    wall[12].hitbox.width = 60;
-    wall[12].hitbox.height = 115;
-    //violeta
-    wall[13].hitbox.x = 0;
-    wall[13].hitbox.y = 335;
-    wall[13].hitbox.width = 120;
-    wall[13].hitbox.height = 165;
-    //azul claro
-    wall[14].hitbox.x = 60;
-    wall[14].hitbox.y = 330;
-    wall[14].hitbox.width = 135;
-    wall[14].hitbox.height = 45;
-    //bege
-    wall[15].hitbox.x = 800;
-    wall[15].hitbox.y = 330;
-    wall[15].hitbox.width = 200;
-    wall[15].hitbox.height = 45;
-    //roxo escuro
-    wall[16].hitbox.x = 00;
-    wall[16].hitbox.y = 220;
-    wall[16].hitbox.width = 105;
-    wall[16].hitbox.height = 45;
-    //dourado
-    wall[17].hitbox.x = 860;
-    wall[17].hitbox.y = 220;
-    wall[17].hitbox.width = 140;
-    wall[17].hitbox.height = 45;
-    //preto dnv
-    wall[18].hitbox.x = 875;
-    wall[18].hitbox.y = 375;
-    wall[18].hitbox.width = 125;
-    wall[18].hitbox.height = 125;
-    //azul dnv
-    wall[19].hitbox.x = 670;
-    wall[19].hitbox.y = 140;
-    wall[19].hitbox.width = 45;
-    wall[19].hitbox.height = 30;
-    //vermelho dnv
-    wall[20].hitbox.x = 770;
-    wall[20].hitbox.y = 140;
-    wall[20].hitbox.width = 230;
-    wall[20].hitbox.height = 30;
-    //roxo dnv
-    wall[21].hitbox.x = 815;
-    wall[21].hitbox.y = 00;
-    wall[21].hitbox.width = 185;
-    wall[21].hitbox.height = 140;
+    //preenchendo as paredes da fase 1:
+        wall[0].hitbox.x = 330;
+        wall[0].hitbox.y = 0;
+        wall[0].hitbox.width = 345;
+        wall[0].hitbox.height = 150;
+        wall[1].hitbox.x = 28;
+        wall[1].hitbox.y = 0;
+        wall[1].hitbox.width = 157;
+        wall[1].hitbox.height = 150;
+        wall[2].hitbox.x = 170;
+        wall[2].hitbox.y = 100;
+        wall[2].hitbox.width = 85;
+        wall[2].hitbox.height = 165;
+        wall[3].hitbox.x = 340;
+        wall[3].hitbox.y = 430;
+        wall[3].hitbox.width = 325;
+        wall[3].hitbox.height = 60;
+        wall[4].hitbox.x = 280;
+        wall[4].hitbox.y = 355;
+        wall[4].hitbox.width = 65;
+        wall[4].hitbox.height = 145;
+        wall[5].hitbox.x = 260;
+        wall[5].hitbox.y = 330;
+        wall[5].hitbox.width = 210;
+        wall[5].hitbox.height = 45;
+        wall[6].hitbox.x = 535;
+        wall[6].hitbox.y = 330;
+        wall[6].hitbox.width = 210;
+        wall[6].hitbox.height = 45;
+        wall[7].hitbox.x = 665;
+        wall[7].hitbox.y = 355;
+        wall[7].hitbox.width = 40;
+        wall[7].hitbox.height = 145;
+        wall[8].hitbox.x = 620;
+        wall[8].hitbox.y = 130;
+        wall[8].hitbox.width = 50;
+        wall[8].hitbox.height = 95;
+        wall[9].hitbox.x = 330;
+        wall[9].hitbox.y = 105;
+        wall[9].hitbox.width = 50;
+        wall[9].hitbox.height = 145;
+        wall[10].hitbox.x = 330;
+        wall[10].hitbox.y = 210;
+        wall[10].hitbox.width = 140;
+        wall[10].hitbox.height = 55;
+        wall[11].hitbox.x = 535;
+        wall[11].hitbox.y = 210;
+        wall[11].hitbox.width = 270;
+        wall[11].hitbox.height = 55;
+        wall[12].hitbox.x = 0;
+        wall[12].hitbox.y = 220;
+        wall[12].hitbox.width = 60;
+        wall[12].hitbox.height = 115;
+        wall[13].hitbox.x = 0;
+        wall[13].hitbox.y = 335;
+        wall[13].hitbox.width = 120;
+        wall[13].hitbox.height = 165;
+        wall[14].hitbox.x = 60;
+        wall[14].hitbox.y = 330;
+        wall[14].hitbox.width = 135;
+        wall[14].hitbox.height = 45;
+        wall[15].hitbox.x = 810;
+        wall[15].hitbox.y = 330;
+        wall[15].hitbox.width = 190;
+        wall[15].hitbox.height = 45;
+        wall[16].hitbox.x = 00;
+        wall[16].hitbox.y = 220;
+        wall[16].hitbox.width = 105;
+        wall[16].hitbox.height = 45;
+        wall[17].hitbox.x = 870;
+        wall[17].hitbox.y = 220;
+        wall[17].hitbox.width = 130;
+        wall[17].hitbox.height = 45;
+        wall[18].hitbox.x = 875;
+        wall[18].hitbox.y = 375;
+        wall[18].hitbox.width = 125;
+        wall[18].hitbox.height = 125;
+        wall[19].hitbox.x = 670;
+        wall[19].hitbox.y = 130;
+        wall[19].hitbox.width = 45;
+        wall[19].hitbox.height = 40;
+        wall[20].hitbox.x = 780;
+        wall[20].hitbox.y = 130;
+        wall[20].hitbox.width = 220;
+        wall[20].hitbox.height = 40;
+        wall[21].hitbox.x = 815;
+        wall[21].hitbox.y = 00;
+        wall[21].hitbox.width = 20;
+        wall[21].hitbox.height = 140;
     
     //ABRINDO ARQUIVOS DA MOVIMENTAÇÃO
     FILE* mamisf1 = fopen ("/raylib/RunningGirl/arquivos/maefase1.txt","r");
@@ -1260,118 +1238,87 @@ int fase2(int* n, int* points, int* vidas, int* extra, int* fase)
     chave.hitbox.width = 1;
     chave.hitbox.height = 1;
     
-    //preenchendo as paredes da fase 1:
-    
-    //vermelho dnv
-    wall[20].hitbox.x = 770;
-    wall[20].hitbox.y = 140;
-    wall[20].hitbox.width = 230;
-    wall[20].hitbox.height = 30;
-    //roxo dnv
-    wall[21].hitbox.x = 815;
-    wall[21].hitbox.y = 00;
-    wall[21].hitbox.width = 185;
-    wall[21].hitbox.height = 140;
-    //preto
-    wall[22].hitbox.x = 350;
-    wall[22].hitbox.y = 0;
-    wall[22].hitbox.width = 300;
-    wall[22].hitbox.height = 145;
-    //azul
-    wall[23].hitbox.x = 0;
-    wall[23].hitbox.y = 0;
-    wall[23].hitbox.width = 225;
-    wall[23].hitbox.height = 150;
-    //vermelho
-    wall[24].hitbox.x = 150;
-    wall[24].hitbox.y = 115;
-    wall[24].hitbox.width = 30;
-    wall[24].hitbox.height = 125;
-    //verde
-    wall[25].hitbox.x = 320;
-    wall[25].hitbox.y = 425;
-    wall[25].hitbox.width = 340;
-    wall[25].hitbox.height = 80;
-    //amarelo
-    wall[26].hitbox.x = 320;
-    wall[26].hitbox.y = 355;
-    wall[26].hitbox.width = 35;
-    wall[26].hitbox.height = 145;
-    //rosa
-    wall[27].hitbox.x = 250;
-    wall[27].hitbox.y = 310;
-    wall[27].hitbox.width = 105;
-    wall[27].hitbox.height = 45;
-    //marrom
-    wall[28].hitbox.x = 625;
-    wall[28].hitbox.y = 310;
-    wall[28].hitbox.width = 165;
-    wall[28].hitbox.height = 50;
-    //roxo
-    wall[29].hitbox.x = 625;
-    wall[29].hitbox.y = 320;
-    wall[29].hitbox.width = 25;
-    wall[29].hitbox.height = 115;
-    //laranja
-    wall[30].hitbox.x = 560;
-    wall[30].hitbox.y = 140;
-    wall[30].hitbox.width = 30;
-    wall[30].hitbox.height = 130;
-    //cinza
-    wall[31].hitbox.x = 385;
-    wall[31].hitbox.y = 140;
-    wall[31].hitbox.width = 40;
-    wall[31].hitbox.height = 130;
-    //azul escuro
-    wall[32].hitbox.x = 280;
-    wall[32].hitbox.y = 230;
-    wall[32].hitbox.width = 135;
-    wall[32].hitbox.height = 40;
-    //verde escuro
-    wall[33].hitbox.x = 560;
-    wall[33].hitbox.y = 230;
-    wall[33].hitbox.width = 80;
-    wall[33].hitbox.height = 40;
-    //lima
-    wall[34].hitbox.x = 130;
-    wall[34].hitbox.y = 230;
-    wall[34].hitbox.width = 90;
-    wall[34].hitbox.height = 40;
-    //violeta
-    wall[36].hitbox.x = 120;
-    wall[36].hitbox.y = 310;
-    wall[36].hitbox.width = 60;
-    wall[36].hitbox.height = 45;
-    //azul claro
-    wall[37].hitbox.x = 50;
-    wall[37].hitbox.y = 310;
-    wall[37].hitbox.width = 75;
-    wall[37].hitbox.height = 190;
-    //bege
-    wall[38].hitbox.x = 850;
-    wall[38].hitbox.y = 310;
-    wall[38].hitbox.width = 80;
-    wall[38].hitbox.height = 190;
-    //roxo escuro
-    wall[39].hitbox.x = 690;
-    wall[39].hitbox.y = 230;
-    wall[39].hitbox.width = 240;
-    wall[39].hitbox.height = 40;
-    //dourado
-    wall[40].hitbox.x = 705;
-    wall[40].hitbox.y = 100;
-    wall[40].hitbox.width = 240;
-    wall[40].hitbox.height = 50;
-    //cinza escuro
-    wall[41].hitbox.x = 280;
-    wall[41].hitbox.y = 100;
-    wall[41].hitbox.width = 135;
-    wall[41].hitbox.height = 50;
-    //rosa pink
-    wall[42].hitbox.x = 795;
-    wall[42].hitbox.y = 00;
-    wall[42].hitbox.width = 15;
-    wall[42].hitbox.height = 110;
+    //preenchendo as paredes da fase 2:
+        wall[22].hitbox.x = 350;
+        wall[22].hitbox.y = 0;
+        wall[22].hitbox.width = 300;
+        wall[22].hitbox.height = 145;
+        wall[23].hitbox.x = 0;
+        wall[23].hitbox.y = 0;
+        wall[23].hitbox.width = 225;
+        wall[23].hitbox.height = 150;
+        wall[24].hitbox.x = 150;
+        wall[24].hitbox.y = 115;
+        wall[24].hitbox.width = 30;
+        wall[24].hitbox.height = 125;
+        wall[25].hitbox.x = 340;
+        wall[25].hitbox.y = 425;
+        wall[25].hitbox.width = 300;
+        wall[25].hitbox.height = 80;
+        wall[26].hitbox.x = 320;
+        wall[26].hitbox.y = 320;
+        wall[26].hitbox.width = 45;
+        wall[26].hitbox.height = 145;
+        wall[27].hitbox.x = 260;
+        wall[27].hitbox.y = 310;
+        wall[27].hitbox.width = 95;
+        wall[27].hitbox.height = 45;
+        wall[28].hitbox.x = 635;
+        wall[28].hitbox.y = 310;
+        wall[28].hitbox.width = 155;
+        wall[28].hitbox.height = 50;
+        wall[29].hitbox.x = 620;
+        wall[29].hitbox.y = 320;
+        wall[29].hitbox.width = 40;
+        wall[29].hitbox.height = 165;
+        wall[30].hitbox.x = 560;
+        wall[30].hitbox.y = 140;
+        wall[30].hitbox.width = 40;
+        wall[30].hitbox.height = 120;
+        wall[31].hitbox.x = 385;
+        wall[31].hitbox.y = 140;
+        wall[31].hitbox.width = 40;
+        wall[31].hitbox.height = 120;
+        wall[32].hitbox.x = 290;
+        wall[32].hitbox.y = 230;
+        wall[32].hitbox.width = 125;
+        wall[32].hitbox.height = 40;
+        wall[33].hitbox.x = 570;
+        wall[33].hitbox.y = 230;
+        wall[33].hitbox.width = 70;
+        wall[33].hitbox.height = 40;
+        wall[34].hitbox.x = 130;
+        wall[34].hitbox.y = 230;
+        wall[34].hitbox.width = 90;
+        wall[34].hitbox.height = 40;
+        wall[36].hitbox.x = 50;
+        wall[36].hitbox.y = 310;
+        wall[36].hitbox.width = 130;
+        wall[36].hitbox.height = 45;
+        wall[37].hitbox.x = 50;
+        wall[37].hitbox.y = 340;
+        wall[37].hitbox.width = 75;
+        wall[37].hitbox.height = 160;
+        wall[38].hitbox.x = 850;
+        wall[38].hitbox.y = 310;
+        wall[38].hitbox.width = 80;
+        wall[38].hitbox.height = 190;
+        wall[39].hitbox.x = 700;
+        wall[39].hitbox.y = 230;
+        wall[39].hitbox.width = 230;
+        wall[39].hitbox.height = 40;
+        wall[40].hitbox.x = 705;
+        wall[40].hitbox.y = 100;
+        wall[40].hitbox.width = 240;
+        wall[40].hitbox.height = 50;
+        wall[41].hitbox.x = 290;
+        wall[41].hitbox.y = 100;
+        wall[41].hitbox.width = 125;
+        wall[41].hitbox.height = 50;
+        wall[42].hitbox.x = 795;
+        wall[42].hitbox.y = 00;
+        wall[42].hitbox.width = 15;
+        wall[42].hitbox.height = 110;
     
     //ABRINDO ARQUIVOS DA MOVIMENTAÇÃO
     FILE* mamisf2 = fopen ("/raylib/RunningGirl/arquivos/maefase2.txt","r");
@@ -1523,7 +1470,7 @@ int fase2(int* n, int* points, int* vidas, int* extra, int* fase)
         
         colisao_fase2 (&perso[0].hitbox.x, &perso[0].hitbox.y);
         
-        for(int i = 20; i <= 41; i++)
+        for(int i = 22; i <= 43; i++)
         {
             
             if (CheckCollisionRecs (perso[0].hitbox, wall[i].hitbox) == 1)
