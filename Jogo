@@ -202,7 +202,7 @@ void menu(void)
             
             DrawText(TextFormat("%i | %i",x ,y), 500, 30, 20, BLACK);
 
-            //botão continuar
+            /*//botão continuar
             DrawRectangle(400, 100, 200, 50, BLACK);
             if(x >= 400 && x <= 600 && y >= 100 && y <= 150){
                 DrawRectangle(405, 105, 190, 40, VIOLET);
@@ -214,9 +214,9 @@ void menu(void)
             }
             else{
             DrawRectangle(405, 105, 190, 40, BLUE);}
-            DrawText("Continuar", 418, 115, 25, BLACK);
+            DrawText("Continuar", 418, 115, 25, BLACK);*/
             
-            //botão salvar e sair
+            //continuar
             DrawRectangle(400, 180, 200, 50, BLACK);
             if(x >= 400 && x <= 600 && y >= 180 && y <= 230){
                 DrawRectangle(405, 185, 190, 40, VIOLET);
@@ -229,18 +229,23 @@ void menu(void)
             }
             else{
             DrawRectangle(405, 185, 190, 40, BLUE);}
-            DrawText("Salvar e sair", 418, 195, 25, BLACK);
+            DrawText("Continuar", 418, 195, 25, BLACK);
             
-            // botão salvar
+            // botão sair
             DrawRectangle(400, 260, 200, 50, BLACK);
             if(x >= 400 && x <= 600 && y >= 260 && y <= 310){
                 DrawRectangle(405, 265, 190, 40, VIOLET);
+                
+                 if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+                {
+                    exit(0);
+                }
             }
             else{
             DrawRectangle(405, 265, 190, 40, BLUE);}
-            DrawText("Salvar", 418, 275, 25, BLACK);
+            DrawText("Sair", 418, 275, 25, BLACK);
             
-            //botão sair
+            /*//botão sair
             DrawRectangle(400, 340, 200, 50, BLACK);
             if(x >= 400 && x <= 600 && y >= 340 && y <= 390){
                 DrawRectangle(405, 345, 190, 40, VIOLET);
@@ -253,7 +258,7 @@ void menu(void)
             }
             else{
             DrawRectangle(405, 345, 190, 40, BLUE);}
-            DrawText("Sair", 418, 355, 25, BLACK);
+            DrawText("Sair", 418, 355, 25, BLACK);*/
             
             
         EndDrawing();
@@ -873,14 +878,15 @@ int fase1(int* n, int* points, int* vidas, int* extra, int* fase)
             }
         }
         
-        if((*points) >= 50 && (*extra) == 2)
+        if((*points) >= 70 && (*extra) == 2)
         {
             if (CheckCollisionRecs(saida, perso[0].hitbox) == 1)
             {
-                *extra = 0;
-                (*fase)++;
                 StopSound (musicafase1);
                 UnloadSound (musicafase1);
+                *extra = 0;
+                (*fase)++;
+               
                 break;
             }
             
@@ -1442,10 +1448,10 @@ int fase2(int* n, int* points, int* vidas, int* extra, int* fase)
     
     //rectangle de saida
     Rectangle saida;
-    saida.x = 100;
-    saida.y = 430;
-    saida.width = 45;
-    saida.height = 70;
+    saida.x = 90;
+    saida.y = 450;
+    saida.width = 60;
+    saida.height = 50;
 /*
     //Declaração da camera
     Camera2D cam;
@@ -1486,22 +1492,7 @@ int fase2(int* n, int* points, int* vidas, int* extra, int* fase)
             exit (0);
         }
         
-        if((*points) >= 80 && (*extra) == 2)
-        {
-            StopSound (musicafase2);
-            UnloadSound (musicafase2);
-            if (CheckCollisionRecs(saida, perso[0].hitbox) == 1)
-            {
-                *extra = 0;
-                (*fase)++;
-                BeginDrawing();//a parte de ganhou da festaaaaa
-                DrawTexture(partytx, 0,0,RAYWHITE);
-                coresaleatorias(&rp,&gp,&bp,&ap,&timep);
-                DrawText("WELCOME TO THE PARTY!", 300,100, 70,(Color){rp,gp,bp,ago});
-                EndDrawing();
-                break;
-            }
-        }
+        
         
         //printar e checar colisão dinheirinho
         for(int i = 0; i <= 113; i++)
@@ -1628,6 +1619,29 @@ int fase2(int* n, int* points, int* vidas, int* extra, int* fase)
             if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
             {
                 menu();
+            }
+        }
+        
+        if((*points) >= 180 && (*extra) == 2)
+        {
+            
+            if (CheckCollisionRecs(saida, perso[0].hitbox) == 1)
+            {
+                StopSound (musicafase2);
+                UnloadSound (musicafase2);
+                
+                BeginDrawing();//a parte de ganhou da festaaaaa
+                
+                DrawTexture(partytx, 0,0,RAYWHITE);
+                coresaleatorias(&rp,&gp,&bp,&ap,&timep);
+                DrawText("WELCOME TO THE PARTY!", 300,100, 70,(Color){rp,gp,bp,ago});
+                
+                EndDrawing();
+                
+                *extra = 0;
+                (*fase)++;
+                
+                break;
             }
         }
         
@@ -1783,9 +1797,9 @@ int main(void)
             
             
             //printar botões
-            if(x >= 250 && x <= 406 && y >= 290 && y <= 321)
+            if(x >= 420 && x <= 530 && y >= 300 && y <= 331)
             {
-                DrawText("Novo Jogo",238,290,35,WHITE);
+                DrawText("  Jogar  ",410,300,35,WHITE);
                 
                 //Verificando se o botão JOGAR foi clicado
                 if(IsMouseButtonDown(MOUSE_LEFT_BUTTON))
@@ -1808,16 +1822,17 @@ int main(void)
                         {
                             fase2(&n, &jog[n].points, &jog[n].vidas, &jog[n].extra, &jog[n].fase);
                         }
+                        
                     }
                 }
             }
             else
             {
-                DrawText("Novo Jogo",250,290,30,WHITE);
+                DrawText("  Jogar  ",415, 300, 30,WHITE);
             }
             
             
-            if(x >= 550 && x <= 750 && y >= 290 && y <= 321)
+            /*if(x >= 550 && x <= 750 && y >= 290 && y <= 321)
             {
                 DrawText("Jogos Salvos",535,290,35,WHITE);
                 
@@ -1830,7 +1845,7 @@ int main(void)
             {
                 DrawText("Jogos Salvos",550,290,30,WHITE);
             }
-            /*
+            
             if(x >= 428 && x <= 545 && y >= 350 && y <= 380)
             {
                 
