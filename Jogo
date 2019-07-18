@@ -258,42 +258,27 @@ void menu(void)
     UnloadTexture(menutx);
 }
 
-int main(void)
+
+int fase1(int* n, int* points, int* vidas, int* extra, int* fase)
 {
+    
     const int screenWidth = 1000;
     const int screenHeight = 500;
     
     //Declaração de variaveis
     int x, y;
-    int letterCount = 0;
     int estadopirraia=3, lado=2;//atualizada pela função "movimentopirraia"
     int rgo,ggo,bgo,ago,rp,gp,bp,ap;
     float timego=0, timep=0, timemov=0;
     float time=0.0f, timevida=0.0f;
     bool nperdevida=false, perdeu=false;
     Color cores1,cores2;
+    
     //Vetor de personagens
     personagem perso[50];
-    //perso[0]=pirraia
-    //perso[1]=piolho
-    //perso[2]=mami
-    //perso[3]=papi
-    //perso[4]=doguinho
     
     //Vetor paredes
     paredes wall[50];
-
-    
-    InitWindow(screenWidth, screenHeight, "Jogo RunningGirl");
-    InitAudioDevice();
-    
-    
-    
-    //imagem main menu
-    Image mainMenu = LoadImage("/raylib/RunningGirl/fundos/menu1.png");
-    ImageResize(&mainMenu, screenWidth, screenHeight);
-    Texture2D menuTexture = LoadTextureFromImage(mainMenu);
-    UnloadImage(mainMenu);
     
     //cenario fase 1
     Image cen1 = LoadImage("/raylib/RunningGirl/fundos/casa.png");
@@ -301,23 +286,11 @@ int main(void)
     Texture2D cen1tx = LoadTextureFromImage(cen1);
     UnloadImage(cen1);
     
-     //cenario fase 2
-    Image cen2 = LoadImage("/raylib/RunningGirl/fundos/casa1.png");
-    ImageResize(&cen2, screenWidth, screenHeight);
-    Texture2D cen2tx = LoadTextureFromImage(cen2);
-    UnloadImage(cen2);
-    
-     //objetivo fase 1
+    //objetivo fase 1
     Image objf1 = LoadImage("/raylib/RunningGirl/fundos/objfase1.png");
     ImageResize(&objf1, screenWidth, screenHeight);
     Texture2D objf1tx = LoadTextureFromImage(objf1);
     UnloadImage(objf1);
-    
-     //objetivo fase 2
-    Image objf2 = LoadImage("/raylib/RunningGirl/fundos/objfase2.png");
-    ImageResize(&objf2, screenWidth, screenHeight);
-    Texture2D objf2tx = LoadTextureFromImage(objf2);
-    UnloadImage(objf2);
     
     //botando o fundo festa(quando ganhar)
     Image party = LoadImage("/raylib/RunningGirl/fundos/finalfesta1.png");
@@ -395,39 +368,6 @@ int main(void)
     Rectangle uppapi    = { 100.0f, 0.0f, (float)perso[3].textura.width/4, (float)perso[3].textura.height };//PEGA A IMAGEM DO PAPI VOLTADA PRA CIMA
     Rectangle downpapi  = { 150.0f, 0.0f, (float)perso[3].textura.width/4, (float)perso[3].textura.height };//PEGA A IMAGEM DO PAPI VOLTADA PRA BAIXO
    
-    //preenchendo o dog
-    perso[4].imagem = LoadImage("/raylib/RunningGirl/sprites/dog.png");
-    ImageResize(&perso[4].imagem,50,200);
-    perso[4].textura = LoadTextureFromImage(perso[4].imagem);
-    perso[4].pos.x = 777.0;//posição x incial do dog
-    perso[4].pos.y = 446.0;//posição y incial do dog
-    perso[4].hitbox.x = perso[4].pos.x;
-    perso[4].hitbox.y = perso[4].pos.y;
-    perso[4].hitbox.width = 50;
-    perso[4].hitbox.height = 50;
-    
-     //sprite DO DOG
-    Rectangle downdog  = { 0.0f, 0.0f  , (float)perso[4].textura.width, (float)perso[4].textura.height/4};//PEGA A IMAGEM DO  VOLTADA PRA ESQUERDA
-    Rectangle rightdog = { 0.0f, 50.0f, (float)perso[4].textura.width, (float)perso[4].textura.height/4};//PEGA A IMAGEM DO  VOLTADA PRA DIREITA
-    Rectangle updog    = { 0.0f, 100.0f, (float)perso[4].textura.width, (float)perso[4].textura.height/4};//PEGA A IMAGEM DO  VOLTADA PRA CIMA
-    Rectangle leftdog  = { 0.0f, 150.0f, (float)perso[4].textura.width, (float)perso[4].textura.height/4};//PEGA A IMAGEM DO  VOLTADA PRA BAIXO
-   
-    
-    //preenchendo a struct jogador
-    int n = 0;
-    jogador jog[10];
-    for(int j = 0; j < 10; j++)
-    {
-        for(int i = 0; i < 19; i++)
-        {
-            jog[j].nome[i] = '_';
-        }
-        jog[j].points = 0;
-        jog[j].vidas = 3;
-        jog[j].extra = 0;
-        jog[j].fase = 0;
-    }
-    //jog.fujona = perso[0];
     
     coisas moeda[76];
     //colocando imagem nas moedas
@@ -577,8 +517,504 @@ int main(void)
         moeda[i].hitbox.height = 1;
     }
     
+    //declarando e posicionando o óculos
+    coisas oculos;
+    
+    Image oculoss = LoadImage("/raylib/RunningGirl/objetos/oculos.png");
+    ImageResize(&oculoss, 45, 20);
+    oculos.textura = LoadTextureFromImage(oculoss);
+    UnloadImage(oculoss);
+    
+    oculos.pos.x = 870;
+    oculos.pos.y = 185;
+    oculos.hitbox.x = oculos.pos.x + 23;
+    oculos.hitbox.y = oculos.pos.y + 10;
+    oculos.hitbox.width = 1;
+    oculos.hitbox.height = 1;
+    
+    //declarando e posicionando a jaqueta
+    coisas jack;
+    
+    Image jacket = LoadImage("/raylib/RunningGirl/objetos/jacket.png");
+    ImageResize(&jacket, 20, 45);
+    jack.textura = LoadTextureFromImage(jacket);
+    UnloadImage(jacket);
+    
+    jack.pos.x = 250;
+    jack.pos.y = 420;
+    jack.hitbox.x = jack.pos.x + 10;
+    jack.hitbox.y = jack.pos.y + 23;
+    jack.hitbox.width = 1;
+    jack.hitbox.height = 1;
+    
+        //preenchendo as paredes da fase 1:
+    //preto
+    wall[0].hitbox.x = 330;
+    wall[0].hitbox.y = 0;
+    wall[0].hitbox.width = 345;
+    wall[0].hitbox.height = 150;
+    //azul
+    wall[1].hitbox.x = 28;
+    wall[1].hitbox.y = 0;
+    wall[1].hitbox.width = 157;
+    wall[1].hitbox.height = 150;
+    //vermelho
+    wall[2].hitbox.x = 160;
+    wall[2].hitbox.y = 100;
+    wall[2].hitbox.width = 95;
+    wall[2].hitbox.height = 165;
+    //verde
+    wall[3].hitbox.x = 340;
+    wall[3].hitbox.y = 440;
+    wall[3].hitbox.width = 365;
+    wall[3].hitbox.height = 60;
+    //amarelo
+    wall[4].hitbox.x = 280;
+    wall[4].hitbox.y = 355;
+    wall[4].hitbox.width = 75;
+    wall[4].hitbox.height = 145;
+    //rosa
+    wall[5].hitbox.x = 250;
+    wall[5].hitbox.y = 330;
+    wall[5].hitbox.width = 220;
+    wall[5].hitbox.height = 45;
+    //marrom
+    wall[6].hitbox.x = 525;
+    wall[6].hitbox.y = 330;
+    wall[6].hitbox.width = 220;
+    wall[6].hitbox.height = 45;
+    //roxo
+    wall[7].hitbox.x = 666;
+    wall[7].hitbox.y = 355;
+    wall[7].hitbox.width = 39;
+    wall[7].hitbox.height = 145;
+    //laranja
+    wall[8].hitbox.x = 620;
+    wall[8].hitbox.y = 130;
+    wall[8].hitbox.width = 50;
+    wall[8].hitbox.height = 95;
+    //cinza
+    wall[9].hitbox.x = 325;
+    wall[9].hitbox.y = 115;
+    wall[9].hitbox.width = 55;
+    wall[9].hitbox.height = 135;
+    //azul escuro
+    wall[10].hitbox.x = 310;
+    wall[10].hitbox.y = 220;
+    wall[10].hitbox.width = 160;
+    wall[10].hitbox.height = 45;
+    //verde escuro
+    wall[11].hitbox.x = 525;
+    wall[11].hitbox.y = 220;
+    wall[11].hitbox.width = 280;
+    wall[11].hitbox.height = 45;
+    //lima
+    wall[12].hitbox.x = 0;
+    wall[12].hitbox.y = 220;
+    wall[12].hitbox.width = 60;
+    wall[12].hitbox.height = 115;
+    //violeta
+    wall[13].hitbox.x = 0;
+    wall[13].hitbox.y = 335;
+    wall[13].hitbox.width = 120;
+    wall[13].hitbox.height = 165;
+    //azul claro
+    wall[14].hitbox.x = 60;
+    wall[14].hitbox.y = 330;
+    wall[14].hitbox.width = 135;
+    wall[14].hitbox.height = 45;
+    //bege
+    wall[15].hitbox.x = 800;
+    wall[15].hitbox.y = 330;
+    wall[15].hitbox.width = 200;
+    wall[15].hitbox.height = 45;
+    //roxo escuro
+    wall[16].hitbox.x = 00;
+    wall[16].hitbox.y = 220;
+    wall[16].hitbox.width = 105;
+    wall[16].hitbox.height = 45;
+    //dourado
+    wall[17].hitbox.x = 860;
+    wall[17].hitbox.y = 220;
+    wall[17].hitbox.width = 140;
+    wall[17].hitbox.height = 45;
+    //preto dnv
+    wall[18].hitbox.x = 875;
+    wall[18].hitbox.y = 375;
+    wall[18].hitbox.width = 125;
+    wall[18].hitbox.height = 125;
+    //azul dnv
+    wall[19].hitbox.x = 670;
+    wall[19].hitbox.y = 140;
+    wall[19].hitbox.width = 45;
+    wall[19].hitbox.height = 30;
+    //vermelho dnv
+    wall[20].hitbox.x = 770;
+    wall[20].hitbox.y = 140;
+    wall[20].hitbox.width = 230;
+    wall[20].hitbox.height = 30;
+    //roxo dnv
+    wall[21].hitbox.x = 815;
+    wall[21].hitbox.y = 00;
+    wall[21].hitbox.width = 185;
+    wall[21].hitbox.height = 140;
+    
+    //ABRINDO ARQUIVOS DA MOVIMENTAÇÃO
+    FILE* mamisf1 = fopen ("/raylib/RunningGirl/arquivos/maefase1.txt","r");
+    FILE* papisf1 = fopen ("/raylib/RunningGirl/arquivos/paifase1.txt","r");
+    FILE* pioif1  = fopen ("/raylib/RunningGirl/arquivos/piolhofase1.txt","r");
+    int mae1x, mae1y, pai1x, pai1y, pioi1x, pioi1y;//PRA USAR NA MOVIMENTAÇÃO DA FAMILIA
+    
+    //rectangle de saida
+    Rectangle saida;
+    saida.x = 40;
+    saida.y = 180;
+    saida.width = 60;
+    saida.height = 40;
+    
+    /*
+    //Declaração da camera
+    Camera2D cam;
+    cam.zoom = 2.2f;
+    cam.rotation = 0.0f;
+    cam.offset = (Vector2){0.0f,0.0f};
+    */
+    
+    do{ //pra aparecer objetivos fase 1
+        BeginDrawing();
+        DrawTexture(objf1tx,0,0,RAYWHITE);
+        EndDrawing();
+        time+=GetFrameTime();
+    }while(time<5.0f);
+                    
+    //FASE1 
+    while(perdeu==false)
+    {
+        if(IsKeyPressed(KEY_END))
+        {
+            exit (0);
+        }
+            
+        x=GetMouseX();
+        y=GetMouseY();
+        
+        BeginDrawing();  
+        //raio da camera
+        //cam.target = (Vector2){perso[0].pos.x-200, perso[0].pos.y-200};
+        //BeginMode2D(cam);
+        ClearBackground(WHITE);
+        
+        DrawTexture(cen1tx, 0,0,RAYWHITE);//Printar cenario
+        
+        DrawText(TextFormat("%i | %i",x ,y), 500, 30, 20, BLACK);
+        
+        Vector2 posicaopirraia = {perso[0].hitbox.x, perso[0].hitbox.y};
+        
+        movimentofujona (&perso[0].hitbox.x, &perso[0].hitbox.y, &estadopirraia);
+        
+        //printar e checar colisão dinheirinho
+        for(int i = 0; i <= 75; i++)
+        {
+            if(CheckCollisionRecs(moeda[i].hitbox, perso[0].hitbox) == 1)
+            {
+                (*points)++;
+                
+                moeda[i].hitbox.x = -30;
+                moeda[i].hitbox.y = -30;
+                moeda[i].pos.x = -30;
+                moeda[i].pos.y = -30;
+            }
+            
+            DrawTexture(moeda[1].textura, moeda[i].pos.x, moeda[i].pos.y, RAYWHITE);
+         
+        }
+        
+        //printar e checar colisão do oculos
+        DrawTexture(oculos.textura, oculos.pos.x, oculos.pos.y, RAYWHITE);
+        
+        if(CheckCollisionRecs(oculos.hitbox, perso[0].hitbox) == 1)
+        {
+            oculos.pos.x = -30;
+            oculos.pos.y = -30;
+            oculos.hitbox.x = oculos.pos.x;
+            oculos.hitbox.y = oculos.pos.y;
+            
+            (*extra)++;
+        }
+        
+        //printar e checar colisão da jaqueta
+        DrawTexture(jack.textura, jack.pos.x, jack.pos.y, RAYWHITE);
+        
+        if(CheckCollisionRecs(jack.hitbox, perso[0].hitbox) == 1)
+        {
+            jack.pos.x = -30;
+            jack.pos.y = -30;
+            jack.hitbox.x = jack.pos.x;
+            jack.hitbox.y = jack.pos.y;
+            
+            (*extra)++;
+        }
+        
+        sprites(&estadopirraia, &perso[0].textura, RAYWHITE, &posicaopirraia, &uppirraia, &downpirraia, &leftpirraia, &rightpirraia);
+        
+        
+        //fase1
+        
+        movimentoperseguidor(pioif1, &pioi1x, &pioi1y, &perso[1].textura, RAYWHITE, &lado, &perso[1].hitbox.x,&perso[1].hitbox.y );
+        Vector2 posicaopioi1 = {pioi1x, pioi1y};//variavel da sprite do pioi, pra as sprites terem a mesma posicao dele
+        sprites(&lado, &perso[1].textura, RAYWHITE, &posicaopioi1, &uppiolho, &downpiolho, &leftpiolho, &rightpiolho);
+
+        movimentoperseguidor(mamisf1, &mae1x, &mae1y, &perso[2].textura, RAYWHITE, &lado,&perso[2].hitbox.x,&perso[2].hitbox.y);
+        Vector2 posicaomae1 = {mae1x, mae1y};//variavel da sprite da mae, pra as sprites terem a mesma posicao dela 
+        sprites(&lado, &perso[2].textura, RAYWHITE, &posicaomae1, &upmami, &downmami, &leftmami, &rightmami);
+        
+       
+        movimentoperseguidor(papisf1, &pai1x, &pai1y, &perso[3].textura, RAYWHITE, &lado,&perso[3].hitbox.x,&perso[3].hitbox.y);
+        Vector2 posicaopai1 = {pai1x, pai1y};//variavel da sprite do pai, pra as sprites terem a mesma posicao dele
+        sprites(&lado, &perso[3].textura, RAYWHITE, &posicaopai1, &uppapi, &downpapi, &leftpapi, &rightpapi);
+        
+        /*if(CheckCollisionRecs(perso[0].hitbox, perso[1].hitbox) && !nperdevida){
+                (*vidas)--;
+                nperdevida=true;
+        }
+        if(CheckCollisionRecs(perso[0].hitbox, perso[2].hitbox) && !nperdevida){
+                (*vidas)--;
+                nperdevida=true;
+        }
+        if(CheckCollisionRecs(perso[0].hitbox, perso[3].hitbox) && !nperdevida){
+                (*vidas)--;
+                nperdevida=true;
+                
+        }*/
+        if(nperdevida){
+            timevida+=1.0f;
+            if(timevida==50.0f){
+                nperdevida=false;
+                timevida=0.0f;
+            }
+        }
+        
+        if((*points) >= 50 && (*extra) == 2)
+        {
+            if (CheckCollisionRecs(saida, perso[0].hitbox) == 1)
+            {
+                *extra = 0;
+                (*fase)++;
+                break;
+            }
+        }
+        
+        
+        //importante colocar a colisão antes de colocar a boneca, e depois de chamar a movimentação, pra ficar visualmente melhor
+        //colisão pra não sair do mapa
+        colisao_fase1 (&perso[0].hitbox.x, &perso[0].hitbox.y);
+        //colisão as paredes
+        for(int i = 0; i <= 21; i++)
+        {
+         if (CheckCollisionRecs (perso[0].hitbox, wall[i].hitbox))
+            {
+                //indo pra direita
+                if (perso[0].hitbox.x+10 == wall[i].hitbox.x + wall[i].hitbox.width)
+                    perso[0].hitbox.x += 5.0f;
+
+                //indo pra direita
+                if (perso[0].hitbox.x + perso[0].hitbox.width == wall[i].hitbox.x+10)
+                    perso[0].hitbox.x -= 5.0f;
+
+                //indo pra cima
+                if (perso[0].hitbox.y+10 == wall[i].hitbox.y + wall[i].hitbox.height)
+                    perso[0].hitbox.y += 5.0f;
+
+                //indo pra baixo
+                if (perso[0].hitbox.y + perso[0].hitbox.height == wall[i].hitbox.y+10)
+                    perso[0].hitbox.y -= 5.0f;
+            }   
+        } 
+        
+        DrawRectangle(350, 465, 300, 35, SKYBLUE);
+        DrawText(TextFormat("Dinheirinho: %i\t|\tExtra: %i", *points, *extra), 360, 470, 20, WHITE);
+        DrawText(TextFormat("Vidas: %i\n", *vidas), 20, 50, 20, BLACK);
+        DrawRectangle(20, 20, 80, 20, RED);
+        DrawText("PAUSA",22, 22, 20, WHITE);
+        
+        if(x >= 20 && x <= 100 && y >= 20 && y <= 40)
+        {
+            if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+            {
+                menu();
+            }
+        }
+            
+        if((*vidas)==0){
+            perdeu=true;
+        }
+        //EndMode2D();
+        EndDrawing();
+        
+        if(perdeu)
+        {
+            while(1)
+            {
+                if(IsKeyPressed(KEY_END))
+                {
+                    exit (0);
+                }
+                
+                BeginDrawing();
+                DrawTexture(gameovertx, 0,0,RAYWHITE);
+                coresaleatorias(&rgo,&ggo,&bgo,&ago,&timego);
+                
+                DrawText("GAME OVER", 300,200, 60,(Color){rp,gp,bp,ap});
+                EndDrawing();
+            }
+        }
+    }
+    
+    UnloadTexture(perso[0].textura);
+    UnloadTexture(cen1tx);
+    UnloadTexture(partytx);
+    UnloadTexture(gameovertx);
+    UnloadTexture(moeda[1].textura);
+    UnloadTexture(oculos.textura);
+    UnloadTexture(jack.textura);
+    
+    fclose(mamisf1);
+    fclose(papisf1);
+    fclose(pioif1);
+}
+
+int fase2(int* n, int* points, int* vidas, int* extra, int* fase)
+{
+    const int screenWidth = 1000;
+    const int screenHeight = 500;
+    
+    //Declaração de variaveis
+    int x, y;
+    int estadopirraia=3, lado=2;//atualizada pela função "movimentopirraia"
+    int rgo,ggo,bgo,ago,rp,gp,bp,ap;
+    float timego=0, timep=0, timemov=0;
+    float time=0.0f, timevida=0.0f;
+    bool nperdevida=false, perdeu=false;
+    Color cores1,cores2;
+    //Vetor de personagens
+    personagem perso[50];
+    
+    //Vetor paredes
+    paredes wall[50];
+
+     //cenario fase 2
+    Image cen2 = LoadImage("/raylib/RunningGirl/fundos/casa1.png");
+    ImageResize(&cen2, screenWidth, screenHeight);
+    Texture2D cen2tx = LoadTextureFromImage(cen2);
+    UnloadImage(cen2);
+    
+
+     //objetivo fase 2
+    Image objf2 = LoadImage("/raylib/RunningGirl/fundos/objfase2.png");
+    ImageResize(&objf2, screenWidth, screenHeight);
+    Texture2D objf2tx = LoadTextureFromImage(objf2);
+    UnloadImage(objf2);
+    
+    //botando o fundo festa(quando ganhar)
+    Image party = LoadImage("/raylib/RunningGirl/fundos/finalfesta1.png");
+    ImageResize(&party, screenWidth, screenHeight);
+    Texture2D partytx = LoadTextureFromImage(party);
+    UnloadImage(party);
+    
+    //botando o fundo game over
+    Image gameover = LoadImage("/raylib/RunningGirl/fundos/quarto.png");
+    ImageResize(&gameover, screenWidth, screenHeight);
+    Texture2D gameovertx = LoadTextureFromImage(gameover);
+    UnloadImage(gameover);
+    
+    //preenchendo a fujona
+    perso[0].imagem = LoadImage("/raylib/RunningGirl/sprites/pirraia.png");
+    ImageResize(&perso[0].imagem, 140, 35);
+    perso[0].textura = LoadTextureFromImage(perso[0].imagem);
+    perso[0].hitbox.x = 200.0;
+    perso[0].hitbox.y = 60.0;
+    perso[0].hitbox.width = 35;
+    perso[0].hitbox.height = 35;
+
+    //sprite DA PIRRAIA
+    Rectangle leftpirraia  = { 0.0f  , 0.0f, (float)perso[0].textura.width/4, (float)perso[0].textura.height };//PEGA A IMAGEM DA PIRRAIA VOLTADA PRA ESQUERDA
+    Rectangle rightpirraia = { 35.0f , 0.0f, (float)perso[0].textura.width/4, (float)perso[0].textura.height };//PEGA A IMAGEM DA PIRRAIA VOLTADA PRA DIREITA
+    Rectangle uppirraia    = { 70.0f , 0.0f, (float)perso[0].textura.width/4, (float)perso[0].textura.height };//PEGA A IMAGEM DA PIRRAIA VOLTADA PRA CIMA
+    Rectangle downpirraia  = { 105.0f, 0.0f, (float)perso[0].textura.width/4, (float)perso[0].textura.height };//PEGA A IMAGEM DA PIRRAIA VOLTADA PRA BAIXO
+    
+    //preenchendo o piolho
+    perso[1].imagem = LoadImage("/raylib/RunningGirl/sprites/piolho.png");
+    ImageResize(&perso[1].imagem, 140, 35);
+    perso[1].textura = LoadTextureFromImage(perso[1].imagem);
+    perso[1].pos.x = 730.0;//posição x incial do piolho
+    perso[1].pos.y = 90.0;//posição y incial do piolho
+    perso[1].hitbox.x = perso[1].pos.x;
+    perso[1].hitbox.y = perso[1].pos.y;
+    perso[1].hitbox.width = 35;
+    perso[1].hitbox.height = 35;
+    
+    //sprite DO PIOLHO
+    Rectangle leftpiolho  = { 0.0f  , 0.0f, (float)perso[1].textura.width/4, (float)perso[1].textura.height };//PEGA A IMAGEM DO PIOLHO VOLTADA PRA ESQUERDA
+    Rectangle rightpiolho = { 35.0f , 0.0f, (float)perso[1].textura.width/4, (float)perso[1].textura.height };//PEGA A IMAGEM DO PIOLHO VOLTADA PRA DIREITA
+    Rectangle uppiolho    = { 70.0f , 0.0f, (float)perso[1].textura.width/4, (float)perso[1].textura.height };//PEGA A IMAGEM DA DO PIOLHO VOLTADA PRA CIMA
+    Rectangle downpiolho  = { 105.0f, 0.0f, (float)perso[1].textura.width/4, (float)perso[1].textura.height };//PEGA A IMAGEM DO PIOLHO VOLTADA PRA BAIXO
+    
+    //preenchendo a mami
+    perso[2].imagem = LoadImage("/raylib/RunningGirl/sprites/mamis.png");
+    perso[2].textura = LoadTextureFromImage(perso[2].imagem);
+    perso[2].pos.x = 220.0;//posição x incial da mae
+    perso[2].pos.y = 440.0;//posição y incial da mae
+    perso[2].hitbox.x = perso[2].pos.x;
+    perso[2].hitbox.y = perso[2].pos.y;
+    perso[2].hitbox.width = 50;
+    perso[2].hitbox.height = 50;
+    
+    //sprite DA MAMI
+    Rectangle leftmami  = { 0.0f  , 0.0f, (float)perso[2].textura.width/4, (float)perso[2].textura.height };//PEGA A IMAGEM DA MAMI VOLTADA PRA ESQUERDA
+    Rectangle rightmami = { 50.0f , 0.0f, (float)perso[2].textura.width/4, (float)perso[2].textura.height };//PEGA A IMAGEM DA MAMI VOLTADA PRA DIREITA
+    Rectangle upmami    = { 100.0f, 0.0f, (float)perso[2].textura.width/4, (float)perso[2].textura.height };//PEGA A IMAGEM DA MAMI VOLTADA PRA CIMA
+    Rectangle downmami  = { 150.0f, 0.0f, (float)perso[2].textura.width/4, (float)perso[2].textura.height };//PEGA A IMAGEM DA MAMI VOLTADA PRA BAIXO
+    
+    //preenchendo o papi
+    perso[3].imagem = LoadImage("/raylib/RunningGirl/sprites/papis.png");
+    perso[3].textura = LoadTextureFromImage(perso[3].imagem);
+    perso[3].pos.x = 777.0;//posição x incial do pai
+    perso[3].pos.y = 446.0;//posição y incial do pai
+    perso[3].hitbox.x = perso[3].pos.x;
+    perso[3].hitbox.y = perso[3].pos.y;
+    perso[3].hitbox.width = 50;
+    perso[3].hitbox.height = 50;
+    
+     //sprite DO PAPI
+    Rectangle leftpapi  = { 0.0f  , 0.0f, (float)perso[3].textura.width/4, (float)perso[3].textura.height };//PEGA A IMAGEM DO PAPI VOLTADA PRA ESQUERDA
+    Rectangle rightpapi = { 50.0f , 0.0f, (float)perso[3].textura.width/4, (float)perso[3].textura.height };//PEGA A IMAGEM DO PAPI VOLTADA PRA DIREITA
+    Rectangle uppapi    = { 100.0f, 0.0f, (float)perso[3].textura.width/4, (float)perso[3].textura.height };//PEGA A IMAGEM DO PAPI VOLTADA PRA CIMA
+    Rectangle downpapi  = { 150.0f, 0.0f, (float)perso[3].textura.width/4, (float)perso[3].textura.height };//PEGA A IMAGEM DO PAPI VOLTADA PRA BAIXO
+   
+    //preenchendo o dog
+    perso[4].imagem = LoadImage("/raylib/RunningGirl/sprites/dog.png");
+    ImageResize(&perso[4].imagem,50,200);
+    perso[4].textura = LoadTextureFromImage(perso[4].imagem);
+    perso[4].pos.x = 777.0;//posição x incial do dog
+    perso[4].pos.y = 446.0;//posição y incial do dog
+    perso[4].hitbox.x = perso[4].pos.x;
+    perso[4].hitbox.y = perso[4].pos.y;
+    perso[4].hitbox.width = 50;
+    perso[4].hitbox.height = 50;
+    
+     //sprite DO DOG
+    Rectangle downdog  = { 0.0f, 0.0f  , (float)perso[4].textura.width, (float)perso[4].textura.height/4};//PEGA A IMAGEM DO  VOLTADA PRA ESQUERDA
+    Rectangle rightdog = { 0.0f, 50.0f, (float)perso[4].textura.width, (float)perso[4].textura.height/4};//PEGA A IMAGEM DO  VOLTADA PRA DIREITA
+    Rectangle updog    = { 0.0f, 100.0f, (float)perso[4].textura.width, (float)perso[4].textura.height/4};//PEGA A IMAGEM DO  VOLTADA PRA CIMA
+    Rectangle leftdog  = { 0.0f, 150.0f, (float)perso[4].textura.width, (float)perso[4].textura.height/4};//PEGA A IMAGEM DO  VOLTADA PRA BAIXO
+   
+    
     // declarando e posicionando as moedas da 2 fase
     coisas moeda1[114];
+    Image coin = LoadImage("/raylib/RunningGirl/objetos/cedulas.png");
+    ImageResize(&coin, 20, 20);
+    moeda1[1].textura = LoadTextureFromImage(coin);
+    UnloadImage(coin);
     
     moeda1[0].pos.x = 365;
     moeda1[0].pos.y = 210;
@@ -609,7 +1045,7 @@ int main(void)
     moeda1[13].pos.x = 240;
     moeda1[13].pos.y = 185;
     
-    count = 65;
+    int count = 65;
     for(int i = 14; i <= 33; i++)
     {
         moeda1[i].pos.x = count;
@@ -794,38 +1230,6 @@ int main(void)
         moeda1[i].hitbox.height = 1;
     }
     
-    
-    
-    //declarando e posicionando o óculos
-    coisas oculos;
-    
-    Image oculoss = LoadImage("/raylib/RunningGirl/objetos/oculos.png");
-    ImageResize(&oculoss, 45, 20);
-    oculos.textura = LoadTextureFromImage(oculoss);
-    UnloadImage(oculoss);
-    
-    oculos.pos.x = 870;
-    oculos.pos.y = 185;
-    oculos.hitbox.x = oculos.pos.x + 23;
-    oculos.hitbox.y = oculos.pos.y + 10;
-    oculos.hitbox.width = 1;
-    oculos.hitbox.height = 1;
-    
-    //declarando e posicionando a jaqueta
-    coisas jack;
-    
-    Image jacket = LoadImage("/raylib/RunningGirl/objetos/jacket.png");
-    ImageResize(&jacket, 20, 45);
-    jack.textura = LoadTextureFromImage(jacket);
-    UnloadImage(jacket);
-    
-    jack.pos.x = 250;
-    jack.pos.y = 420;
-    jack.hitbox.x = jack.pos.x + 10;
-    jack.hitbox.y = jack.pos.y + 23;
-    jack.hitbox.width = 1;
-    jack.hitbox.height = 1;
-    
     //declarando e posicionando o celular
     coisas celular;
     
@@ -857,106 +1261,7 @@ int main(void)
     chave.hitbox.height = 1;
     
     //preenchendo as paredes da fase 1:
-    //preto
-    wall[0].hitbox.x = 330;
-    wall[0].hitbox.y = 0;
-    wall[0].hitbox.width = 345;
-    wall[0].hitbox.height = 150;
-    //azul
-    wall[1].hitbox.x = 28;
-    wall[1].hitbox.y = 0;
-    wall[1].hitbox.width = 157;
-    wall[1].hitbox.height = 150;
-    //vermelho
-    wall[2].hitbox.x = 160;
-    wall[2].hitbox.y = 100;
-    wall[2].hitbox.width = 95;
-    wall[2].hitbox.height = 165;
-    //verde
-    wall[3].hitbox.x = 340;
-    wall[3].hitbox.y = 440;
-    wall[3].hitbox.width = 365;
-    wall[3].hitbox.height = 60;
-    //amarelo
-    wall[4].hitbox.x = 280;
-    wall[4].hitbox.y = 355;
-    wall[4].hitbox.width = 75;
-    wall[4].hitbox.height = 145;
-    //rosa
-    wall[5].hitbox.x = 250;
-    wall[5].hitbox.y = 330;
-    wall[5].hitbox.width = 220;
-    wall[5].hitbox.height = 45;
-    //marrom
-    wall[6].hitbox.x = 525;
-    wall[6].hitbox.y = 330;
-    wall[6].hitbox.width = 220;
-    wall[6].hitbox.height = 45;
-    //roxo
-    wall[7].hitbox.x = 666;
-    wall[7].hitbox.y = 355;
-    wall[7].hitbox.width = 39;
-    wall[7].hitbox.height = 145;
-    //laranja
-    wall[8].hitbox.x = 620;
-    wall[8].hitbox.y = 130;
-    wall[8].hitbox.width = 50;
-    wall[8].hitbox.height = 95;
-    //cinza
-    wall[9].hitbox.x = 325;
-    wall[9].hitbox.y = 115;
-    wall[9].hitbox.width = 55;
-    wall[9].hitbox.height = 135;
-    //azul escuro
-    wall[10].hitbox.x = 310;
-    wall[10].hitbox.y = 220;
-    wall[10].hitbox.width = 160;
-    wall[10].hitbox.height = 45;
-    //verde escuro
-    wall[11].hitbox.x = 525;
-    wall[11].hitbox.y = 220;
-    wall[11].hitbox.width = 280;
-    wall[11].hitbox.height = 45;
-    //lima
-    wall[12].hitbox.x = 0;
-    wall[12].hitbox.y = 220;
-    wall[12].hitbox.width = 60;
-    wall[12].hitbox.height = 115;
-    //violeta
-    wall[13].hitbox.x = 0;
-    wall[13].hitbox.y = 335;
-    wall[13].hitbox.width = 120;
-    wall[13].hitbox.height = 165;
-    //azul claro
-    wall[14].hitbox.x = 60;
-    wall[14].hitbox.y = 330;
-    wall[14].hitbox.width = 135;
-    wall[14].hitbox.height = 45;
-    //bege
-    wall[15].hitbox.x = 800;
-    wall[15].hitbox.y = 330;
-    wall[15].hitbox.width = 200;
-    wall[15].hitbox.height = 45;
-    //roxo escuro
-    wall[16].hitbox.x = 00;
-    wall[16].hitbox.y = 220;
-    wall[16].hitbox.width = 105;
-    wall[16].hitbox.height = 45;
-    //dourado
-    wall[17].hitbox.x = 860;
-    wall[17].hitbox.y = 220;
-    wall[17].hitbox.width = 140;
-    wall[17].hitbox.height = 45;
-    //preto dnv
-    wall[18].hitbox.x = 875;
-    wall[18].hitbox.y = 375;
-    wall[18].hitbox.width = 125;
-    wall[18].hitbox.height = 125;
-    //azul dnv
-    wall[19].hitbox.x = 670;
-    wall[19].hitbox.y = 140;
-    wall[19].hitbox.width = 45;
-    wall[19].hitbox.height = 30;
+    
     //vermelho dnv
     wall[20].hitbox.x = 770;
     wall[20].hitbox.y = 140;
@@ -1067,16 +1372,20 @@ int main(void)
     wall[42].hitbox.y = 00;
     wall[42].hitbox.width = 15;
     wall[42].hitbox.height = 110;
+    
     //ABRINDO ARQUIVOS DA MOVIMENTAÇÃO
-    FILE* mamisf1 = fopen ("/raylib/RunningGirl/arquivos/maefase1.txt","r");
-    FILE* papisf1 = fopen ("/raylib/RunningGirl/arquivos/paifase1.txt","r");
-    FILE* pioif1  = fopen ("/raylib/RunningGirl/arquivos/piolhofase1.txt","r");
     FILE* mamisf2 = fopen ("/raylib/RunningGirl/arquivos/maefase2.txt","r");
     FILE* papisf2 = fopen ("/raylib/RunningGirl/arquivos/paifase2.txt","r");
     FILE* pioif2  = fopen ("/raylib/RunningGirl/arquivos/piolhofase2.txt","r");
     FILE* dogsf2  = fopen ("/raylib/RunningGirl/arquivos/dogfase2.txt","r");
-    int mae1x, mae1y, pai1x, pai1y, pioi1x, pioi1y, mae2x, mae2y, pai2x, pai2y, pioi2x, pioi2y, dogx, dogy;//PRA USAR NA MOVIMENTAÇÃO DA FAMILIA
+    int mae2x, mae2y, pai2x, pai2y, pioi2x, pioi2y, dogx, dogy;//PRA USAR NA MOVIMENTAÇÃO DA FAMILIA
     
+    //rectangle de saida
+    Rectangle saida;
+    saida.x = 100;
+    saida.y = 430;
+    saida.width = 45;
+    saida.height = 70;
     
     /*
     //Declaração da camera
@@ -1085,6 +1394,296 @@ int main(void)
     cam.rotation = 0.0f;
     cam.offset = (Vector2){0.0f,0.0f};
     */
+    
+    do{ //pra aparecer objetivos fase 2
+        BeginDrawing();
+        DrawTexture(objf2tx,0,0,RAYWHITE);
+        EndDrawing();
+        time+=GetFrameTime();
+    }while(time<5.0f);
+    
+    while(1)
+    {
+        x=GetMouseX();
+        y=GetMouseY();
+        
+        BeginDrawing();
+        ClearBackground(WHITE);
+        
+        DrawTexture(cen2tx, 0,0,RAYWHITE);//Printar cenario
+        DrawText(TextFormat("%i | %i",x ,y), 500, 30, 20, BLACK);
+       
+        
+        Vector2 posicaopirraia = {perso[0].hitbox.x, perso[0].hitbox.y};
+        
+        movimentofujona (&perso[0].hitbox.x, &perso[0].hitbox.y, &estadopirraia);
+        
+        if(IsKeyPressed(KEY_END))
+        {
+            exit (0);
+        }
+        
+        if((*points) >= 80 && (*extra) == 2)
+        {
+            if (CheckCollisionRecs(saida, perso[0].hitbox) == 1)
+            {
+                *extra = 0;
+                (*fase)++;
+                break;
+            }
+        }
+        
+        //printar e checar colisão dinheirinho
+        for(int i = 0; i <= 113; i++)
+        {
+            if(CheckCollisionRecs(moeda1[i].hitbox, perso[0].hitbox) == 1)
+            {
+                (*points)++;
+                
+                moeda1[i].hitbox.x = -30;
+                moeda1[i].hitbox.y = -30;
+                moeda1[i].pos.x = -30;
+                moeda1[i].pos.y = -30;
+            }
+            
+            DrawTexture(moeda1[1].textura, moeda1[i].pos.x, moeda1[i].pos.y, RAYWHITE);
+         
+        }
+        
+        //printar e checar colisão da chave
+        DrawTexture(chave.textura, chave.pos.x, chave.pos.y, RAYWHITE);
+        
+        if(CheckCollisionRecs(chave.hitbox, perso[0].hitbox) == 1)
+        {
+            chave.pos.x = -30;
+            chave.pos.y = -30;
+            chave.hitbox.x = chave.pos.x;
+            chave.hitbox.y = chave.pos.y;
+            
+            (*extra)++;
+        }
+        
+        //printar e checar colisão da chave
+        DrawTexture(celular.textura, celular.pos.x, celular.pos.y, RAYWHITE);
+        
+        if(CheckCollisionRecs(celular.hitbox, perso[0].hitbox) == 1)
+        {
+            celular.pos.x = -30;
+            celular.pos.y = -30;
+            celular.hitbox.x = chave.pos.x;
+            celular.hitbox.y = chave.pos.y;
+            
+            (*extra)++;
+        }
+        
+        sprites(&estadopirraia, &perso[0].textura, RAYWHITE, &posicaopirraia, &uppirraia, &downpirraia, &leftpirraia, &rightpirraia);
+        
+        //fase2 mov
+        movimentoperseguidor(pioif2, &pioi2x, &pioi2y, &perso[1].textura, RAYWHITE, &lado,&perso[1].hitbox.x,&perso[1].hitbox.y);
+        Vector2 posicaopioi2 = {pioi2x, pioi2y};//variavel da sprite do pioi, pra as sprites terem a mesma posicao dele
+        sprites(&lado, &perso[1].textura, RAYWHITE, &posicaopioi2, &uppiolho, &downpiolho, &leftpiolho, &rightpiolho);
+
+        movimentoperseguidor(mamisf2, &mae2x, &mae2y, &perso[2].textura, RAYWHITE, &lado,&perso[2].hitbox.x,&perso[2].hitbox.y);
+        Vector2 posicaomae2 = {mae2x, mae2y};//variavel da sprite da mae, pra as sprites terem a mesma posicao dela 
+        sprites(&lado, &perso[2].textura, RAYWHITE, &posicaomae2, &upmami, &downmami, &leftmami, &rightmami);
+
+        movimentoperseguidor(papisf2, &pai2x, &pai2y, &perso[3].textura, RAYWHITE, &lado,&perso[3].hitbox.x,&perso[3].hitbox.y);
+        Vector2 posicaopai2 = {pai2x, pai2y};//variavel da sprite do pai, pra as sprites terem a mesma posicao dele
+        sprites(&lado, &perso[3].textura, RAYWHITE, &posicaopai2, &uppapi, &downpapi, &leftpapi, &rightpapi);
+
+        movimentoperseguidor(dogsf2, &dogx, &dogy, &perso[4].textura, RAYWHITE, &lado,&perso[4].hitbox.x,&perso[4].hitbox.y);
+        Vector2 posicaodog = {dogx, dogy};//variavel da sprite do dog, pra as sprites terem a mesma posicao dele
+        sprites(&lado, &perso[4].textura, RAYWHITE, &posicaodog, &updog, &downdog, &leftdog, &rightdog);
+        
+        /*if(CheckCollisionRecs(perso[0].hitbox, perso[1].hitbox) && !nperdevida){
+                (*vidas)--;
+                nperdevida=true;
+        }
+        if(CheckCollisionRecs(perso[0].hitbox, perso[2].hitbox) && !nperdevida){
+                (*vidas)--;
+                nperdevida=true;
+        }
+        if(CheckCollisionRecs(perso[0].hitbox, perso[3].hitbox) && !nperdevida){
+                (*vidas)--;
+                nperdevida=true;
+                
+        }
+        if(CheckCollisionRecs(perso[0].hitbox, perso[4].hitbox) && !nperdevida){
+                (*vidas)--;
+                nperdevida=true;
+                
+        }*/
+        if(nperdevida){
+            timevida+=1.0f;
+            if(timevida==50.0f){
+                nperdevida=false;
+                timevida=0.0f;
+            }
+        }
+        
+        colisao_fase2 (&perso[0].hitbox.x, &perso[0].hitbox.y);
+        
+        for(int i = 20; i <= 41; i++)
+        {
+            
+            if (CheckCollisionRecs (perso[0].hitbox, wall[i].hitbox) == 1)
+            {
+                //indo pra esquerda
+                if (perso[0].hitbox.x+10 == wall[i].hitbox.x + wall[i].hitbox.width)
+                    perso[0].hitbox.x += 5.0f;
+                
+                //indo pra direita
+                if (perso[0].hitbox.x + perso[0].hitbox.width == wall[i].hitbox.x+10)
+                    perso[0].hitbox.x -= 5.0f;
+                
+                //indo pra cima
+                if (perso[0].hitbox.y+10 == wall[i].hitbox.y + wall[i].hitbox.height)
+                    perso[0].hitbox.y += 5.0f;
+                
+                //indo pra baixo
+                if (perso[0].hitbox.y + perso[0].hitbox.height == wall[i].hitbox.y+10)
+                    perso[0].hitbox.y -= 5.0f;
+            }
+                            
+        }
+        
+        DrawRectangle(350, 465, 300, 35, SKYBLUE);
+        DrawText(TextFormat("Dinheirinho: %i\t|\tExtra: %i", *points, *extra), 355, 470, 20, WHITE);
+        
+        DrawRectangle(20, 20, 80, 20, RED);
+        DrawText("PAUSA",24, 22, 20, WHITE);
+        
+        if(x >= 20 && x <= 100 && y >= 20 && y <= 40)
+        {
+            if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+            {
+                menu();
+            }
+        }
+        
+        DrawText(TextFormat("%d", nperdevida), 200,400,60,BLUE);
+        DrawText(TextFormat("Vidas: %i\n", *vidas), 20, 50, 20, BLACK);
+        EndDrawing();
+        
+        if(perdeu)
+        {
+            while(1)
+            {
+                if(IsKeyPressed(KEY_END))
+                {
+                    exit (0);
+                }
+                
+                BeginDrawing();
+                DrawTexture(gameovertx, 0,0,RAYWHITE);
+                coresaleatorias(&rgo,&ggo,&bgo,&ago,&timego);
+                
+                DrawText("GAME OVER", 300,200, 60,(Color){rp,gp,bp,ap});
+                EndDrawing();
+            }
+        }
+        
+        
+        
+    }
+    
+    UnloadTexture(perso[0].textura);
+    UnloadTexture(cen2tx);
+    UnloadTexture(partytx);
+    UnloadTexture(gameovertx);
+    UnloadTexture(moeda1[1].textura);
+    UnloadTexture(chave.textura);
+    UnloadTexture(celular.textura);
+    UnloadTexture(objf2tx);
+    
+    fclose(mamisf2);
+    fclose(papisf2);
+    fclose(pioif2);
+    fclose(dogsf2);
+}
+
+int inserirNome(char nome[], int* fase)
+{
+    int letterCount = 0;
+    int key;
+    
+    while(1)
+    {
+        if(IsKeyPressed(KEY_END))
+        {
+            exit (0);
+        }
+        
+        BeginDrawing();
+            
+            ClearBackground(RAYWHITE);
+            DrawRectangle(0, 0, 1000, 500, RAYWHITE);
+            DrawText("Insira seu nome:", 200, 100, 25, BLACK);
+            DrawRectangle(200, 130, 600, 40, SKYBLUE);
+            DrawText("Pressione ENTER para continuar", 200, 180, 15, BLACK);
+            
+            key = GetKeyPressed();
+
+            if ((key >= 32) && (key <= 125) && (letterCount < 19))
+            {
+                nome[letterCount] = (char)key;
+                letterCount++;
+            }
+
+            else if (IsKeyPressed(KEY_BACKSPACE) && letterCount > 0)
+            {
+                letterCount--;
+                nome[letterCount] = '\0';
+            }
+            
+            else if(IsKeyPressed(KEY_ENTER)) 
+            {
+                (*fase)++;
+                break;
+            }
+            
+            DrawText(TextFormat("%s", nome), 220, 140, 25, WHITE);
+            
+        EndDrawing();
+    }
+    
+}
+
+
+int main(void)
+{
+    const int screenWidth = 1000;
+    const int screenHeight = 500;
+    
+    //Declaração de variaveis
+    int x, y;
+    
+    InitWindow(screenWidth, screenHeight, "Jogo RunningGirl");
+    InitAudioDevice();
+    
+    //imagem main menu
+    Image mainMenu = LoadImage("/raylib/RunningGirl/fundos/menu1.png");
+    ImageResize(&mainMenu, screenWidth, screenHeight);
+    Texture2D menuTexture = LoadTextureFromImage(mainMenu);
+    UnloadImage(mainMenu);
+    
+    
+    //preenchendo a struct jogador
+    int n = 0;
+    jogador jog[10];
+    for(int j = 0; j < 10; j++)
+    {
+        for(int i = 0; i < 19; i++)
+        {
+            jog[j].nome[i] = '_';
+        }
+        jog[j].points = 0;
+        jog[j].vidas = 3;
+        jog[j].extra = 0;
+        jog[j].fase = 0;
+    }
+    //jog.fujona = perso[0];
+    
     SetTargetFPS(60);
     
     while(!WindowShouldClose())
@@ -1110,220 +1709,24 @@ int main(void)
                 //Verificando se o botão JOGAR foi clicado
                 if(IsMouseButtonDown(MOUSE_LEFT_BUTTON))
                 {
-                    
                     while(1)
                     {
-                        if(IsKeyPressed(KEY_END))
+                        
+                        if (jog[n].fase == 0)
                         {
-                            return 0;
+                            inserirNome(jog[n].nome, &jog[n].fase);
+                        }
+
+                        else if(jog[n].fase == 1)
+                        {
+                            fase1(&n, &jog[n].points, &jog[n].vidas, &jog[n].extra, &jog[n].fase);
                         }
                         
-                        BeginDrawing();
-                            
-                            ClearBackground(RAYWHITE);
-                            DrawRectangle(0, 0, screenWidth, screenHeight, RAYWHITE);
-                            DrawText("Insira seu nome:", 200, 100, 25, BLACK);
-                            DrawRectangle(200, 130, 600, 40, SKYBLUE);
-                            DrawText("Pressione ENTER para continuar", 200, 180, 15, BLACK);
-                            
-                            int key = GetKeyPressed();
-
-                            if ((key >= 32) && (key <= 125) && (letterCount < 19))
-                            {
-                                jog[n].nome[letterCount] = (char)key;
-                                letterCount++;
-                            }
-
-                            else if (IsKeyPressed(KEY_BACKSPACE) && letterCount > 0)
-                            {
-                                letterCount--;
-                                jog[n].nome[letterCount] = '\0';
-                            }
-                            
-                            else if(IsKeyPressed(KEY_ENTER)) 
-                            {
-                                
-                                break;
-                            }
-                            
-                            DrawText(TextFormat("%s", jog[n].nome), 220, 140, 25, WHITE);
-                            
-                        EndDrawing();
+                        else if(jog[n].fase == 2)
+                        {
+                            fase2(&n, &jog[n].points, &jog[n].vidas, &jog[n].extra, &jog[n].fase);
+                        }
                     }
-                    
-                    do{ //pra aparecer objetivos fase 1
-                        BeginDrawing();
-                        DrawTexture(objf1tx,0,0,RAYWHITE);
-                        EndDrawing();
-                        time+=GetFrameTime();
-                    }while(time<5.0f);
-                    
-                    //FASE1 
-                    while(perdeu==false)
-                    {
-                        if(IsKeyPressed(KEY_END))
-                        {
-                            return 0;
-                        }
-                            
-                        x=GetMouseX();
-                        y=GetMouseY();
-                        
-                        BeginDrawing();  
-                        //raio da camera
-                        //cam.target = (Vector2){perso[0].pos.x-200, perso[0].pos.y-200};
-                        //BeginMode2D(cam);
-                        ClearBackground(WHITE);
-                        
-                        DrawTexture(cen1tx, 0,0,RAYWHITE);//Printar cenario
-                        
-                        DrawText(TextFormat("%i | %i",x ,y), 500, 30, 20, BLACK);
-                        
-                        Vector2 posicaopirraia = {perso[0].hitbox.x, perso[0].hitbox.y};
-                        
-                        movimentofujona (&perso[0].hitbox.x, &perso[0].hitbox.y, &estadopirraia);
-                        
-                        //printar e checar colisão dinheirinho
-                        for(int i = 0; i <= 75; i++)
-                        {
-                            if(CheckCollisionRecs(moeda[i].hitbox, perso[0].hitbox) == 1)
-                            {
-                                jog[n].points++;
-                                
-                                moeda[i].hitbox.x = -30;
-                                moeda[i].hitbox.y = -30;
-                                moeda[i].pos.x = -30;
-                                moeda[i].pos.y = -30;
-                            }
-                            
-                            DrawTexture(moeda[1].textura, moeda[i].pos.x, moeda[i].pos.y, RAYWHITE);
-                         
-                        }
-                        
-                        //printar e checar colisão do oculos
-                        DrawTexture(oculos.textura, oculos.pos.x, oculos.pos.y, RAYWHITE);
-                        
-                        if(CheckCollisionRecs(oculos.hitbox, perso[0].hitbox) == 1)
-                        {
-                            oculos.pos.x = -30;
-                            oculos.pos.y = -30;
-                            oculos.hitbox.x = oculos.pos.x;
-                            oculos.hitbox.y = oculos.pos.y;
-                            
-                            jog[n].extra++;
-                        }
-                        
-                        //printar e checar colisão da jaqueta
-                        DrawTexture(jack.textura, jack.pos.x, jack.pos.y, RAYWHITE);
-                        
-                        if(CheckCollisionRecs(jack.hitbox, perso[0].hitbox) == 1)
-                        {
-                            jack.pos.x = -30;
-                            jack.pos.y = -30;
-                            jack.hitbox.x = jack.pos.x;
-                            jack.hitbox.y = jack.pos.y;
-                            
-                            jog[n].extra++;
-                        }
-                        
-                        sprites(&estadopirraia, &perso[0].textura, RAYWHITE, &posicaopirraia, &uppirraia, &downpirraia, &leftpirraia, &rightpirraia);
-                        
-                        
-                        //fase1
-                        
-                        movimentoperseguidor(pioif1, &pioi1x, &pioi1y, &perso[1].textura, RAYWHITE, &lado, &perso[1].hitbox.x,&perso[1].hitbox.y );
-                        Vector2 posicaopioi1 = {pioi1x, pioi1y};//variavel da sprite do pioi, pra as sprites terem a mesma posicao dele
-                        sprites(&lado, &perso[1].textura, RAYWHITE, &posicaopioi1, &uppiolho, &downpiolho, &leftpiolho, &rightpiolho);
-
-                        movimentoperseguidor(mamisf1, &mae1x, &mae1y, &perso[2].textura, RAYWHITE, &lado,&perso[2].hitbox.x,&perso[2].hitbox.y);
-                        Vector2 posicaomae1 = {mae1x, mae1y};//variavel da sprite da mae, pra as sprites terem a mesma posicao dela 
-                        sprites(&lado, &perso[2].textura, RAYWHITE, &posicaomae1, &upmami, &downmami, &leftmami, &rightmami);
-                        
-                       
-                        movimentoperseguidor(papisf1, &pai1x, &pai1y, &perso[3].textura, RAYWHITE, &lado,&perso[3].hitbox.x,&perso[3].hitbox.y);
-                        Vector2 posicaopai1 = {pai1x, pai1y};//variavel da sprite do pai, pra as sprites terem a mesma posicao dele
-                        sprites(&lado, &perso[3].textura, RAYWHITE, &posicaopai1, &uppapi, &downpapi, &leftpapi, &rightpapi);
-                        
-                        if(CheckCollisionRecs(perso[0].hitbox, perso[1].hitbox) && !nperdevida){
-                                jog[n].vidas--;
-                                nperdevida=true;
-                        }
-                        if(CheckCollisionRecs(perso[0].hitbox, perso[2].hitbox) && !nperdevida){
-                                jog[n].vidas--;
-                                nperdevida=true;
-                        }
-                        if(CheckCollisionRecs(perso[0].hitbox, perso[3].hitbox) && !nperdevida){
-                                jog[n].vidas--;
-                                nperdevida=true;
-                                
-                        }
-                        if(nperdevida){
-                            timevida+=1.0f;
-                            if(timevida==50.0f){
-                                nperdevida=false;
-                                timevida=0.0f;
-                            }
-                        }
-                        
-                        
-                        //importante colocar a colisão antes de colocar a boneca, e depois de chamar a movimentação, pra ficar visualmente melhor
-                        //colisão pra não sair do mapa
-                        colisao_fase1 (&perso[0].hitbox.x, &perso[0].hitbox.y);
-                        //colisão as paredes
-                        for(int i = 0; i <= 21; i++)
-                        {
-                         if (CheckCollisionRecs (perso[0].hitbox, wall[i].hitbox))
-                            {
-                                //indo pra direita
-                                if (perso[0].hitbox.x+10 == wall[i].hitbox.x + wall[i].hitbox.width)
-                                    perso[0].hitbox.x += 5.0f;
-
-                                //indo pra direita
-                                if (perso[0].hitbox.x + perso[0].hitbox.width == wall[i].hitbox.x+10)
-                                    perso[0].hitbox.x -= 5.0f;
-
-                                //indo pra cima
-                                if (perso[0].hitbox.y+10 == wall[i].hitbox.y + wall[i].hitbox.height)
-                                    perso[0].hitbox.y += 5.0f;
-
-                                //indo pra baixo
-                                if (perso[0].hitbox.y + perso[0].hitbox.height == wall[i].hitbox.y+10)
-                                    perso[0].hitbox.y -= 5.0f;
-                            }   
-                        } 
-                        
-                        DrawRectangle(350, 465, 300, 35, SKYBLUE);
-                        DrawText(TextFormat("Dinheirinho: %i\t|\tExtra: %i", jog[n].points, jog[n].extra), 360, 470, 20, WHITE);
-                        DrawText(TextFormat("Vidas: %i\n", jog[n].vidas), 20, 50, 20, BLACK);
-                        DrawRectangle(20, 20, 80, 20, RED);
-                        DrawText("PAUSA",22, 22, 20, WHITE);
-                        
-                        if(x >= 20 && x <= 100 && y >= 20 && y <= 40)
-                        {
-                            if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-                            {
-                                menu();
-                            }
-                        }
-                            
-                        if(jog[n].vidas==0){
-                            perdeu=true;
-                        }
-                        //EndMode2D();
-                        EndDrawing();
-                        
-                        
-                    }
-                    do{
-                        BeginDrawing();
-                        DrawTexture(gameovertx, 0,0,RAYWHITE);
-                        coresaleatorias(&rgo,&ggo,&bgo,&ago,&timego);
-                        
-                        DrawText("GAME OVER", 300,200, 60,(Color){rp,gp,bp,ap});
-                        EndDrawing();
-                    }while(perdeu);
-                    
-                    
                 }
             }
             else
@@ -1338,166 +1741,7 @@ int main(void)
                 
                 if(IsMouseButtonDown(MOUSE_LEFT_BUTTON))
                 {
-                    do{ //pra aparecer objetivos fase 2
-                        BeginDrawing();
-                        DrawTexture(objf2tx,0,0,RAYWHITE);
-                        EndDrawing();
-                        time+=GetFrameTime();
-                    }while(time<5.0f);
-                    while(1)
-                    {
-                        x=GetMouseX();
-                        y=GetMouseY();
-                        
-                        BeginDrawing();
-                        ClearBackground(WHITE);
-                        
-                        DrawTexture(cen2tx, 0,0,RAYWHITE);//Printar cenario
-                        DrawText(TextFormat("%i | %i",x ,y), 500, 30, 20, BLACK);
-                       
-                        
-                        Vector2 posicaopirraia = {perso[0].hitbox.x, perso[0].hitbox.y};
-                        
-                        movimentofujona (&perso[0].hitbox.x, &perso[0].hitbox.y, &estadopirraia);
-                        
-                        //printar e checar colisão dinheirinho
-                        for(int i = 0; i <= 113; i++)
-                        {
-                            if(CheckCollisionRecs(moeda1[i].hitbox, perso[0].hitbox) == 1)
-                            {
-                                jog[n].points++;
-                                
-                                moeda1[i].hitbox.x = -30;
-                                moeda1[i].hitbox.y = -30;
-                                moeda1[i].pos.x = -30;
-                                moeda1[i].pos.y = -30;
-                            }
-                            
-                            DrawTexture(moeda[1].textura, moeda1[i].pos.x, moeda1[i].pos.y, RAYWHITE);
-                         
-                        }
-                        
-                        //printar e checar colisão da chave
-                        DrawTexture(chave.textura, chave.pos.x, chave.pos.y, RAYWHITE);
-                        
-                        if(CheckCollisionRecs(chave.hitbox, perso[0].hitbox) == 1)
-                        {
-                            chave.pos.x = -30;
-                            chave.pos.y = -30;
-                            chave.hitbox.x = chave.pos.x;
-                            chave.hitbox.y = chave.pos.y;
-                            
-                            jog[n].extra++;
-                        }
-                        
-                        //printar e checar colisão da chave
-                        DrawTexture(celular.textura, celular.pos.x, celular.pos.y, RAYWHITE);
-                        
-                        if(CheckCollisionRecs(celular.hitbox, perso[0].hitbox) == 1)
-                        {
-                            celular.pos.x = -30;
-                            celular.pos.y = -30;
-                            celular.hitbox.x = chave.pos.x;
-                            celular.hitbox.y = chave.pos.y;
-                            
-                            jog[n].extra++;
-                        }
-                        
-                        sprites(&estadopirraia, &perso[0].textura, RAYWHITE, &posicaopirraia, &uppirraia, &downpirraia, &leftpirraia, &rightpirraia);
-                        
-                        //fase2 mov
-                        movimentoperseguidor(pioif2, &pioi2x, &pioi2y, &perso[1].textura, RAYWHITE, &lado,&perso[1].hitbox.x,&perso[1].hitbox.y);
-                        Vector2 posicaopioi2 = {pioi2x, pioi2y};//variavel da sprite do pioi, pra as sprites terem a mesma posicao dele
-                        sprites(&lado, &perso[1].textura, RAYWHITE, &posicaopioi2, &uppiolho, &downpiolho, &leftpiolho, &rightpiolho);
-
-                        movimentoperseguidor(mamisf2, &mae2x, &mae2y, &perso[2].textura, RAYWHITE, &lado,&perso[2].hitbox.x,&perso[2].hitbox.y);
-                        Vector2 posicaomae2 = {mae2x, mae2y};//variavel da sprite da mae, pra as sprites terem a mesma posicao dela 
-                        sprites(&lado, &perso[2].textura, RAYWHITE, &posicaomae2, &upmami, &downmami, &leftmami, &rightmami);
-
-                        movimentoperseguidor(papisf2, &pai2x, &pai2y, &perso[3].textura, RAYWHITE, &lado,&perso[3].hitbox.x,&perso[3].hitbox.y);
-                        Vector2 posicaopai2 = {pai2x, pai2y};//variavel da sprite do pai, pra as sprites terem a mesma posicao dele
-                        sprites(&lado, &perso[3].textura, RAYWHITE, &posicaopai2, &uppapi, &downpapi, &leftpapi, &rightpapi);
-
-                        movimentoperseguidor(dogsf2, &dogx, &dogy, &perso[4].textura, RAYWHITE, &lado,&perso[4].hitbox.x,&perso[4].hitbox.y);
-                        Vector2 posicaodog = {dogx, dogy};//variavel da sprite do dog, pra as sprites terem a mesma posicao dele
-                        sprites(&lado, &perso[4].textura, RAYWHITE, &posicaodog, &updog, &downdog, &leftdog, &rightdog);
-                        
-                        if(CheckCollisionRecs(perso[0].hitbox, perso[1].hitbox) && !nperdevida){
-                                jog[n].vidas--;
-                                nperdevida=true;
-                        }
-                        if(CheckCollisionRecs(perso[0].hitbox, perso[2].hitbox) && !nperdevida){
-                                jog[n].vidas--;
-                                nperdevida=true;
-                        }
-                        if(CheckCollisionRecs(perso[0].hitbox, perso[3].hitbox) && !nperdevida){
-                                jog[n].vidas--;
-                                nperdevida=true;
-                                
-                        }
-                        if(CheckCollisionRecs(perso[0].hitbox, perso[4].hitbox) && !nperdevida){
-                                jog[n].vidas--;
-                                nperdevida=true;
-                                
-                        }
-                        if(nperdevida){
-                            timevida+=1.0f;
-                            if(timevida==50.0f){
-                                nperdevida=false;
-                                timevida=0.0f;
-                            }
-                        }
-                        
-                        colisao_fase2 (&perso[0].hitbox.x, &perso[0].hitbox.y);
-                        
-                        for(int i = 20; i <= 41; i++)
-                        {
-                            
-                            if (CheckCollisionRecs (perso[0].hitbox, wall[i].hitbox) == 1)
-                            {
-                                //indo pra esquerda
-                                if (perso[0].hitbox.x+10 == wall[i].hitbox.x + wall[i].hitbox.width)
-                                    perso[0].hitbox.x += 5.0f;
-                                
-                                //indo pra direita
-                                if (perso[0].hitbox.x + perso[0].hitbox.width == wall[i].hitbox.x+10)
-                                    perso[0].hitbox.x -= 5.0f;
-                                
-                                //indo pra cima
-                                if (perso[0].hitbox.y+10 == wall[i].hitbox.y + wall[i].hitbox.height)
-                                    perso[0].hitbox.y += 5.0f;
-                                
-                                //indo pra baixo
-                                if (perso[0].hitbox.y + perso[0].hitbox.height == wall[i].hitbox.y+10)
-                                    perso[0].hitbox.y -= 5.0f;
-                            }
-                                            
-                        }
-                        
-                        DrawRectangle(350, 465, 300, 35, SKYBLUE);
-                        DrawText(TextFormat("Dinheirinho: %i\t|\tExtra: %i", jog[n].points, jog[n].extra), 355, 470, 20, WHITE);
-                        
-                        DrawRectangle(20, 20, 80, 20, RED);
-                        DrawText("PAUSA",24, 22, 20, WHITE);
-                        
-                        if(x >= 20 && x <= 100 && y >= 20 && y <= 40)
-                        {
-                            if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-                            {
-                                menu();
-                            }
-                        }
-                        
-                        DrawText(TextFormat("%d", nperdevida), 200,400,60,BLUE);
-                        DrawText(TextFormat("Vidas: %i\n", jog[n].vidas), 20, 50, 20, BLACK);
-                        EndDrawing();
-                        
-                        if(IsKeyPressed(KEY_END))
-                        {
-                            return 0;
-                        }
-                            
-                    }
+                    fase2(&n, &jog[n].points, &jog[n].vidas, &jog[n].extra, &jog[n].fase);
                 }
             }
             else
@@ -1537,28 +1781,6 @@ int main(void)
     
     //descarregar imagens e texturas
     UnloadTexture(menuTexture);
-    UnloadTexture(perso[0].textura);
-    UnloadTexture(cen1tx);
-    UnloadTexture(cen2tx);
-    UnloadTexture(partytx);
-    UnloadTexture(gameovertx);
-    UnloadTexture(moeda[1].textura);
-    UnloadTexture(chave.textura);
-    UnloadTexture(moeda[1].textura);
-    UnloadTexture(chave.textura);
-    UnloadTexture(oculos.textura);
-    UnloadTexture(celular.textura);
-    UnloadTexture(jack.textura);
-    UnloadTexture(objf1tx);
-    UnloadTexture(objf2tx);
-    
-    fclose(mamisf2);
-    fclose(papisf2);
-    fclose(pioif2);
-    fclose(dogsf2);
-    fclose(mamisf1);
-    fclose(papisf1);
-    fclose(pioif1);
     
     CloseWindow();
     
