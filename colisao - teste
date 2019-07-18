@@ -1,4 +1,5 @@
 #include "raylib.h"
+#include <stdlib.h>
 
 typedef struct personagem
 {
@@ -15,45 +16,37 @@ typedef struct paredes
     Rectangle hitbox;
 }paredes;
 
-typedef struct meninateste
-{
-    Vector2 pos;
-    Rectangle hitbox;
-}meninateste;
-
-//tirei os parametros a mais q tinha pra deixar só a da hitbox
 void movimentofujona(float *x, float *y, int *estado){
     if(IsKeyDown(KEY_W)||IsKeyDown(KEY_UP)){
-        *y-=5.0f;
+        *y -= 5.0f;
         *estado = 0;
     }
     else if(IsKeyDown(KEY_S)||IsKeyDown(KEY_DOWN)){
-        *y+=5.0f;
+        *y += 5.0f;
         *estado = 1;
     }
     else if(IsKeyDown(KEY_A)||IsKeyDown(KEY_LEFT)){
-        *x-=5.0f;
+        *x -= 5.0f;
         *estado = 2;
     }
     else if(IsKeyDown(KEY_D)||IsKeyDown(KEY_RIGHT)){
-        *x+=5.0f;
+        *x += 5.0f;
         *estado = 3;
     }
     //essa função tá retornando valores pra atualizar a variavel "estadopirraia", pra poder usar no switch e printar a foto certa da pirraia em cada caso.
 }
 
-void colisao (float *x, float *y)
+void colisao_fase1 (float *x, float *y)
 {
     //colisão com as paredes:
     //é bom colocar essa parte antes de desenhar o personagem pra visualmente ela só ficar parada
-    //colocar depois de chamar a função da movimentação tbm
             
     //lado esquerdo:
     if (*x+10 <= 28) 
         *x += 5.0f;
             
     //lado direito:
-    if (*x+40 >= 940)
+    if (*x+35 >= 950)
         *x -= 5.0f;
             
     //cima:
@@ -61,9 +54,10 @@ void colisao (float *x, float *y)
         *y += 5.0f;
             
     //baixo:
-    if (*y+50 >= 500)
+    if (*y+35 >= 500)
         *y -= 5.0f;
 }
+
 
 
 int main(void)
@@ -72,14 +66,17 @@ int main(void)
     const int screenHeight = 500;
     
     int x, y;
-    //tirei as outras variaveis q n vou usar por enquanto
     int estadopirraia=3;//atualizada pela função "movimentopirraia"
+
     
-    SetTargetFPS(60);                   
+    SetTargetFPS(60);       
     
     personagem perso[50];
+    
+    //declarando as paredes
     paredes wall[50];
-
+    
+    
     InitWindow(screenWidth, screenHeight, "Colisão");
     
     Image cen1 = LoadImage("/raylib/RunningGirl/fundos/casa.png");
@@ -87,15 +84,15 @@ int main(void)
     Texture2D cen1tx = LoadTextureFromImage(cen1);
     UnloadImage(cen1);
 
-    //preenchendo a fujona
+   //preenchendo a fujona
     perso[0].imagem = LoadImage("/raylib/RunningGirl/sprites/pirraia.png");
     ImageResize(&perso[0].imagem, 140, 35);
     perso[0].textura = LoadTextureFromImage(perso[0].imagem);
-    perso[0].hitbox.x = 200.0;
-    perso[0].hitbox.y = 60.0;
-    perso[0].hitbox.width = 32;
-    perso[0].hitbox.height = 45;
-    
+    perso[0].hitbox.x = 475.0;
+    perso[0].hitbox.y = 310.0;
+    perso[0].hitbox.width = 35;
+    perso[0].hitbox.height = 35;
+   
     //sprite DA PIRRAIA
     Rectangle leftpirraia  = { 0.0f  , 0.0f, (float)perso[0].textura.width/4, (float)perso[0].textura.height };//PEGA A IMAGEM DA PIRRAIA VOLTADA PRA ESQUERDA
     Rectangle rightpirraia = { 35.0f , 0.0f, (float)perso[0].textura.width/4, (float)perso[0].textura.height };//PEGA A IMAGEM DA PIRRAIA VOLTADA PRA DIREITA
@@ -113,34 +110,34 @@ int main(void)
     wall[1].hitbox.width = 157;
     wall[1].hitbox.height = 150;
     //vermelho
-    wall[2].hitbox.x = 160;
+    wall[2].hitbox.x = 170;
     wall[2].hitbox.y = 100;
-    wall[2].hitbox.width = 95;
+    wall[2].hitbox.width = 85;
     wall[2].hitbox.height = 165;
     //verde
     wall[3].hitbox.x = 340;
-    wall[3].hitbox.y = 440;
-    wall[3].hitbox.width = 365;
+    wall[3].hitbox.y = 430;
+    wall[3].hitbox.width = 325;
     wall[3].hitbox.height = 60;
     //amarelo
     wall[4].hitbox.x = 280;
     wall[4].hitbox.y = 355;
-    wall[4].hitbox.width = 75;
+    wall[4].hitbox.width = 65;
     wall[4].hitbox.height = 145;
     //rosa
-    wall[5].hitbox.x = 250;
+    wall[5].hitbox.x = 260;
     wall[5].hitbox.y = 330;
-    wall[5].hitbox.width = 220;
+    wall[5].hitbox.width = 210;
     wall[5].hitbox.height = 45;
     //marrom
-    wall[6].hitbox.x = 525;
+    wall[6].hitbox.x = 535;
     wall[6].hitbox.y = 330;
-    wall[6].hitbox.width = 220;
+    wall[6].hitbox.width = 210;
     wall[6].hitbox.height = 45;
     //roxo
-    wall[7].hitbox.x = 666;
+    wall[7].hitbox.x = 665;
     wall[7].hitbox.y = 355;
-    wall[7].hitbox.width = 39;
+    wall[7].hitbox.width = 40;
     wall[7].hitbox.height = 145;
     //laranja
     wall[8].hitbox.x = 620;
@@ -148,20 +145,20 @@ int main(void)
     wall[8].hitbox.width = 50;
     wall[8].hitbox.height = 95;
     //cinza
-    wall[9].hitbox.x = 325;
-    wall[9].hitbox.y = 115;
-    wall[9].hitbox.width = 55;
-    wall[9].hitbox.height = 135;
+    wall[9].hitbox.x = 330;
+    wall[9].hitbox.y = 105;
+    wall[9].hitbox.width = 50;
+    wall[9].hitbox.height = 145;
     //azul escuro
-    wall[10].hitbox.x = 310;
-    wall[10].hitbox.y = 220;
-    wall[10].hitbox.width = 160;
-    wall[10].hitbox.height = 45;
+    wall[10].hitbox.x = 330;
+    wall[10].hitbox.y = 210;
+    wall[10].hitbox.width = 140;
+    wall[10].hitbox.height = 55;
     //verde escuro
-    wall[11].hitbox.x = 525;
-    wall[11].hitbox.y = 220;
-    wall[11].hitbox.width = 280;
-    wall[11].hitbox.height = 45;
+    wall[11].hitbox.x = 535;
+    wall[11].hitbox.y = 210;
+    wall[11].hitbox.width = 270;
+    wall[11].hitbox.height = 55;
     //lima
     wall[12].hitbox.x = 0;
     wall[12].hitbox.y = 220;
@@ -178,9 +175,9 @@ int main(void)
     wall[14].hitbox.width = 135;
     wall[14].hitbox.height = 45;
     //bege
-    wall[15].hitbox.x = 800;
+    wall[15].hitbox.x = 810;
     wall[15].hitbox.y = 330;
-    wall[15].hitbox.width = 200;
+    wall[15].hitbox.width = 190;
     wall[15].hitbox.height = 45;
     //roxo escuro
     wall[16].hitbox.x = 00;
@@ -188,9 +185,9 @@ int main(void)
     wall[16].hitbox.width = 105;
     wall[16].hitbox.height = 45;
     //dourado
-    wall[17].hitbox.x = 860;
+    wall[17].hitbox.x = 870;
     wall[17].hitbox.y = 220;
-    wall[17].hitbox.width = 140;
+    wall[17].hitbox.width = 130;
     wall[17].hitbox.height = 45;
     //preto dnv
     wall[18].hitbox.x = 875;
@@ -199,20 +196,20 @@ int main(void)
     wall[18].hitbox.height = 125;
     //azul dnv
     wall[19].hitbox.x = 670;
-    wall[19].hitbox.y = 140;
+    wall[19].hitbox.y = 130;
     wall[19].hitbox.width = 45;
-    wall[19].hitbox.height = 30;
+    wall[19].hitbox.height = 40;
     //vermelho dnv
-    wall[20].hitbox.x = 770;
-    wall[20].hitbox.y = 140;
-    wall[20].hitbox.width = 230;
-    wall[20].hitbox.height = 30;
+    wall[20].hitbox.x = 780;
+    wall[20].hitbox.y = 130;
+    wall[20].hitbox.width = 220;
+    wall[20].hitbox.height = 40;
     //roxo dnv
     wall[21].hitbox.x = 815;
     wall[21].hitbox.y = 00;
-    wall[21].hitbox.width = 185;
+    wall[21].hitbox.width = 20;
     wall[21].hitbox.height = 140;
-
+    
     
     while (!WindowShouldClose())
     {
@@ -224,13 +221,10 @@ int main(void)
         ClearBackground(RAYWHITE); // mesmo background aleatorio só pra rodar
         
         DrawTexture(cen1tx, 0,0,RAYWHITE); // Printar cenario
-        
-        //substitui o pos.x por hitbox.x
-        Vector2 posicaopirraia = {perso[0].hitbox.x, perso[0].hitbox.y};//variavel da sprite da pirraia, pra as sprites terem a mesma posicao dela    
-        
 
-        //mesma coisa aqui
-        movimentofujona(&perso[0].hitbox.x, &perso[0].hitbox.y, &estadopirraia);//Movimentação pirraia
+        Vector2 posicaopirraia = {perso[0].hitbox.x, perso[0].hitbox.y}; //variavel da sprite da pirraia, pra as sprites terem a mesma posicao dela    
+        
+        movimentofujona(&perso[0].hitbox.x, &perso[0].hitbox.y, &estadopirraia); //Movimentação pirraia
         switch(estadopirraia)//pra printar a pirraia do lado certo e sem sumir
         {
             case 0:
@@ -247,94 +241,30 @@ int main(void)
             break;
          }
          
-        //ah é bom botar colisao dps de movimentação pra só mostrar ela parada
-        colisao (&perso[0].hitbox.x, &perso[0].hitbox.y);
-
-            
-        //colisão com o retângulo:
+        colisao_fase1 (&perso[0].hitbox.x, &perso[0].hitbox.y);
         
-        //BLACK
+        //colisão com o retângulo:
         for(int i = 0; i <= 21; i++)
         {
-            
-            if (CheckCollisionRecs (perso[0].hitbox, wall[i].hitbox) == 1)
+         if (CheckCollisionRecs (perso[0].hitbox, wall[i].hitbox))
             {
-                //indo pela direita do objeto
-                if (perso[0].hitbox.x+10 == wall[0].hitbox.x + wall[i].hitbox.width) //esse +5 é só pra ficar visualmente melhor
+                //indo pra direita
+                if (perso[0].hitbox.x+10 == wall[i].hitbox.x + wall[i].hitbox.width)
                     perso[0].hitbox.x += 5.0f;
-                
-                //indo pela esquerda do objeto
-                if (perso[0].hitbox.x + perso[0].hitbox.width == wall[i].hitbox.x+10) //esse +5 é só pra ficar visualmente melhor
+
+                //indo pra direita
+                if (perso[0].hitbox.x + perso[0].hitbox.width == wall[i].hitbox.x+10)
                     perso[0].hitbox.x -= 5.0f;
-                
-                //indo por baixo
-                if (perso[0].hitbox.y+10 == wall[0].hitbox.y + wall[i].hitbox.height) //esse +5 é só pra ficar visualmente melhor
+
+                //indo pra cima
+                if (perso[0].hitbox.y+10 == wall[i].hitbox.y + wall[i].hitbox.height)
                     perso[0].hitbox.y += 5.0f;
-                
-                //indo por cima
-                if (perso[0].hitbox.y + perso[0].hitbox.height == wall[i].hitbox.y+10) //esse +5 é só pra ficar visualmente melhor
+
+                //indo pra baixo
+                if (perso[0].hitbox.y + perso[0].hitbox.height == wall[i].hitbox.y+10)
                     perso[0].hitbox.y -= 5.0f;
-            }
-            
+            }   
         }
-        
-        
-        //os retangulos das hitboxs
-        //DrawRectangleRec (perso[0].hitbox, RAYWHITE);
-        
-        //DrawRectangleRec (perso[1].hitbox, RAYWHITE);*/
- 
-        //as boneca
-        
-        //as paredes:
-        /*
-        //preto
-        DrawRectangle(wall[0].hitbox.x, wall[0].hitbox.y, wall[0].hitbox.width, wall[0].hitbox.height, BLACK);
-        //azul
-        DrawRectangle(wall[1].hitbox.x, wall[1].hitbox.y, wall[1].hitbox.width, wall[1].hitbox.height, BLUE);
-        //vermelho
-        DrawRectangle(wall[2].hitbox.x, wall[2].hitbox.y, wall[2].hitbox.width, wall[2].hitbox.height, RED);
-        //verde
-        DrawRectangle(wall[3].hitbox.x, wall[3].hitbox.y, wall[3].hitbox.width, wall[3].hitbox.height, GREEN);
-        //amarelo
-        DrawRectangle(wall[4].hitbox.x, wall[4].hitbox.y, wall[4].hitbox.width, wall[4].hitbox.height, YELLOW);
-        //rosa
-        DrawRectangle(wall[5].hitbox.x, wall[5].hitbox.y, wall[5].hitbox.width, wall[5].hitbox.height, PINK);
-        //marrom
-        DrawRectangle(wall[6].hitbox.x, wall[6].hitbox.y, wall[6].hitbox.width, wall[6].hitbox.height, DARKBROWN);
-        //roxo
-        DrawRectangle(wall[7].hitbox.x, wall[7].hitbox.y, wall[7].hitbox.width, wall[7].hitbox.height, PURPLE);
-        //laranja
-        DrawRectangle(wall[8].hitbox.x, wall[8].hitbox.y, wall[8].hitbox.width, wall[8].hitbox.height, ORANGE);
-        //cinza
-        DrawRectangle(wall[9].hitbox.x, wall[9].hitbox.y, wall[9].hitbox.width, wall[9].hitbox.height, GRAY);
-        //azulescuro
-        DrawRectangle(wall[10].hitbox.x, wall[10].hitbox.y, wall[10].hitbox.width, wall[10].hitbox.height, DARKBLUE);
-        //VERDEescuro
-        DrawRectangle(wall[11].hitbox.x, wall[11].hitbox.y, wall[11].hitbox.width, wall[11].hitbox.height, DARKGREEN);
-        //lime
-        DrawRectangle(wall[12].hitbox.x, wall[12].hitbox.y, wall[12].hitbox.width, wall[12].hitbox.height, LIME);
-        //violeta
-        DrawRectangle(wall[13].hitbox.x, wall[13].hitbox.y, wall[13].hitbox.width, wall[13].hitbox.height, VIOLET);
-        //azul claro
-        DrawRectangle(wall[14].hitbox.x, wall[14].hitbox.y, wall[14].hitbox.width, wall[14].hitbox.height, SKYBLUE);
-        //bege
-        DrawRectangle(wall[15].hitbox.x, wall[15].hitbox.y, wall[15].hitbox.width, wall[15].hitbox.height, BEIGE);
-        //roxo escuro
-        DrawRectangle(wall[16].hitbox.x, wall[16].hitbox.y, wall[16].hitbox.width, wall[16].hitbox.height, DARKPURPLE);
-        //dourado
-        DrawRectangle(wall[17].hitbox.x, wall[17].hitbox.y, wall[17].hitbox.width, wall[17].hitbox.height, GOLD);
-        //preto de novo
-        DrawRectangle(wall[18].hitbox.x, wall[18].hitbox.y, wall[18].hitbox.width, wall[18].hitbox.height, BLACK);
-        //azul de novo
-        DrawRectangle(wall[19].hitbox.x, wall[19].hitbox.y, wall[19].hitbox.width, wall[19].hitbox.height, BLUE);
-        //vermelho de novo
-        DrawRectangle(wall[20].hitbox.x, wall[20].hitbox.y, wall[20].hitbox.width, wall[20].hitbox.height, RED);
-        //roxo de novo
-        DrawRectangle(wall[21].hitbox.x, wall[21].hitbox.y, wall[21].hitbox.width, wall[21].hitbox.height, PURPLE);
-        
-        DrawText(TextFormat("%i | %i",x ,y), 500, 30, 20, GOLD);
-        */
         
         EndDrawing();
         
