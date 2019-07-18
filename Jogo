@@ -158,18 +158,22 @@ void movimentofujona(float *x, float *y, int *estado){
     if(IsKeyDown(KEY_W)){
         *y-=5.0f;
         *estado = 0;//up
+      
     }
     else if(IsKeyDown(KEY_S)){
         *y+=5.0f;
         *estado = 1;//down
+      
     }
     else if(IsKeyDown(KEY_A)){
         *x-=5.0f;
         *estado = 2;//left
+   
     }
     else if(IsKeyDown(KEY_D)){
         *x+=5.0f;
         *estado = 3;//right
+     
     }
     
     //essa função tá retornando valores pra atualizar a variavel "estadopirraia", pra poder usar no switch e printar a foto certa da pirraia em cada caso.
@@ -272,7 +276,8 @@ int fase1(int* n, int* points, int* vidas, int* extra, int* fase)
     float timego=0, timep=0, timemov=0;
     float time=0.0f, timevida=0.0f;
     bool nperdevida=false, perdeu=false;
-    Color cores1,cores2;
+    int temp=0, temf=0;
+    float xpir=517.0f, ypir=300.0f,  falax=395.0f, falay=190.0f;
     
     //Vetor de personagens
     personagem perso[50];
@@ -303,6 +308,38 @@ int fase1(int* n, int* points, int* vidas, int* extra, int* fase)
     ImageResize(&gameover, screenWidth, screenHeight);
     Texture2D gameovertx = LoadTextureFromImage(gameover);
     UnloadImage(gameover);
+    
+    Image his = LoadImage("/raylib/RunningGirl/fundos/historinhafundo.png");
+    ImageResize(&his, screenWidth, screenHeight);
+    Texture2D histx = LoadTextureFromImage(his);
+    UnloadImage(his);
+    
+    Image pir = LoadImage("/raylib/RunningGirl/sprites/falandopirraia.png");
+    ImageResize(&pir, 250,200);
+    Texture2D pirtx = LoadTextureFromImage(pir);
+    UnloadImage(pir);
+    //Rectangle bicol   = {0.0f  , 0.0f  , (float)pirtx.width/3, (float)pirtx.height/2};
+    Rectangle aberta  = {83.3f , 0.0f  , (float)pirtx.width/3, (float)pirtx.height/2};
+    //Rectangle choks   = {166.6f, 0.0f  , (float)pirtx.width/3, (float)pirtx.height/2};
+    //Rectangle bicor   = {0.0f  , 100.0f, (float)pirtx.width/3, (float)pirtx.height/2};
+    Rectangle fechada = {83.3f , 100.0f, (float)pirtx.width/3, (float)pirtx.height/2};
+    //Rectangle safada  = {166.6f, 100.0f, (float)pirtx.width/3, (float)pirtx.height/2};
+    Vector2 posicaopir = {xpir,ypir};
+    
+    Image fala = LoadImage("/raylib/RunningGirl/sprites/falas1.png");
+    //ImageResize(&fala,2430, 250);
+    Texture2D falatx = LoadTextureFromImage(fala);
+    UnloadImage(fala); 
+    Rectangle fala1 = {0.0f   , 0.0f, (float)falatx.width/9, (float)falatx.height};
+    Rectangle fala2 = {190.0f  , 0.0f, (float)falatx.width/9, (float)falatx.height};
+    Rectangle fala3 = {380.0f , 0.0f, (float)falatx.width/9, (float)falatx.height};
+    Rectangle fala4 = {570.0f , 0.0f, (float)falatx.width/9, (float)falatx.height};
+    Rectangle fala5 = {760.0f , 0.0f, (float)falatx.width/9, (float)falatx.height};
+    Rectangle fala6 = {950.0f, 0.0f,  (float)falatx.width/9, (float)falatx.height};
+    Rectangle fala7 = {1140.0f, 0.0f, (float)falatx.width/9, (float)falatx.height};
+    Rectangle fala8 = {1330.0f, 0.0f, (float)falatx.width/9, (float)falatx.height};
+    Rectangle fala9 = {1520.0f, 0.0f, (float)falatx.width/9, (float)falatx.height};
+    Vector2 posicaofala = {falax,falay};
     
     //preenchendo a fujona
     perso[0].imagem = LoadImage("/raylib/RunningGirl/sprites/pirraia.png");
@@ -650,20 +687,80 @@ int fase1(int* n, int* points, int* vidas, int* extra, int* fase)
     saida.width = 60;
     saida.height = 40;
     
-    /*
+/*
     //Declaração da camera
     Camera2D cam;
     cam.zoom = 2.2f;
     cam.rotation = 0.0f;
     cam.offset = (Vector2){0.0f,0.0f};
-    */
-    
+*/
+    while(1){
+        BeginDrawing();
+        DrawTexture(histx, 0,0, RAYWHITE);
+        
+        if(temf<100){
+            DrawTextureRec(falatx, fala1, posicaofala,RAYWHITE);
+            temf++;
+        }
+        if(temf>=100&&temf<200){
+            DrawTextureRec(falatx, fala2, posicaofala,RAYWHITE);
+            temf++;
+        }
+        if(temf>=200&&temf<300){
+            DrawTextureRec(falatx, fala3, posicaofala,RAYWHITE);
+            temf++;
+        }
+        if(temf>=300&&temf<400){
+            DrawTextureRec(falatx, fala4, posicaofala,RAYWHITE);
+            temf++;
+        }
+        if(temf>=400&&temf<500){
+            DrawTextureRec(falatx, fala5, posicaofala,RAYWHITE);
+            temf++;
+        }
+        if(temf>=500&&temf<600){
+            DrawTextureRec(falatx, fala6, posicaofala,RAYWHITE);
+            temf++;
+        }
+        if(temf>=600&&temf<700){
+            DrawTextureRec(falatx, fala7, posicaofala,RAYWHITE);
+            temf++;
+        }
+        if(temf>=700&&temf<800){
+            DrawTextureRec(falatx, fala8, posicaofala,RAYWHITE);
+            temf++;
+        }
+        if(temf>=800&&temf<900){
+            DrawTextureRec(falatx, fala9, posicaofala,RAYWHITE);
+            temf++;
+        }
+        if(temf==900){
+            break;
+        }
+        
+        if(temp<40){
+            DrawTextureRec(pirtx, aberta, posicaopir, RAYWHITE);
+            temp++;
+        }
+        if(temp>=40&&temp<=80){
+            DrawTextureRec(pirtx, fechada, posicaopir, RAYWHITE);
+            temp++;   
+        }
+        if(temp==80){
+            temp=0;
+        }
+
+        EndDrawing();
+    }
     do{ //pra aparecer objetivos fase 1
         BeginDrawing();
         DrawTexture(objf1tx,0,0,RAYWHITE);
         EndDrawing();
         time+=GetFrameTime();
-    }while(time<5.0f);
+        if (time>=10){
+            break;
+        }
+    }while(!IsKeyPressed(KEY_ENTER));
                     
     //FASE1 
     while(perdeu==false)
@@ -751,7 +848,7 @@ int fase1(int* n, int* points, int* vidas, int* extra, int* fase)
         Vector2 posicaopai1 = {pai1x, pai1y};//variavel da sprite do pai, pra as sprites terem a mesma posicao dele
         sprites(&lado, &perso[3].textura, RAYWHITE, &posicaopai1, &uppapi, &downpapi, &leftpapi, &rightpapi);
         
-        /*if(CheckCollisionRecs(perso[0].hitbox, perso[1].hitbox) && !nperdevida){
+        if(CheckCollisionRecs(perso[0].hitbox, perso[1].hitbox) && !nperdevida){
                 (*vidas)--;
                 nperdevida=true;
         }
@@ -763,10 +860,10 @@ int fase1(int* n, int* points, int* vidas, int* extra, int* fase)
                 (*vidas)--;
                 nperdevida=true;
                 
-        }*/
+        }
         if(nperdevida){
             timevida+=1.0f;
-            if(timevida==50.0f){
+            if(timevida==100.0f){
                 nperdevida=false;
                 timevida=0.0f;
             }
@@ -778,8 +875,10 @@ int fase1(int* n, int* points, int* vidas, int* extra, int* fase)
             {
                 *extra = 0;
                 (*fase)++;
+                
                 break;
             }
+            
         }
         
         
@@ -841,8 +940,7 @@ int fase1(int* n, int* points, int* vidas, int* extra, int* fase)
                 BeginDrawing();
                 DrawTexture(gameovertx, 0,0,RAYWHITE);
                 coresaleatorias(&rgo,&ggo,&bgo,&ago,&timego);
-                
-                DrawText("GAME OVER", 300,200, 60,(Color){rp,gp,bp,ap});
+                DrawText("GAME OVER", 300,100, 70,(Color){rgo,ggo,bgo,ago});
                 EndDrawing();
             }
         }
@@ -855,6 +953,9 @@ int fase1(int* n, int* points, int* vidas, int* extra, int* fase)
     UnloadTexture(moeda[1].textura);
     UnloadTexture(oculos.textura);
     UnloadTexture(jack.textura);
+    UnloadTexture(pirtx);
+    UnloadTexture(histx);
+    UnloadTexture(falatx);
     
     fclose(mamisf1);
     fclose(papisf1);
@@ -873,7 +974,7 @@ int fase2(int* n, int* points, int* vidas, int* extra, int* fase)
     float timego=0, timep=0, timemov=0;
     float time=0.0f, timevida=0.0f;
     bool nperdevida=false, perdeu=false;
-    Color cores1,cores2;
+ 
     //Vetor de personagens
     personagem perso[50];
     
@@ -1333,14 +1434,13 @@ int fase2(int* n, int* points, int* vidas, int* extra, int* fase)
     saida.y = 430;
     saida.width = 45;
     saida.height = 70;
-    
-    /*
+/*
     //Declaração da camera
     Camera2D cam;
     cam.zoom = 2.2f;
     cam.rotation = 0.0f;
     cam.offset = (Vector2){0.0f,0.0f};
-    */
+*/
     
     do{ //pra aparecer objetivos fase 2
         BeginDrawing();
@@ -1355,6 +1455,7 @@ int fase2(int* n, int* points, int* vidas, int* extra, int* fase)
         y=GetMouseY();
         
         BeginDrawing();
+        
         ClearBackground(WHITE);
         
         DrawTexture(cen2tx, 0,0,RAYWHITE);//Printar cenario
@@ -1376,6 +1477,11 @@ int fase2(int* n, int* points, int* vidas, int* extra, int* fase)
             {
                 *extra = 0;
                 (*fase)++;
+                BeginDrawing();//a parte de ganhou da festaaaaa
+                DrawTexture(partytx, 0,0,RAYWHITE);
+                coresaleatorias(&rp,&gp,&bp,&ap,&timep);
+                DrawText("WELCOME TO THE PARTY!", 300,100, 70,(Color){rp,gp,bp,ago});
+                EndDrawing();
                 break;
             }
         }
@@ -1442,7 +1548,7 @@ int fase2(int* n, int* points, int* vidas, int* extra, int* fase)
         Vector2 posicaodog = {dogx, dogy};//variavel da sprite do dog, pra as sprites terem a mesma posicao dele
         sprites(&lado, &perso[4].textura, RAYWHITE, &posicaodog, &updog, &downdog, &leftdog, &rightdog);
         
-        /*if(CheckCollisionRecs(perso[0].hitbox, perso[1].hitbox) && !nperdevida){
+        if(CheckCollisionRecs(perso[0].hitbox, perso[1].hitbox) && !nperdevida){
                 (*vidas)--;
                 nperdevida=true;
         }
@@ -1459,10 +1565,10 @@ int fase2(int* n, int* points, int* vidas, int* extra, int* fase)
                 (*vidas)--;
                 nperdevida=true;
                 
-        }*/
+        }
         if(nperdevida){
             timevida+=1.0f;
-            if(timevida==50.0f){
+            if(timevida==100.0f){
                 nperdevida=false;
                 timevida=0.0f;
             }
@@ -1508,7 +1614,7 @@ int fase2(int* n, int* points, int* vidas, int* extra, int* fase)
             }
         }
         
-        DrawText(TextFormat("%d", nperdevida), 200,400,60,BLUE);
+
         DrawText(TextFormat("Vidas: %i\n", *vidas), 20, 50, 20, BLACK);
         EndDrawing();
         
@@ -1525,7 +1631,7 @@ int fase2(int* n, int* points, int* vidas, int* extra, int* fase)
                 DrawTexture(gameovertx, 0,0,RAYWHITE);
                 coresaleatorias(&rgo,&ggo,&bgo,&ago,&timego);
                 
-                DrawText("GAME OVER", 300,200, 60,(Color){rp,gp,bp,ap});
+                DrawText("GAME OVER", 300,100, 70,(Color){rgo,ggo,bgo,ago});
                 EndDrawing();
             }
         }
@@ -1695,9 +1801,10 @@ int main(void)
             {
                 DrawText("Jogos Salvos",550,290,30,WHITE);
             }
-            
+            /*
             if(x >= 428 && x <= 545 && y >= 350 && y <= 380)
             {
+                
                 DrawText("Ranking",420,350,35,WHITE);
                 
                 if(IsMouseButtonDown(MOUSE_LEFT_BUTTON))
@@ -1720,7 +1827,7 @@ int main(void)
             else
             {
                 DrawText("Ranking",430,350,30,WHITE);
-            }
+            }*/
             
         
         EndDrawing();
