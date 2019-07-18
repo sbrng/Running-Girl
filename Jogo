@@ -270,6 +270,7 @@ int fase1(int* n, int* points, int* vidas, int* extra, int* fase)
     const int screenHeight = 500;
     
     //Declaração de variaveis
+    Sound musicafase1 = LoadSound ("/raylib/RunningGirl/musicas/please-dont-stop-the-music-lyrics.mp3");
     int x, y;
     int estadopirraia=3, lado=2;//atualizada pela função "movimentopirraia"
     int rgo,ggo,bgo,ago,rp,gp,bp,ap;
@@ -761,10 +762,13 @@ int fase1(int* n, int* points, int* vidas, int* extra, int* fase)
             break;
         }
     }while(!IsKeyPressed(KEY_ENTER));
-                    
+    
+    //musicafase1
+    PlaySound (musicafase1);
+    
     //FASE1 
     while(perdeu==false)
-    {
+    {   
         if(IsKeyPressed(KEY_END))
         {
             exit (0);
@@ -875,7 +879,8 @@ int fase1(int* n, int* points, int* vidas, int* extra, int* fase)
             {
                 *extra = 0;
                 (*fase)++;
-                
+                StopSound (musicafase1);
+                UnloadSound (musicafase1);
                 break;
             }
             
@@ -930,10 +935,16 @@ int fase1(int* n, int* points, int* vidas, int* extra, int* fase)
         
         if(perdeu)
         {
+            StopSound (musicafase1);
+            UnloadSound (musicafase1);
+            Sound gameover = LoadSound ("/raylib/RunningGirl/musicas/sad-trombone-sound-effect.mp3");
+            PlaySound (gameover);
             while(1)
             {
                 if(IsKeyPressed(KEY_END))
                 {
+                    StopSound (gameover);
+                    UnloadSound (gameover);
                     exit (0);
                 }
                 
@@ -968,6 +979,7 @@ int fase2(int* n, int* points, int* vidas, int* extra, int* fase)
     const int screenHeight = 500;
     
     //Declaração de variaveis
+    Sound musicafase2 = LoadSound ("/raylib/RunningGirl/musicas/the-black-eyed-peas-lyrics.mp3");
     int x, y;
     int estadopirraia=3, lado=2;//atualizada pela função "movimentopirraia"
     int rgo,ggo,bgo,ago,rp,gp,bp,ap;
@@ -1449,6 +1461,9 @@ int fase2(int* n, int* points, int* vidas, int* extra, int* fase)
         time+=GetFrameTime();
     }while(time<5.0f);
     
+    //play musicafase2
+    PlaySound (musicafase2);
+    
     while(1)
     {
         x=GetMouseX();
@@ -1473,6 +1488,8 @@ int fase2(int* n, int* points, int* vidas, int* extra, int* fase)
         
         if((*points) >= 80 && (*extra) == 2)
         {
+            StopSound (musicafase2);
+            UnloadSound (musicafase2);
             if (CheckCollisionRecs(saida, perso[0].hitbox) == 1)
             {
                 *extra = 0;
@@ -1620,10 +1637,14 @@ int fase2(int* n, int* points, int* vidas, int* extra, int* fase)
         
         if(perdeu)
         {
+            Sound gameover = LoadSound ("/raylib/RunningGirl/musicas/sad-trombone-sound-effect.mp3");
+            PlaySound (gameover);
             while(1)
             {
                 if(IsKeyPressed(KEY_END))
                 {
+                    StopSound (gameover);
+                    UnloadSound (gameover);
                     exit (0);
                 }
                 
@@ -1720,6 +1741,9 @@ int main(void)
     Texture2D menuTexture = LoadTextureFromImage(mainMenu);
     UnloadImage(mainMenu);
     
+    //musica menu:
+    Sound musicamenu = LoadSound("/raylib/RunningGirl/musicas/brodyquest.mp3"); 
+   
     
     //preenchendo a struct jogador
     int n = 0;
@@ -1738,6 +1762,10 @@ int main(void)
     //jog.fujona = perso[0];
     
     SetTargetFPS(60);
+    
+    //tocando musica
+    PlaySound (musicamenu);
+    
     
     while(!WindowShouldClose())
     {
@@ -1762,6 +1790,7 @@ int main(void)
                 //Verificando se o botão JOGAR foi clicado
                 if(IsMouseButtonDown(MOUSE_LEFT_BUTTON))
                 {
+                    StopSound (musicamenu);
                     while(1)
                     {
                         
@@ -1835,6 +1864,7 @@ int main(void)
     
     //descarregar imagens e texturas
     UnloadTexture(menuTexture);
+    UnloadSound (musicamenu);
     
     CloseWindow();
     
