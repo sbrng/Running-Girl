@@ -262,7 +262,7 @@ void menu(int* n, jogador jog[])
 }
 
 
-int fase1(int* n, int* points, int* vidas, int* extra, int* fase, jogador jog[])
+int fase1(int* n, int* points, int* vidas, int* extra, int* fase, float* posx, float* posy, jogador jog[])
 {
     
     const int screenWidth = 1000;
@@ -701,6 +701,9 @@ int fase1(int* n, int* points, int* vidas, int* extra, int* fase, jogador jog[])
         x=GetMouseX();
         y=GetMouseY();
         
+        (*posx) = perso[0].pos.x;
+        (*posy) = perso[0].pos.y;
+        
         BeginDrawing();  
         //raio da camera
         //cam.target = (Vector2){perso[0].pos.x-200, perso[0].pos.y-200};
@@ -844,7 +847,7 @@ int fase1(int* n, int* points, int* vidas, int* extra, int* fase, jogador jog[])
         {
             if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
             {
-                menu(&n, jog);
+                menu(n, jog);
             }
         }
             
@@ -886,7 +889,7 @@ int fase1(int* n, int* points, int* vidas, int* extra, int* fase, jogador jog[])
     fclose(pioif1);
 }
 
-int fase2(int* n, int* points, int* vidas, int* extra, int* fase, jogador jog[])
+int fase2(int* n, int* points, int* vidas, int* extra, int* fase, float* posx, float* posy, jogador jog[])
 {
     const int screenWidth = 1000;
     const int screenHeight = 500;
@@ -1410,6 +1413,9 @@ int fase2(int* n, int* points, int* vidas, int* extra, int* fase, jogador jog[])
         x=GetMouseX();
         y=GetMouseY();
         
+        (*posx) = perso[0].pos.x;
+        (*posy) = perso[0].pos.y;
+        
         BeginDrawing();
         ClearBackground(WHITE);
         
@@ -1560,7 +1566,7 @@ int fase2(int* n, int* points, int* vidas, int* extra, int* fase, jogador jog[])
         {
             if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
             {
-                menu(&n, jog);
+                menu(n, jog);
             }
         }
         
@@ -1654,14 +1660,36 @@ int inserirNome(char nome[], int* fase)
 
 void salvar(int* n, jogador jog[])
 {
-    FILE* arq = fopen("/raylib/RunningGirl/arquivos/arq.txt","ab");
+    FILE* arq = fopen("/raylib/RunningGirl/arquivos/arq.txt","a+");
 
     fwrite(jog, sizeof(jogador), 10, arq);
 
     fclose(arq);
     
-    (*n)++;
+    if((*n) < 9){
+        (*n)++;
+    }
+    else if((*n) == 9){
+        (*n) = 0;
+    }
 }
+    FILE* num = fopen("/raylib/RunningGirl/arquivos/n.txt","w");
+
+    fwrite(*n, sizeof(int), 1, num);
+
+    fclose(arq);
+    
+    
+
+void abrir(int* n, jogador jog[])
+{
+    FILE* arq = fopen("/raylib/RunningGirl/arquivos/arq.txt","r");
+
+    fread(jog, sizeof(jogador), 10, arq);
+
+    fclose(arq);
+}
+
 
 int main(void)
 {
@@ -1680,9 +1708,15 @@ int main(void)
     Texture2D menuTexture = LoadTextureFromImage(mainMenu);
     UnloadImage(mainMenu);
     
+    Image menu = LoadImage("/raylib/RunningGirl/fundos/menu2.png");
+    ImageResize(&menu, screenWidth, screenHeight);
+    Texture2D menutx = LoadTextureFromImage(menu);
+    UnloadImage(menu);
+    
+    FILE* num = fopen("/raylib/RunningGirl/arquivos/n.txt","r");
     
     //preenchendo a struct jogador
-    int n = 0;
+    int n = num;
     jogador jog[10];
     for(int j = 0; j < 10; j++)
     {
@@ -1732,12 +1766,12 @@ int main(void)
 
                         else if(jog[n].fase == 1)
                         {
-                            fase1(&n, &jog[n].points, &jog[n].vidas, &jog[n].extra, &jog[n].fase, jog);
+                            fase1(&n, &jog[n].points, &jog[n].vidas, &jog[n].extra, &jog[n].fase, &jog[n].pos.x, &jog[n].pos.y, jog);
                         }
                         
                         else if(jog[n].fase == 2)
                         {
-                            fase2(&n, &jog[n].points, &jog[n].vidas, &jog[n].extra, &jog[n].fase, jog);
+                            fase2(&n, &jog[n].points, &jog[n].vidas, &jog[n].extra, &jog[n].fase, &jog[n].pos.x, &jog[n].pos.y, jog);
                         }
                     }
                 }
@@ -1754,8 +1788,40 @@ int main(void)
                 
                 if(IsMouseButtonDown(MOUSE_LEFT_BUTTON))
                 {
-                    fase2(&n, &jog[n].points, &jog[n].vidas, &jog[n].extra, &jog[n].fase, jog);
+                    int tam1 = 200;
+                    int tam2 = 50;
+                    
+                    FILE* arq = fopen("/raylib/RunningGirl/arquivos/arq.txt","r");
+
+                    fread(jog, sizeof(jogador), 10, arq);
+
+                    
+                    while(1)
+                    {
+                        BeginDrawing();
+                        
+                        DrawTexture(menutx, 0, 0, RAYWHITE);
+                        
+                        for(int i = 0; i < 10; i++){
+                            DrawText(TextFormat("%i.  %s", i+1, jog[i].nome),tam1, tam2, 25, WHITE);
+                            
+                            tam2 += 40;
+                        }  
+                        
+                        EndDrawing();
+                        
+                        if(IsKeyPressed(KEY_END))
+                        {
+                            exit(0);
+                        }
+                        
+                        tam2 = 50;
+                        
+                    }
+                    
+                    fclose(arq);
                 }
+                
             }
             else
             {
