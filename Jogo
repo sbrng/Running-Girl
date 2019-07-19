@@ -100,7 +100,7 @@ void colisao_fase2 (float *x, float *y)
         *y += 5.0f;
             
     //baixo:
-    if (*y+35 >= 470)
+    if (*y+35 >= 490)
         *y -= 5.0f;
 }
 
@@ -790,8 +790,6 @@ int fase1(int* n, int* points, int* vidas, int* extra, int* fase)
         
         DrawTexture(cen1tx, 0,0,RAYWHITE);//Printar cenario
         
-        DrawText(TextFormat("%i | %i",x ,y), 500, 30, 20, BLACK);
-        
         Vector2 posicaopirraia = {perso[0].hitbox.x, perso[0].hitbox.y};
         
         movimentofujona (&perso[0].hitbox.x, &perso[0].hitbox.y, &estadopirraia);
@@ -878,13 +876,14 @@ int fase1(int* n, int* points, int* vidas, int* extra, int* fase)
             }
         }
         
-        if((*points) >= 70 && (*extra) == 2)
+        if((*points) >= 70 && (*extra) >= 2)
         {
             if (CheckCollisionRecs(saida, perso[0].hitbox) == 1)
             {
                 StopSound (musicafase1);
                 UnloadSound (musicafase1);
-                *extra = 0;
+                (*extra) = 0;
+                (*vidas) = 3;
                 (*fase)++;
                
                 break;
@@ -990,8 +989,8 @@ int fase2(int* n, int* points, int* vidas, int* extra, int* fase)
     int estadopirraia=3, lado=2;//atualizada pela função "movimentopirraia"
     int rgo,ggo,bgo,ago,rp,gp,bp,ap;
     float timego=0, timep=0, timemov=0;
-    float time=0.0f, timevida=0.0f;
-    bool nperdevida=false, perdeu=false;
+    float time=0.0f, timelife=0.0f;
+    bool nlosevida=false, lose=false;
  
     //Vetor de personagens
     personagem perso[50];
@@ -1028,8 +1027,8 @@ int fase2(int* n, int* points, int* vidas, int* extra, int* fase)
     perso[0].imagem = LoadImage("/raylib/RunningGirl/sprites/pirraia.png");
     ImageResize(&perso[0].imagem, 140, 35);
     perso[0].textura = LoadTextureFromImage(perso[0].imagem);
-    perso[0].hitbox.x = 200.0;
-    perso[0].hitbox.y = 60.0;
+    perso[0].hitbox.x = 85.0;
+    perso[0].hitbox.y = 170.0;
     perso[0].hitbox.width = 35;
     perso[0].hitbox.height = 35;
 
@@ -1445,10 +1444,10 @@ int fase2(int* n, int* points, int* vidas, int* extra, int* fase)
     FILE* pioif2  = fopen ("/raylib/RunningGirl/arquivos/piolhofase2.txt","r");
     FILE* dogsf2  = fopen ("/raylib/RunningGirl/arquivos/dogfase2.txt","r");
     int mae2x, mae2y, pai2x, pai2y, pioi2x, pioi2y, dogx, dogy;//PRA USAR NA MOVIMENTAÇÃO DA FAMILIA
-    
+    Sound final = LoadSound("/raylib/RunningGirl/musicas/we-are-the-champions-lyrics.mp3");
     //rectangle de saida
     Rectangle saida;
-    saida.x = 90;
+    saida.x = 200;
     saida.y = 450;
     saida.width = 60;
     saida.height = 50;
@@ -1465,23 +1464,24 @@ int fase2(int* n, int* points, int* vidas, int* extra, int* fase)
         DrawTexture(objf2tx,0,0,RAYWHITE);
         EndDrawing();
         time+=GetFrameTime();
-    }while(time<5.0f);
+    }while(time<8.0f);
     
     //play musicafase2
     PlaySound (musicafase2);
     
-    while(1)
+    while(lose==false)
     {
-        x=GetMouseX();
-        y=GetMouseY();
+       /*
+        x = GetMouseX();
+        y = GetMouseY();*/
         
         BeginDrawing();
         
         ClearBackground(WHITE);
         
         DrawTexture(cen2tx, 0,0,RAYWHITE);//Printar cenario
-        DrawText(TextFormat("%i | %i",x ,y), 500, 30, 20, BLACK);
-       
+        
+        
         
         Vector2 posicaopirraia = {perso[0].hitbox.x, perso[0].hitbox.y};
         
@@ -1556,30 +1556,35 @@ int fase2(int* n, int* points, int* vidas, int* extra, int* fase)
         Vector2 posicaodog = {dogx, dogy};//variavel da sprite do dog, pra as sprites terem a mesma posicao dele
         sprites(&lado, &perso[4].textura, RAYWHITE, &posicaodog, &updog, &downdog, &leftdog, &rightdog);
         
-        if(CheckCollisionRecs(perso[0].hitbox, perso[1].hitbox) && !nperdevida){
+        if(CheckCollisionRecs(perso[0].hitbox, perso[1].hitbox) && !nlosevida){
                 (*vidas)--;
-                nperdevida=true;
+                nlosevida=true;
         }
-        if(CheckCollisionRecs(perso[0].hitbox, perso[2].hitbox) && !nperdevida){
+        if(CheckCollisionRecs(perso[0].hitbox, perso[2].hitbox) && !nlosevida){
                 (*vidas)--;
-                nperdevida=true;
+                nlosevida=true;
         }
-        if(CheckCollisionRecs(perso[0].hitbox, perso[3].hitbox) && !nperdevida){
+        if(CheckCollisionRecs(perso[0].hitbox, perso[3].hitbox) && !nlosevida){
                 (*vidas)--;
-                nperdevida=true;
+                nlosevida=true;
                 
         }
-        if(CheckCollisionRecs(perso[0].hitbox, perso[4].hitbox) && !nperdevida){
+        if(CheckCollisionRecs(perso[0].hitbox, perso[4].hitbox) && !nlosevida){
                 (*vidas)--;
-                nperdevida=true;
+                nlosevida=true;
                 
         }
-        if(nperdevida){
-            timevida+=1.0f;
-            if(timevida==100.0f){
-                nperdevida=false;
-                timevida=0.0f;
+        if(nlosevida){
+            timelife+=1.0f;
+            if(timelife==100.0f){
+                nlosevida=false;
+                timelife=0.0f;
             }
+        }
+        if(*vidas==0){
+                
+                lose=true;
+                
         }
         
         colisao_fase2 (&perso[0].hitbox.x, &perso[0].hitbox.y);
@@ -1622,24 +1627,32 @@ int fase2(int* n, int* points, int* vidas, int* extra, int* fase)
             }
         }
         
-        if((*points) >= 180 && (*extra) == 2)
+        if((*points) >= 180 && (*extra) >= 2)
         {
             
             if (CheckCollisionRecs(saida, perso[0].hitbox) == 1)
             {
-                StopSound (musicafase2);
-                UnloadSound (musicafase2);
-                
-                BeginDrawing();//a parte de ganhou da festaaaaa
-                
-                DrawTexture(partytx, 0,0,RAYWHITE);
-                coresaleatorias(&rp,&gp,&bp,&ap,&timep);
-                DrawText("WELCOME TO THE PARTY!", 300,100, 70,(Color){rp,gp,bp,ago});
-                
-                EndDrawing();
-                
                 *extra = 0;
                 (*fase)++;
+                StopSound (musicafase2);
+                UnloadSound (musicafase2);
+                while(1){
+                    PlaySound(final);
+                    BeginDrawing();//a parte de ganhou da festaaaaa
+                    DrawTexture(partytx, 0,0,RAYWHITE);
+                    coresaleatorias(&rp,&gp,&bp,&ap,&timep);
+                    DrawText("WELCOME TO THE PARTY!", 40,80, 60,(Color){rp,gp,bp,ap});
+                    if(IsKeyPressed(KEY_END)){
+                        StopSound(final);
+                        UnloadSound(final);
+                        exit(0);
+                    }
+                EndDrawing();
+                }
+                
+               
+                
+                
                 
                 break;
             }
@@ -1649,7 +1662,7 @@ int fase2(int* n, int* points, int* vidas, int* extra, int* fase)
         DrawText(TextFormat("Vidas: %i\n", *vidas), 20, 50, 20, BLACK);
         EndDrawing();
         
-        if(perdeu)
+        if(lose)
         {
             Sound gameover = LoadSound ("/raylib/RunningGirl/musicas/sad-trombone-sound-effect.mp3");
             PlaySound (gameover);
@@ -1793,7 +1806,7 @@ int main(void)
             DrawTexture(menuTexture, 0, 0, RAYWHITE);
                   
             //printar localização do mouse
-            DrawText(TextFormat("%i | %i",x ,y), 500, 30, 20, BLACK);
+            //DrawText(TextFormat("%i | %i",x ,y), 500, 30, 20, BLACK);
             
             
             //printar botões
